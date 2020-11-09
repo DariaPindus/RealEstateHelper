@@ -15,7 +15,7 @@ public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-    @OneToMany @Setter
+    @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<OfferHistory> offerHistories;
     @Getter @Setter
