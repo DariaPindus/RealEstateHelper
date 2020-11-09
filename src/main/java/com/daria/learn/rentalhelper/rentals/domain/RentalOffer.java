@@ -11,9 +11,18 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@org.hibernate.annotations.NamedQuery(
+        name = "RentalOffer_FindBySearchableFields",
+        query = "select ro from RentalOffer ro " +
+        "where ro.name=:address and " +
+        "ro.agency=:agency and " +
+        "ro.postalCode=:postalCode",
+        timeout = 1
+)
 public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Getter
     private Integer id;
     @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -88,7 +97,6 @@ public class RentalOffer {
     public String toString() {
         return "RentalOffer{" +
                 "id=" + id +
-                ", offerHistories=" + offerHistories +
                 ", address='" + name + '\'' +
                 ", postalCode='" + postalCode + '\'' +
                 ", price=" + price +

@@ -18,13 +18,11 @@ public class CustomRentalOfferRepositoryImpl implements CustomRentalOfferReposit
         this.sessionFactory = sessionFactory;
     }
 
-    @Override
+//    @Override
+    @Deprecated
     public Optional<RentalOffer> findExistingOffer(RentalOffer offer) {
         Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery("select ro from RentalOffer ro " +
-                "where ro.name=:address and " +
-                "ro.agency=:agency and " +
-                "ro.postalCode=:postalCode")
+        Query query = session.createNamedQuery("RentalOffer_FindBySearchableFields", RentalOffer.class)
                 .setParameter("address", offer.getName())
                 .setParameter("agency", offer.getAgency())
                 .setParameter("postalCode", offer.getPostalCode());
@@ -36,4 +34,16 @@ public class CustomRentalOfferRepositoryImpl implements CustomRentalOfferReposit
         }
     }
 
+    @Override
+    public Optional<RentalOffer> findOfferHistoryById(Integer id) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("select ro from RentalOffer ro join fetch ro.offerHistories oh where ro.id=:offerId", RentalOffer.class)
+                .setParameter("offerId", id);
+        try {
+            Object existingOffer = query.getSingleResult();
+            return Optional.of((RentalOffer)existingOffer);
+        } catch (NoResultException noResultException) {
+            return Optional.empty();
+        }
+    }
 }
