@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.rentals.config;
+package com.daria.learn.rentalhelper.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration

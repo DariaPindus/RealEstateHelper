@@ -16,6 +16,7 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
 
     private static final String POSTAL_CODE_PATTERN = "([0-9]{4}\\s[A-Z]{2})";
     private static final String PRICE_PATTERN = "\\b([0-9,]*)\\b";
+    private static final String PARARIUS_LINK_PREFIX = "https://www.pararius.com/apartments/rotterdam";
 
     private static final String NAME_CLASS = "listing-search-item__title";
     private static final String LINK_CLASS = "listing-search-item__link";
@@ -55,6 +56,6 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
     private String parseLink(Elements titleElements) {
         if (titleElements.size() == 0 || titleElements.get(0).childrenSize() < 1)
             return "";
-        return titleElements.get(0).child(0).attr("href");
+        return PARARIUS_LINK_PREFIX + titleElements.get(0).child(0).attr("href");
     }
 }

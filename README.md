@@ -11,6 +11,7 @@ To start Mysql:
 - Install activemq  
 - Go to installation folder (/your/path/apache-activemq-5.16.0/bin/) and run  
 `./activemq start`
+- ActiveMQ management url - http://localhost:8161/admin/
 
 ###Wildfly
 Download [wildfly](https://www.wildfly.org/downloads/)  

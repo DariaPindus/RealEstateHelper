@@ -21,7 +21,7 @@ public class ActiveMQRentalListener implements MessageListener {
     }
 
     @Override
-    @JmsListener(destination = "${spring.activemq.topic}")
+    @JmsListener(destination = "${spring.activemq.topic.rental}")
     public void onMessage(Message message) {
         try{
             ObjectMessage objectMessage = (ObjectMessage)message;
