@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper.bot;
 
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,7 +13,8 @@ public class RentalNotifierBot extends TelegramWebhookBot {
 
     private final BotHandlerFacade botHandlerFacade;
 
-    public RentalNotifierBot(String botUsername, String botToken, String botPath, BotHandlerFacade botHandlerFacade) {
+    public RentalNotifierBot(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, String botPath, BotHandlerFacade botHandlerFacade) {
+        super(defaultBotOptions);
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.botPath = botPath;

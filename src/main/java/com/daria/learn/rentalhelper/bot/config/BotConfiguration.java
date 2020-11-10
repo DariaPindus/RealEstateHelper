@@ -27,6 +27,6 @@ public class BotConfiguration {
         options.setProxyHost(proxyHost);
         options.setProxyPort(Integer.parseInt(proxyPort));
         options.setProxyType(DefaultBotOptions.ProxyType.valueOf(proxyType));
-        return new RentalNotifierBot(botUsername, botToken, botWebhookPath, botHandlerFacade);
+        return new RentalNotifierBot(options, botUsername, botToken, botWebhookPath, botHandlerFacade);
     }
 }
