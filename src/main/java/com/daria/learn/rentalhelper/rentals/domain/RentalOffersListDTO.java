@@ -16,4 +16,8 @@ public class RentalOffersListDTO implements Serializable {
     public RentalOffersListDTO(List<RentalOfferDTO> rentalOfferDTOS) {
         this.rentalOfferDTOS = rentalOfferDTOS;
     }
+
+    public int size() {
+        return rentalOfferDTOS.size();
+    }
 }

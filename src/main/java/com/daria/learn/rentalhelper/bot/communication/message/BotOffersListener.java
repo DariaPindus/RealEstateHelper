@@ -24,9 +24,10 @@ public class BotOffersListener implements MessageListener {
         try{
             ObjectMessage objectMessage = (ObjectMessage)message;
             RentalOffersListDTO offerDTOS = (RentalOffersListDTO)objectMessage.getObject();
-            botNotifierFacade.notifySubscribedUsers(offerDTOS);
+            if (offerDTOS.size() > 0)
+                botNotifierFacade.notifySubscribedUsers(offerDTOS);
         } catch(Exception e) {
-            System.out.println("Received Exception : "+ e);
+            System.out.println("BotOffersListener Exception : "+ e.getMessage());
         }
     }
 }

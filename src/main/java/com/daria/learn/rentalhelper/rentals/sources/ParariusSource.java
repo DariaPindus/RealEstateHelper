@@ -1,16 +1,13 @@
 package com.daria.learn.rentalhelper.rentals.sources;
 
-import com.daria.learn.rentalhelper.rentals.domain.FilterOfInterest;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.parsers.JsoupOfferParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -28,7 +25,7 @@ public class ParariusSource implements DataSource {
     }
 
     @Override
-    public List<RentalOfferDTO> getOffers(FilterOfInterest filterOfInterest) {
+    public List<RentalOfferDTO> getOffers() {
         List<RentalOfferDTO> resultOffers = new ArrayList<>();
         for (int i = 0; i < LAST_N_PAGES_TO_FETCH; i++) {
             try {
