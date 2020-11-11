@@ -6,14 +6,14 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActiveMQRentalSender {
+public class RentalNotificationSender {
 
     private final JmsTemplate jmsTemplate;
 
     @Value("${spring.activemq.topic.rental}")
     private String topic;
 
-    public ActiveMQRentalSender(JmsTemplate jmsTemplate) {
+    public RentalNotificationSender(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
     }
 

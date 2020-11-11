@@ -42,7 +42,7 @@ public class RentalPersistenceIT {
                 new RentalOfferDTO(repeatingName,"3030 AB", 1200, 50, "My Agency", true, "/link/to/1"),
                 new RentalOfferDTO("Apartment on 6th St", "3031 AB", 1200, 50, "My Agency", true, "/link/to/2"),
                 new RentalOfferDTO("Apartment on 7th St", "3031 AB", 1200, 50, "Another Agency", false, "/link/to/3"));
-        rentalPersistenceFacade.persistRentals(newRentalOffers);
+        rentalPersistenceFacade.persistNewRentals(newRentalOffers);
 
         List<RentalOffer> persistedOffers = (List<RentalOffer>)rentalOfferRepository.findAll();
         assertEquals(newRentalOffers.size(), persistedOffers.size());
@@ -62,7 +62,7 @@ public class RentalPersistenceIT {
         List<RentalOfferDTO> newRentalOffers = List.of(
                 new RentalOfferDTO(repeatingName, "3030 AB", 1200, 50, "My Agency", true, "/link/to/1"),
                 newOffer);
-        rentalPersistenceFacade.persistRentals(newRentalOffers);
+        rentalPersistenceFacade.persistNewRentals(newRentalOffers);
 
         Iterable<RentalOffer> allOffers = rentalOfferRepository.findAll();
         List<RentalOffer> resaved = StreamSupport.stream(allOffers.spliterator(), false).filter(offer -> offer.getName().equals(repeatingName)).collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class RentalPersistenceIT {
                 new RentalOfferDTO(repeatingName, "3030 AB", 1200, 50, "My Agency", true, "/link/to/1"),
                 newOffer,
                 updatedOffer);
-        rentalPersistenceFacade.persistRentals(newRentalOffers);
+        rentalPersistenceFacade.persistNewRentals(newRentalOffers);
 
         Iterable<RentalOffer> allOffers = rentalOfferRepository.findAll();
         List<RentalOffer> updated = StreamSupport.stream(allOffers.spliterator(), false).filter(offer -> offer.getName().equals(updatedName)).collect(Collectors.toList());

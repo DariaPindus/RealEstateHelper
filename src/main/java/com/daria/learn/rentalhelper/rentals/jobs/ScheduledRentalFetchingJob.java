@@ -1,9 +1,8 @@
 package com.daria.learn.rentalhelper.rentals.jobs;
 
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
+import com.daria.learn.rentalhelper.rentals.RentalNotificationFacade;
 import com.daria.learn.rentalhelper.rentals.fetch.FetcherFacade;
-import com.daria.learn.rentalhelper.rentals.communication.message.ActiveMQRentalSender;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,17 +16,17 @@ import java.util.List;
 public class ScheduledRentalFetchingJob {
 
     private final FetcherFacade fetcherFacade;
-    private final ActiveMQRentalSender rentalSender;
+    private final RentalNotificationFacade rentalNotificationFacade;
 
-    public ScheduledRentalFetchingJob(FetcherFacade fetcherFacade, ActiveMQRentalSender rentalSender) {
+    public ScheduledRentalFetchingJob(FetcherFacade fetcherFacade, RentalNotificationFacade rentalNotificationFacade) {
         this.fetcherFacade = fetcherFacade;
-        this.rentalSender = rentalSender;
+        this.rentalNotificationFacade = rentalNotificationFacade;
     }
 
     @Scheduled(fixedDelay = 600000)
     public void fetchRentals() {
         System.out.println(Instant.now() + "Run fetch rentals");
         List<RentalOfferDTO> offerDTOList = fetcherFacade.fetchOffers();
-        rentalSender.sendMessage(new RentalOffersListDTO(offerDTOList));
+        rentalNotificationFacade.saveAndNotifyNewRentals(offerDTOList);
     }
 }

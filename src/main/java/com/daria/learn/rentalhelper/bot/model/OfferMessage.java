@@ -3,10 +3,13 @@ package com.daria.learn.rentalhelper.bot.model;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import lombok.Getter;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.List;
 
 public class OfferMessage {
+
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     private final List<RentalOfferDTO> offerDTOS;
     @Getter
@@ -24,9 +27,9 @@ public class OfferMessage {
     }
 
     private StringBuilder buildMessage() {
-        StringBuilder sb = new StringBuilder("<p><i>Новые предложения к ");
-        sb.append(time);
-        sb.append("</i></p>");
+        StringBuilder sb = new StringBuilder("<i>Новые предложения к ");
+        sb.append(formatter.format(time));
+        sb.append("</i>\n");
 
         for (int i = 0; i < offerDTOS.size(); i++) {
             sb.append("<b>");
@@ -48,7 +51,7 @@ public class OfferMessage {
             sb.append(" euros. ");
             sb.append("Agency: ");
             sb.append(offerDTO.getAgency());
-
+            sb.append("\n");
         }
         return sb;
     }

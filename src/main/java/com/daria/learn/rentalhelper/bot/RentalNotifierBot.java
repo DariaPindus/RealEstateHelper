@@ -64,7 +64,7 @@ public class RentalNotifierBot extends TelegramLongPollingBot {
     }
 
     public void sendMessagesToUsers(List<SendMessage> messageList) {
-        for (SendMessage message : messageList) {
+         for (SendMessage message : messageList) {
             sendMessage(message);
         }
     }

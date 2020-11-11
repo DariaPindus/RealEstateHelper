@@ -7,7 +7,9 @@ import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
@@ -60,27 +62,36 @@ public class RentalOffer {
         return postalCode + "--" + area + "--" + agency;
     }
 
-    public boolean addOfferHistoryIfNeeded(RentalOffer newOfferVersion) {
-        FieldHistory fieldHistory = null;
-
-        if (newOfferVersion.getPrice() != this.price)
-            fieldHistory = new FieldHistory("price", String.valueOf(this.price), String.valueOf(newOfferVersion.price));
-        if (!newOfferVersion.getLink().equals(this.link))
-            fieldHistory = new FieldHistory("link", String.valueOf(this.link), String.valueOf(newOfferVersion.link));
-        if (newOfferVersion.getArea() != this.area)
-            fieldHistory = new FieldHistory("area", String.valueOf(this.area), String.valueOf(newOfferVersion.area));
-
-        if (fieldHistory != null) {
-            this.offerHistories.add(new OfferHistory(Instant.now(), OfferStatus.UPDATED, fieldHistory));
-            return true;
-        }
-        return false;
-    }
-
     public static RentalOffer fromRentalOfferDTO(RentalOfferDTO offerDTO) {
         return new RentalOffer(offerDTO.getName(), offerDTO.getPostalCode(),
                 offerDTO.getPrice(), offerDTO.getArea(), offerDTO.getAgency(),
                 offerDTO.isFurnished(), offerDTO.getLink());
+    }
+
+    public boolean updateIfChanged(RentalOffer newRentalOffer) {
+        boolean wasChanged = addOfferHistoryIfChanged(newRentalOffer);
+        this.name = newRentalOffer.getName();
+        this.price = newRentalOffer.getPrice();
+        this.link = newRentalOffer.getLink();
+        this.furnished = newRentalOffer.isFurnished();
+        return wasChanged;
+    }
+
+    private boolean addOfferHistoryIfChanged(RentalOffer newOfferVersion) {
+        List<FieldHistory> fieldHistories = new LinkedList<>();
+
+        if (newOfferVersion.getPrice() != this.price)
+            fieldHistories.add(new FieldHistory("price", String.valueOf(this.price), String.valueOf(newOfferVersion.price)));
+        if (!newOfferVersion.getLink().equals(this.link))
+            fieldHistories.add(new FieldHistory("link", String.valueOf(this.link), String.valueOf(newOfferVersion.link)));
+        if (newOfferVersion.getArea() != this.area)
+            fieldHistories.add(new FieldHistory("area", String.valueOf(this.area), String.valueOf(newOfferVersion.area)));
+
+        if (!fieldHistories.isEmpty()) {
+            this.offerHistories.addAll(fieldHistories.stream().map(fieldHistory -> new OfferHistory(Instant.now(), OfferStatus.UPDATED, fieldHistory)).collect(Collectors.toList()));
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -89,8 +100,8 @@ public class RentalOffer {
             return false;
         RentalOffer that = (RentalOffer) obj;
         return that.postalCode.equals(this.postalCode)
-                && that.name.equals(this.name)
-                && that.area == this.area;
+                && that.area == this.area
+                && that.agency.equals(this.agency);
     }
 
     @Override

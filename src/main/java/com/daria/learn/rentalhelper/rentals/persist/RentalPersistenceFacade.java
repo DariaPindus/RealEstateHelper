@@ -5,5 +5,5 @@ import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import java.util.List;
 
 public interface RentalPersistenceFacade {
-    void persistRentals(List<RentalOfferDTO> rentalOfferDTOS);
+    List<RentalOfferDTO> persistNewRentals(List<RentalOfferDTO> rentalOfferDTOS);
 }
