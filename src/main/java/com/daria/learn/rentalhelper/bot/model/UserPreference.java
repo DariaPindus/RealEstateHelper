@@ -1,10 +1,10 @@
-package com.daria.learn.rentalhelper.rentals.domain;
+package com.daria.learn.rentalhelper.bot.model;
 
 import lombok.Getter;
 
 import java.util.Set;
 
-public class FilterOfInterest {
+public class UserPreference {
     @Getter
     private final double priceUp;
     @Getter
@@ -14,7 +14,7 @@ public class FilterOfInterest {
     @Getter
     private final boolean furnished;
 
-    public FilterOfInterest(double maxPrice, Set<String> postalCodes, int minArea, boolean furnished) {
+    public UserPreference(double maxPrice, Set<String> postalCodes, int minArea, boolean furnished) {
         this.priceUp = maxPrice;
         this.postalCodes = postalCodes;
         this.minArea = minArea;
