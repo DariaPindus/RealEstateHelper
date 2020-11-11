@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
+import com.daria.learn.rentalhelper.bot.exceptions.ExceededMaximumSubscriptionsAmountException;
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.model.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.model.UserPreference;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class LocalUserCache implements UserCache {
 
+    private static final int MAX_USERS_AMOUNT = 100;
     private final Map<Integer, UserBotInfo> userBotMap = new HashMap<>();
 
     @Override
@@ -34,7 +36,7 @@ public class LocalUserCache implements UserCache {
             userBotInfo.setUserPreference(userPreference);
         } else {
             UserBotInfo userBotInfo = new UserBotInfo(userId, chatId, BotStateEnum.SUBSCRIBED, userPreference);
-            userBotMap.put(userId, userBotInfo);
+            safePutToMap(userId, userBotInfo);
         }
     }
 
@@ -45,7 +47,7 @@ public class LocalUserCache implements UserCache {
         if (userBotMap.containsKey(userId)) {
             userBotMap.get(userId).setState(stateEnum);
         } else {
-            userBotMap.put(userId, new UserBotInfo(userId, chatId, stateEnum, null));
+            safePutToMap(userId, new UserBotInfo(userId, chatId, stateEnum, null));
         }
     }
 
@@ -55,5 +57,11 @@ public class LocalUserCache implements UserCache {
         return userBotMap.values().stream()
                 .filter(userBotInfo -> userBotInfo.getState() == BotStateEnum.SUBSCRIBED)
                 .collect(Collectors.toList());
+    }
+
+    private void safePutToMap(Integer userId, UserBotInfo userBotInfo) {
+        if (userBotMap.size() >= MAX_USERS_AMOUNT)
+            throw new ExceededMaximumSubscriptionsAmountException();
+        userBotMap.put(userId, userBotInfo);
     }
 }

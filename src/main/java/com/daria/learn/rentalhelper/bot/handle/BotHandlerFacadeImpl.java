@@ -1,10 +1,10 @@
 package com.daria.learn.rentalhelper.bot.handle;
 
-import com.daria.learn.rentalhelper.bot.handle.statehandle.DefaultBotStateHandler;
+import com.daria.learn.rentalhelper.bot.exceptions.BotException;
+import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
+import com.daria.learn.rentalhelper.bot.handle.statehandle.ExceptionalBotStateHandler;
 import com.daria.learn.rentalhelper.bot.handle.statehandle.UserBotStateHandler;
-import com.daria.learn.rentalhelper.bot.model.OfferMessage;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,24 +14,19 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.time.Instant;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class BotHandlerFacadeImpl implements  BotHandlerFacade {
 
     private final static Logger log = LoggerFactory.getLogger(BotHandlerFacadeImpl.class);
 
-    private final UserCache userCache;
     private final Set<UserBotStateHandler> stateHandlers;
-    private final DefaultBotStateHandler defaultBotStateHandler;
+    private final ExceptionalBotStateHandler exceptionalBotStateHandler;
 
-    public BotHandlerFacadeImpl(UserCache userCache, Set<UserBotStateHandler> stateHandlers, DefaultBotStateHandler defaultBotStateHandler) {
-        this.userCache = userCache;
+    public BotHandlerFacadeImpl(Set<UserBotStateHandler> stateHandlers, ExceptionalBotStateHandler exceptionalBotStateHandler) {
         this.stateHandlers = stateHandlers;
-        this.defaultBotStateHandler = defaultBotStateHandler;
+        this.exceptionalBotStateHandler = exceptionalBotStateHandler;
     }
 
     @Override
@@ -57,8 +52,12 @@ public class BotHandlerFacadeImpl implements  BotHandlerFacade {
     }
 
     private SendMessage handleInputMessage(Message message) {
-        UserBotStateHandler botStateHandler = stateHandlers.stream().filter(stateHandler -> stateHandler.isApplicable(message.getText())).findFirst().orElse(defaultBotStateHandler);
-        return botStateHandler.handleResponse(message);
+        try {
+            UserBotStateHandler botStateHandler = stateHandlers.stream().filter(stateHandler -> stateHandler.isApplicable(message.getText())).findFirst().orElseThrow(NoMatchingStateHandlersFoundException::new);
+            return botStateHandler.handleResponse(message);
+        } catch (BotException botException) {
+            return exceptionalBotStateHandler.handleExceptionalResponse(message, botException);
+        }
     }
 
     private SendMessage processCallbackQuery(CallbackQuery callbackQuery) {
