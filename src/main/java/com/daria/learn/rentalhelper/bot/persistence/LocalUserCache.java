@@ -1,14 +1,12 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.handle.UserBotInfo;
+import com.daria.learn.rentalhelper.bot.model.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.model.UserPreference;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,32 +25,35 @@ public class LocalUserCache implements UserCache {
     }
 
     @Override
-    public void setUserPreference(Integer userId, UserPreference userPreference) {
+    public void setUserPreferenceFromMessage(Message message, UserPreference userPreference) {
+        Integer userId = message.getFrom().getId();
+        Long chatId = message.getChatId();
         if (userBotMap.containsKey(userId)) {
             UserBotInfo userBotInfo = userBotMap.get(userId);
             userBotInfo.setState(BotStateEnum.SUBSCRIBED);
             userBotInfo.setUserPreference(userPreference);
         } else {
-            UserBotInfo userBotInfo = new UserBotInfo(userId, BotStateEnum.SUBSCRIBED, userPreference);
+            UserBotInfo userBotInfo = new UserBotInfo(userId, chatId, BotStateEnum.SUBSCRIBED, userPreference);
             userBotMap.put(userId, userBotInfo);
         }
     }
 
     @Override
-    public void setUserState(Integer userId, BotStateEnum stateEnum) {
+    public void setUserStateFromMessage(Message message, BotStateEnum stateEnum) {
+        Integer userId = message.getFrom().getId();
+        Long chatId = message.getChatId();
         if (userBotMap.containsKey(userId)) {
             userBotMap.get(userId).setState(stateEnum);
         } else {
-            userBotMap.put(userId, new UserBotInfo(userId, stateEnum, null));
+            userBotMap.put(userId, new UserBotInfo(userId, chatId, stateEnum, null));
         }
     }
 
     @Override
     //TODO: optimize (cache ?)
-    public Set<Integer> getSubscribedUserIds() {
-        return userBotMap.entrySet().stream()
-                .filter(entry -> entry.getValue().getState() == BotStateEnum.SUBSCRIBED)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+    public List<UserBotInfo> getSubscribedUserInfos() {
+        return userBotMap.values().stream()
+                .filter(userBotInfo -> userBotInfo.getState() == BotStateEnum.SUBSCRIBED)
+                .collect(Collectors.toList());
     }
 }

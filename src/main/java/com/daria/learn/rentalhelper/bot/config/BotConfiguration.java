@@ -16,9 +16,8 @@ public class BotConfiguration {
     @Bean
     RentalNotifierBot rentalNotifierBot(@Value("${tgbot.username}")String botUsername,
                                         @Value("${tgbot.token}")String botToken,
-                                        @Value("${tgbot.webHookPath}") String botWebhookPath,
                                         @Autowired BotHandlerFacade botHandlerFacade) {
-        return new RentalNotifierBot(botUsername, botToken, botWebhookPath, botHandlerFacade);
+        return new RentalNotifierBot(botUsername, botToken, botHandlerFacade);
     }
 
     @Bean

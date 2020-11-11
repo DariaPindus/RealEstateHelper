@@ -19,14 +19,12 @@ public class RentalNotifierBot extends TelegramLongPollingBot {
 
     private final String botUsername;
     private final String botToken;
-    private final String botPath;
 
     private final BotHandlerFacade botHandlerFacade;
 
-    public RentalNotifierBot(String botUsername, String botToken, String botPath, BotHandlerFacade botHandlerFacade) {
+    public RentalNotifierBot(String botUsername, String botToken, BotHandlerFacade botHandlerFacade) {
         this.botUsername = botUsername;
         this.botToken = botToken;
-        this.botPath = botPath;
         this.botHandlerFacade = botHandlerFacade;
     }
 
@@ -54,11 +52,7 @@ public class RentalNotifierBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage message = botHandlerFacade.handleMessageUpdate(update);
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        sendMessage(message);
     }
 
     @Override
@@ -66,6 +60,20 @@ public class RentalNotifierBot extends TelegramLongPollingBot {
         log.info("TelegramBot onUpdatesReceived {}", updates);
         for (Update update : updates) {
             onUpdateReceived(update);
+        }
+    }
+
+    public void sendMessagesToUsers(List<SendMessage> messageList) {
+        for (SendMessage message : messageList) {
+            sendMessage(message);
+        }
+    }
+
+    private void sendMessage(SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Error sending message " + e.getMessage());
         }
     }
 }

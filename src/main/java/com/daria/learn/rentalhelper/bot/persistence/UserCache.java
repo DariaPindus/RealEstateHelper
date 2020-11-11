@@ -1,9 +1,12 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.model.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.model.UserPreference;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,9 +15,9 @@ public interface UserCache {
 
     Optional<UserPreference> getUserPreference(Integer userId);
 
-    void setUserPreference(Integer userId, UserPreference userPreference);
+    void setUserPreferenceFromMessage(Message message, UserPreference userPreference);
 
-    void setUserState(Integer userId, BotStateEnum stateEnum);
+    void setUserStateFromMessage(Message message, BotStateEnum stateEnum);
 
-    Set<Integer> getSubscribedUserIds();
+    List<UserBotInfo> getSubscribedUserInfos();
 }

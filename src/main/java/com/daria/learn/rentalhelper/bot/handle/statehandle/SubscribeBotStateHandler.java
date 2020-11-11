@@ -6,7 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Locale;
 
@@ -28,8 +27,7 @@ public class SubscribeBotStateHandler implements UserBotStateHandler {
 
     @Override
     public SendMessage handleResponse(Message message) {
-        Integer userId = getUserId(message);
-        userCache.setUserState(userId, BotStateEnum.SUBSCRIBED);
+        userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
         String messageText = messageSource.getMessage("bot.subscribed.reply", null, Locale.getDefault());
         SendMessage responseMessage = new SendMessage();
         responseMessage.setChatId(message.getChatId().toString());

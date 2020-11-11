@@ -2,7 +2,9 @@ package com.daria.learn.rentalhelper.bot.handle;
 
 import com.daria.learn.rentalhelper.bot.handle.statehandle.DefaultBotStateHandler;
 import com.daria.learn.rentalhelper.bot.handle.statehandle.UserBotStateHandler;
+import com.daria.learn.rentalhelper.bot.model.OfferMessage;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +14,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Optional;
+import java.time.Instant;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class BotHandlerFacadeImpl implements  BotHandlerFacade {
