@@ -29,11 +29,18 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
     public RentalOfferDTO parseOfferDTO(Element rootElement) {
         String name = rootElement.getElementsByClass(NAME_CLASS).text();
         String location = parsePostalCode(rootElement.getElementsByClass(LOCATION_CLASS).text());
-        double price = parsePrise(rootElement.getElementsByClass(PRICE_CLASS).text());
+        double price = parseNumber(rootElement.getElementsByClass(PRICE_CLASS).text());
         //TODO: area, furnished
         String agency = rootElement.getElementsByClass(AGENCY_CLASS).text();
         String link = parseLink(rootElement.getElementsByClass(NAME_CLASS));
-        return new RentalOfferDTO(name, location, price, 1, agency, true, link);
+        int area = parseArea(rootElement.getElementsByClass(AREA_CLASS));
+        return new RentalOfferDTO(name, location, price, area, agency, true, link);
+    }
+
+    private int parseArea(Elements elementsByClass) {
+        Element areaElement = elementsByClass.first();
+        String areaStr = areaElement.text();
+        return (int)parseNumber(areaStr);
     }
 
     private String parsePostalCode(String location) {
@@ -42,7 +49,7 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
         return matcher.find() ? matcher.group() : "";
     }
 
-    private double parsePrise(String price) {
+    private double parseNumber(String price) {
         try {
             Pattern pattern = Pattern.compile(PRICE_PATTERN, Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(price);

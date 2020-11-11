@@ -10,32 +10,33 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.Locale;
 
 @Component
-public class SubscribeBotStateHandler implements UserBotStateHandler {
+public class InitBotStateHandler implements UserBotStateHandler {
 
     private final UserCache userCache;
     private final MessageSource messageSource;
 
-    public SubscribeBotStateHandler(UserCache userCache, MessageSource messageSource) {
+    public InitBotStateHandler(UserCache userCache, MessageSource messageSource) {
         this.userCache = userCache;
         this.messageSource = messageSource;
     }
 
     @Override
-    public boolean isApplicable(String message) {
-        return message.toLowerCase().trim().equals("начать");
+    public BotStateEnum getBotStateEnum() {
+        return BotStateEnum.INIT;
     }
 
     @Override
-    public SendMessage handleResponse(Message message) {
-        userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
-        String messageText = messageSource.getMessage("bot.subscribed.reply", null, Locale.getDefault());
-        SendMessage responseMessage = new SendMessage();
-        responseMessage.setChatId(message.getChatId().toString());
-        responseMessage.setText(messageText);
-        return responseMessage;
+    public boolean isApplicable(String userResponse) {
+        return userResponse.trim().equals("/start");
     }
 
-    private Integer getUserId(Message message) {
-        return message.getFrom().getId();
+    @Override
+    public SendMessage replyToMessage(Message message) {
+        String messageText = messageSource.getMessage("bot.started.reply", null, Locale.getDefault());
+        SendMessage responseMessage = new SendMessage(); // Create a SendMessage object with mandatory fields
+        responseMessage.setChatId(message.getChatId().toString());
+        responseMessage.setText(messageText);
+        userCache.setUserStateFromMessage(message, BotStateEnum.STARTED);
+        return responseMessage;
     }
 }

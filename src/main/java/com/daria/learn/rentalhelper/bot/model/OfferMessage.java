@@ -28,7 +28,8 @@ public class OfferMessage {
 
     private StringBuilder buildMessage() {
         StringBuilder sb = new StringBuilder("<i>Новые предложения к ");
-        sb.append(formatter.format(time));
+//        sb.append(formatter.format(time));
+        sb.append(time);
         sb.append("</i>\n");
 
         for (int i = 0; i < offerDTOS.size(); i++) {

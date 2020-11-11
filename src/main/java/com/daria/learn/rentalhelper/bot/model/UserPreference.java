@@ -1,23 +1,38 @@
 package com.daria.learn.rentalhelper.bot.model;
 
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
 public class UserPreference {
-    @Getter
-    private final double priceUp;
-    @Getter
+    @Getter @Nullable
+    private final Double maxPrice;
+    @Getter @Nullable
     private final Set<String> postalCodes;
-    @Getter
-    private final int minArea;
-    @Getter
-    private final boolean furnished;
+    @Getter @Nullable
+    private final Integer minArea;
+    @Getter @Nullable
+    private final Boolean furnished;
 
-    public UserPreference(double maxPrice, Set<String> postalCodes, int minArea, boolean furnished) {
-        this.priceUp = maxPrice;
+    public UserPreference(Double maxPrice, Set<String> postalCodes, Integer minArea, Boolean furnished) {
+        this.maxPrice = maxPrice;
         this.postalCodes = postalCodes;
         this.minArea = minArea;
         this.furnished = furnished;
+    }
+
+    public boolean isMatching(RentalOfferDTO rentalOfferDTO) {
+        boolean result = true;
+
+        if (maxPrice != null)
+            result &= rentalOfferDTO.getPrice() <= maxPrice;
+        if (minArea != null)
+            result &= rentalOfferDTO.getArea() >= minArea;
+        if (furnished != null)
+            result &= rentalOfferDTO.isFurnished() == furnished;
+
+        return result;
     }
 }

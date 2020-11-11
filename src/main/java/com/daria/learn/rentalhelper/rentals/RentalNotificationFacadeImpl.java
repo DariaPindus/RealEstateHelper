@@ -20,8 +20,8 @@ public class RentalNotificationFacadeImpl implements RentalNotificationFacade {
     }
 
     public void saveAndNotifyNewRentals(List<RentalOfferDTO> offerDTOList) {
-        persistenceFacade.persistNewRentals(offerDTOList);
-        rentalSender.sendMessage(new RentalOffersListDTO(offerDTOList));
+        List<RentalOfferDTO> newRentalOffers = persistenceFacade.persistNewRentals(offerDTOList);
+        rentalSender.sendMessage(new RentalOffersListDTO(newRentalOffers));
     }
 
 }

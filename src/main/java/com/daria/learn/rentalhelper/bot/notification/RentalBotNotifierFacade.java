@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.bot.handle.outbound;
+package com.daria.learn.rentalhelper.bot.notification;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 

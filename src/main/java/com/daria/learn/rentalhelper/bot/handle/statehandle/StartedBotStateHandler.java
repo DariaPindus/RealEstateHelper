@@ -1,7 +1,8 @@
 package com.daria.learn.rentalhelper.bot.handle.statehandle;
 
+import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
-import lombok.Getter;
+import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,26 +13,51 @@ import java.util.Locale;
 @Component
 public class StartedBotStateHandler implements UserBotStateHandler {
 
-    @Getter
-    private static final BotStateEnum state = BotStateEnum.STARTED;
-
+    private final UserCache userCache;
     private final MessageSource messageSource;
 
-    public StartedBotStateHandler(MessageSource messageSource) {
+    public StartedBotStateHandler(UserCache userCache, MessageSource messageSource) {
+        this.userCache = userCache;
         this.messageSource = messageSource;
     }
 
     @Override
-    public boolean isApplicable(String message) {
-        return message.trim().equals("/start");
+    public BotStateEnum getBotStateEnum() {
+        return BotStateEnum.STARTED;
     }
 
     @Override
-    public SendMessage handleResponse(Message message) {
-        String messageText = messageSource.getMessage("bot.started.reply", null, Locale.getDefault());
-        SendMessage responseMessage = new SendMessage(); // Create a SendMessage object with mandatory fields
+    public boolean isApplicable(String userResponse) {
+        String messageFormatted = userResponse.toLowerCase().trim();
+        return messageFormatted.equals("начать") || messageFormatted.equals("настроить");
+    }
+
+    @Override
+    public SendMessage replyToMessage(Message message) {
+        String messageFormatted = message.getText().toLowerCase().trim();
+        switch (messageFormatted) {
+            case "начать": return replyWithSubscription(message);
+            case "настроить": return replyWithPreferences(message);
+            default: throw new NoMatchingStateHandlersFoundException();
+        }
+    }
+
+    private SendMessage replyWithPreferences(Message message) {
+        userCache.setUserStateFromMessage(message, BotStateEnum.SET_PREFERENCES);
+        String messageText = messageSource.getMessage("bot.set-preferences.reply", null, Locale.getDefault());
+        SendMessage responseMessage = new SendMessage();
         responseMessage.setChatId(message.getChatId().toString());
         responseMessage.setText(messageText);
         return responseMessage;
     }
+
+    private SendMessage replyWithSubscription(Message message) {
+        userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
+        String messageText = messageSource.getMessage("bot.subscribed.reply", null, Locale.getDefault());
+        SendMessage responseMessage = new SendMessage();
+        responseMessage.setChatId(message.getChatId().toString());
+        responseMessage.setText(messageText);
+        return responseMessage;
+    }
+
 }

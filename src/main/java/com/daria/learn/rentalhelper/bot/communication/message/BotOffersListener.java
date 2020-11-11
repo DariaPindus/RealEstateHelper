@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.communication.message;
 
-import com.daria.learn.rentalhelper.bot.handle.outbound.RentalBotNotifierFacade;
+import com.daria.learn.rentalhelper.bot.notification.RentalBotNotifierFacade;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;

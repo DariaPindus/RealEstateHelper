@@ -1,10 +1,7 @@
 package com.daria.learn.rentalhelper.bot.handle;
 
 import com.daria.learn.rentalhelper.bot.exceptions.BotException;
-import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
 import com.daria.learn.rentalhelper.bot.handle.statehandle.ExceptionalBotStateHandler;
-import com.daria.learn.rentalhelper.bot.handle.statehandle.UserBotStateHandler;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +11,16 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Set;
-
 @Component
 public class BotHandlerFacadeImpl implements  BotHandlerFacade {
 
     private final static Logger log = LoggerFactory.getLogger(BotHandlerFacadeImpl.class);
 
-    private final Set<UserBotStateHandler> stateHandlers;
     private final ExceptionalBotStateHandler exceptionalBotStateHandler;
+    private final BotReplier botReplier;
 
-    public BotHandlerFacadeImpl(Set<UserBotStateHandler> stateHandlers, ExceptionalBotStateHandler exceptionalBotStateHandler) {
-        this.stateHandlers = stateHandlers;
+    public BotHandlerFacadeImpl(ExceptionalBotStateHandler exceptionalBotStateHandler, BotReplier botReplier) {
+        this.botReplier = botReplier;
         this.exceptionalBotStateHandler = exceptionalBotStateHandler;
     }
 
@@ -53,8 +48,7 @@ public class BotHandlerFacadeImpl implements  BotHandlerFacade {
 
     private SendMessage handleInputMessage(Message message) {
         try {
-            UserBotStateHandler botStateHandler = stateHandlers.stream().filter(stateHandler -> stateHandler.isApplicable(message.getText())).findFirst().orElseThrow(NoMatchingStateHandlersFoundException::new);
-            return botStateHandler.handleResponse(message);
+            return botReplier.replyToMessage(message);
         } catch (BotException botException) {
             return exceptionalBotStateHandler.handleExceptionalResponse(message, botException);
         }
