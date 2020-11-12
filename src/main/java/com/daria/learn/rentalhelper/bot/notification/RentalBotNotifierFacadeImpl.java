@@ -32,7 +32,7 @@ public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
                     RentalOffersListDTO personalisedOffers = getPersonalisedRentalList(rentalOffersListDTO, userBotInfo.getUserPreference());
                     if (personalisedOffers.size() < 1)
                         return null;
-                    String messageText = new OfferMessage(rentalOffersListDTO.getRentalOfferDTOS(), Instant.now()).getMessage();
+                    String messageText = new OfferMessage(personalisedOffers.getRentalOfferDTOS(), Instant.now()).getMessage();
                     SendMessage sendMessage = new SendMessage();
                     sendMessage.setParseMode(OfferMessage.getParseMode());
                     sendMessage.setText(messageText);

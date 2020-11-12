@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class ParariusSource implements DataSource {
 
-    private static final int LAST_N_PAGES_TO_FETCH = 1;
+    private static final int LAST_N_PAGES_TO_FETCH = 3;
     private static final String PARARIUS_BASE_URL = "https://www.pararius.com/apartments/rotterdam";
 
     private static final String MAIN_ELEMENT_CLASS = "search-list__item search-list__item--listing";
