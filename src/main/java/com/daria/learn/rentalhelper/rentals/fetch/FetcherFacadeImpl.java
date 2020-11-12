@@ -2,12 +2,16 @@ package com.daria.learn.rentalhelper.rentals.fetch;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.sources.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
 public class FetcherFacadeImpl implements FetcherFacade {
+
+    private static final Logger log = LoggerFactory.getLogger(FetcherFacadeImpl.class);
 
     private final Set<DataSource> dataSources;
 
@@ -17,6 +21,7 @@ public class FetcherFacadeImpl implements FetcherFacade {
 
     @Override
     public List<RentalOfferDTO> fetchOffers() {
+        log.info("Rental fetcher to run");
         List<RentalOfferDTO> resultList = new LinkedList<>();
         for (DataSource dataSource : dataSources) {
             resultList.addAll(dataSource.getOffers());

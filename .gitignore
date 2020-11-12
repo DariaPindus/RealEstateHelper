@@ -36,3 +36,4 @@ build/
 out/
 .mvn/
 credentials.txt
+logs/

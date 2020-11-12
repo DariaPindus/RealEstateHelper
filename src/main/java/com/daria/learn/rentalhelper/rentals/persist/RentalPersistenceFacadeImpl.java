@@ -52,6 +52,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
             rentalOfferRepository.saveAll(offersToPersist);
 
             offersToNotifyAbout.addAll(rentalSearchInfos.values());
+            log.info("Persisted and should notify about new offers {} ", offersToNotifyAbout);
             return offersToNotifyAbout;
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());

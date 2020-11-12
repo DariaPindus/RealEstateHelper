@@ -5,6 +5,8 @@ import com.daria.learn.rentalhelper.rentals.parsers.JsoupOfferParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Component
 public class ParariusSource implements DataSource {
+
+    private static final Logger log = LoggerFactory.getLogger(ParariusSource.class);
 
     private static final int LAST_N_PAGES_TO_FETCH = 3;
     private static final String PARARIUS_BASE_URL = "https://www.pararius.com/apartments/rotterdam";
@@ -33,9 +37,10 @@ public class ParariusSource implements DataSource {
                 Elements elements = doc.getElementsByClass(MAIN_ELEMENT_CLASS);
                 elements.stream().map(jsoupOfferParser::parseOfferDTO).forEach(resultOffers::add);
             } catch (Exception e) {
-                System.out.println("Exception! " + e.getMessage());
+                log.error("Exception fetching Pararius: {}", e.getMessage());
             }
         }
+        log.error("Fetched {} from Pararius ", resultOffers.size());
         return resultOffers;
     }
 

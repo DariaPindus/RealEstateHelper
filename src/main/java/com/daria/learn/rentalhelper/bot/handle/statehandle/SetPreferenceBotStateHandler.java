@@ -37,7 +37,7 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     public boolean isApplicable(String userResponse) {
         Pattern pattern = Pattern.compile(ANSWER_REGEX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(userResponse);
-        return matcher.find();
+        return matcher.find() || wasCancelled(userResponse) || shouldBeCleared(userResponse);
     }
 
     @Override
@@ -47,6 +47,10 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
         String messageText =  messageSource.getMessage("bot.saved-preferences.reply", null, Locale.getDefault());
         if (wasCancelled(userResponse)) {
             messageText = messageSource.getMessage("bot.cancelled.reply", null, Locale.getDefault());
+        } else if (shouldBeCleared(userResponse)) {
+            messageText = messageSource.getMessage("bot.cleared-preferences.reply", null, Locale.getDefault());
+            userCache.setUserPreferenceFromMessage(message, null);
+            userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
         } else {
             UserPreference userPreference = tryParseUserPreference(userResponse);
             userCache.setUserPreferenceFromMessage(message, userPreference);
@@ -61,6 +65,10 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
 
     private boolean wasCancelled(String userResponse) {
         return userResponse.toLowerCase().trim().equals("отменить");
+    }
+
+    private boolean shouldBeCleared(String userResponse) {
+        return userResponse.toLowerCase().trim().equals("очистить");
     }
 
     private UserPreference tryParseUserPreference(String userResponse) {

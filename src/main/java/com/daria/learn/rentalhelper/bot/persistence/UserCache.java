@@ -15,7 +15,7 @@ public interface UserCache {
 
     Optional<UserPreference> getUserPreference(Integer userId);
 
-    void setUserPreferenceFromMessage(Message message, UserPreference userPreference);
+    void setUserPreferenceFromMessage(Message message, @Nullable UserPreference userPreference);
 
     void setUserStateFromMessage(Message message, BotStateEnum stateEnum);
 
