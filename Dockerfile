@@ -1,4 +1,4 @@
-FROM jboss/wildfly
-ARG WAR_FILE=target/*.war
-ADD ${WAR_FILE} /opt/jboss/wildfly/standalone/deployments/
-CMD ["sh", "-c", "sleep 20 && /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0"]
+FROM openjdk:11-jre-slim
+ARG JAR_FILE=target/*.jar
+ADD ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
