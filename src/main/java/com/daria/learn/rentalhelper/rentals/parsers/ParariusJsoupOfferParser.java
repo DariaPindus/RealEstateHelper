@@ -16,7 +16,7 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
 
     private static final String POSTAL_CODE_PATTERN = "([0-9]{4}\\s[A-Z]{2})";
     private static final String PRICE_PATTERN = "\\b([0-9,]*)\\b";
-    private static final String PARARIUS_LINK_PREFIX = "https://www.pararius.com/apartments/rotterdam";
+    private static final String PARARIUS_LINK_PREFIX = "https://www.pararius.com";
 
     private static final String NAME_CLASS = "listing-search-item__title";
     private static final String LINK_CLASS = "listing-search-item__link";
@@ -30,7 +30,7 @@ public class ParariusJsoupOfferParser implements JsoupOfferParser {
         String name = rootElement.getElementsByClass(NAME_CLASS).text();
         String location = parsePostalCode(rootElement.getElementsByClass(LOCATION_CLASS).text());
         double price = parseNumber(rootElement.getElementsByClass(PRICE_CLASS).text());
-        //TODO: area, furnished
+        //TODO: furnished
         String agency = rootElement.getElementsByClass(AGENCY_CLASS).text();
         String link = parseLink(rootElement.getElementsByClass(NAME_CLASS));
         int area = parseArea(rootElement.getElementsByClass(AREA_CLASS));

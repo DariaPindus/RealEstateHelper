@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  db-service:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=rental_fetches
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=SECRETIK
+      - MYSQL_ROOT_PASSWORD=tnTmANNDVGgp3Mrf
+    ports:
+      - 3306:3306
+    container_name: db-service
+    networks:
+      - common-network
+    volumes:
+    - $HOME/rental-db:/var/lib/mysql
+  activemq:
+    image: rmohr/activemq:5.15.9
+    container_name: activemq
+    ports:
+      - 61616:61616 # broker (admin:adminactivemq)(amq:amq)
+      - 8161:8161   # web    http://boot2docker:8161/admin (admin:admin)
+    networks:
+      - common-network
+  main-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db-service
+      - activemq
+    ports:
+      - 8888:8888
+      - 8080:8080
+    environment:
+      - DB_URL=jdbc:mysql://db-service:3306/rental_fetches?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USER=appuser
+      - DB_PASSWORD=SECRETIK
+      - BOT_TOKEN=SECRETIK
+      - SECRET_HEADER_TOKEN=SECRETIK
+      - ACTIVEMQ_PASSWORD=amq
+      - ACTIVEMQ_USERNAME=amq
+      - ACTIVEMQ_URL=tcp://activemq:61616
+    container_name: main-service
+    networks:
+      - common-network
+    volumes:
+    - $HOME/rental-logs:/opt/jboss/wildfly/bin/rental-logs
+
+networks:
+  common-network:
+    driver: bridge

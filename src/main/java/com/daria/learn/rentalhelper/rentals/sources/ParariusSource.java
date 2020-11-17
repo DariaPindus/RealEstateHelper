@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.sources;
 
+import com.daria.learn.rentalhelper.common.SSLHelper;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.parsers.JsoupOfferParser;
 import org.jsoup.Jsoup;
@@ -17,7 +18,7 @@ public class ParariusSource implements DataSource {
 
     private static final Logger log = LoggerFactory.getLogger(ParariusSource.class);
 
-    private static final int LAST_N_PAGES_TO_FETCH = 3;
+    private static final int LAST_N_PAGES_TO_FETCH = 2;
     private static final String PARARIUS_BASE_URL = "https://www.pararius.com/apartments/rotterdam";
 
     private static final String MAIN_ELEMENT_CLASS = "search-list__item search-list__item--listing";
@@ -33,7 +34,7 @@ public class ParariusSource implements DataSource {
         List<RentalOfferDTO> resultOffers = new ArrayList<>();
         for (int i = 0; i < LAST_N_PAGES_TO_FETCH; i++) {
             try {
-                Document doc = Jsoup.connect(getNextPageUrl(i)).get();
+                Document doc = SSLHelper.getConnection(getNextPageUrl(i)).get();
                 Elements elements = doc.getElementsByClass(MAIN_ELEMENT_CLASS);
                 elements.stream().map(jsoupOfferParser::parseOfferDTO).forEach(resultOffers::add);
             } catch (Exception e) {

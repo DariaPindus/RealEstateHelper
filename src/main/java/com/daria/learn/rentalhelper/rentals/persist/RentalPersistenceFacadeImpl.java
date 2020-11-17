@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +24,15 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
     @Transactional
     public List<RentalOfferDTO> persistNewRentals(final List<RentalOfferDTO> rentalOfferDTOS) {
         try {
-            Map<String, RentalOfferDTO> rentalSearchInfos = rentalOfferDTOS.stream()
-                    .collect(Collectors.toMap(dto -> RentalOffer.generateSearchString(dto.getPostalCode(), dto.getArea(), dto.getAgency()), dto -> dto));
+            Map<String, RentalOfferDTO> rentalSearchInfos = new HashMap<>();
+            rentalOfferDTOS.forEach(
+                    dto -> {
+                        String searchString = RentalOffer.generateSearchString(dto.getPostalCode(), dto.getArea(), dto.getAgency());
+                        if (rentalSearchInfos.containsKey(searchString))
+                            return;
+                        rentalSearchInfos.put(searchString, dto);
+                    }
+            );
 
             List<RentalOffer> existingOffers = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet());
             List<RentalOffer> offersToPersist = new LinkedList<>();

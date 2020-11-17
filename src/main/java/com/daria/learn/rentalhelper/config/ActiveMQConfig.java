@@ -20,9 +20,16 @@ public class ActiveMQConfig {
     @Value("${spring.activemq.packages.trusted}")
     private String trustedPackages;
 
+    @Value("${spring.activemq.username}")
+    private String username;
+    @Value("${spring.activemq.password}")
+    private String password;
+
     @Bean
     public ConnectionFactory connectionFactory(){
         ActiveMQConnectionFactory activeMQConnectionFactory  = new ActiveMQConnectionFactory();
+        activeMQConnectionFactory.setUserName(username);
+        activeMQConnectionFactory.setPassword(password);
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
         activeMQConnectionFactory.setTrustedPackages(List.of(trustedPackages.split(",")));
         return  activeMQConnectionFactory;

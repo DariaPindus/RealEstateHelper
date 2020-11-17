@@ -4,10 +4,10 @@
 
     <appender name="FILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./logs/spring-rental-helper.log</file>
+        <file>./rental-logs/spring-rental-helper.log</file>
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/rental-helper-logger-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>./rental-logs/rental-helper-logger-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>50MB</maxFileSize>
