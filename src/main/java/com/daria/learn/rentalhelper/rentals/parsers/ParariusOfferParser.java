@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 
 @Component
-public class ParariusJsoupOfferParser implements JsoupOfferParser {
+public class ParariusOfferParser implements OfferParser {
 
     private static final String POSTAL_CODE_PATTERN = "([0-9]{4}\\s[A-Z]{2})";
     private static final String PRICE_PATTERN = "\\b([0-9,]*)\\b";

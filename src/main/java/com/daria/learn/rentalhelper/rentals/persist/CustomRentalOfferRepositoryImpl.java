@@ -18,7 +18,6 @@ public class CustomRentalOfferRepositoryImpl implements CustomRentalOfferReposit
         this.sessionFactory = sessionFactory;
     }
 
-//    @Override
     @Deprecated
     public Optional<RentalOffer> findExistingOffer(RentalOffer offer) {
         Session session = sessionFactory.getCurrentSession();

@@ -2,8 +2,7 @@ package com.daria.learn.rentalhelper.rentals.sources;
 
 import com.daria.learn.rentalhelper.common.SSLHelper;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
-import com.daria.learn.rentalhelper.rentals.parsers.JsoupOfferParser;
-import org.jsoup.Jsoup;
+import com.daria.learn.rentalhelper.rentals.parsers.OfferParser;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -23,10 +22,10 @@ public class ParariusSource implements DataSource {
 
     private static final String MAIN_ELEMENT_CLASS = "search-list__item search-list__item--listing";
 
-    private final JsoupOfferParser jsoupOfferParser;
+    private final OfferParser offerParser;
 
-    public ParariusSource(JsoupOfferParser jsoupOfferParser) {
-        this.jsoupOfferParser = jsoupOfferParser;
+    public ParariusSource(OfferParser offerParser) {
+        this.offerParser = offerParser;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class ParariusSource implements DataSource {
             try {
                 Document doc = SSLHelper.getConnection(getNextPageUrl(i)).get();
                 Elements elements = doc.getElementsByClass(MAIN_ELEMENT_CLASS);
-                elements.stream().map(jsoupOfferParser::parseOfferDTO).forEach(resultOffers::add);
+                elements.stream().map(offerParser::parseOfferDTO).forEach(resultOffers::add);
             } catch (Exception e) {
                 log.error("Exception fetching Pararius: {}", e.getMessage());
             }

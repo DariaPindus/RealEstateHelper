@@ -1,12 +1,15 @@
 package com.daria.learn.rentalhelper.rentals.communication.message;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RentalNotificationSender {
+    private static final Logger log = LoggerFactory.getLogger(RentalNotificationSender.class);
 
     private final JmsTemplate jmsTemplate;
 
@@ -19,10 +22,10 @@ public class RentalNotificationSender {
 
     public void sendMessage(RentalOffersListDTO rentalOffersListDTO){
         try{
-            System.out.println("Attempting Send message to Topic: "+ topic);
+            log.info("Attempting Send message to Topic: "+ topic);
             jmsTemplate.send(topic, session -> session.createObjectMessage(rentalOffersListDTO));
         } catch(Exception e){
-            System.out.println("Recieved Exception during send Message: " + e);
+            log.info("Received Exception during send Message: " + e);
         }
     }
 }

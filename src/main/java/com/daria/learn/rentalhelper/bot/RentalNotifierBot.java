@@ -51,16 +51,9 @@ public class RentalNotifierBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        log.info("TelegramBot onUpdateReceived {}", update);
         SendMessage message = botHandlerFacade.handleMessageUpdate(update);
         sendMessage(message);
-    }
-
-    @Override
-    public void onUpdatesReceived(List<Update> updates) {
-        log.info("TelegramBot onUpdatesReceived {}", updates);
-        for (Update update : updates) {
-            onUpdateReceived(update);
-        }
     }
 
     public void sendMessagesToUsers(List<SendMessage> messageList) {

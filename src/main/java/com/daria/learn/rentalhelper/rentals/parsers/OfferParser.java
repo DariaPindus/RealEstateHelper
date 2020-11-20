@@ -4,6 +4,6 @@ import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import org.jsoup.nodes.Element;
 
 
-public interface JsoupOfferParser {
+public interface OfferParser {
     RentalOfferDTO parseOfferDTO(Element rootElement);
 }

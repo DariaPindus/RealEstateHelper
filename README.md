@@ -55,3 +55,9 @@ Undeploy and restart wildfly container
 _Tip in case of Failed to execute goal deploy: WFLYCTL0063: Composite operation was rolled back_  
 Check running wildfly logs. Probably the issue can be with port 8080 being already in use. 
 To check this and find id of a proces: `sudo netstat -nlp | grep 8080` 
+
+
+### Telegram Bot   
+Bot creation is pretty straight-forward. Details could be found here: https://core.telegram.org/bots#2-how-do-bots-work  
+> There's a… bot for that. Just talk to BotFather (described below) and follow a few simple steps.   
+> Once you've created a bot and received your authorization token, head down to the Bot API manual to see what you can teach your bot to do.
