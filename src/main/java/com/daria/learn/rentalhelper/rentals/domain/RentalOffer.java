@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.domain;
 
+import com.daria.learn.rentalhelper.rentals.persist.RentalOfferQueries;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
         "ro.postalCode=:postalCode",
         timeout = 1
 )
+@RentalOfferQueries
 public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -54,7 +56,7 @@ public class RentalOffer {
         this.agency = agency;
         this.furnished = furnished;
         this.link = link;
-        this.offerHistories = List.of(new OfferHistory(Instant.now(), OfferStatus.NEW, null));
+        this.offerHistories = List.of(new OfferHistory(Instant.now(), OfferStatus.NEW, null, this));
         this.searchString = generateSearchString(postalCode, area, agency);
     }
 
@@ -81,14 +83,14 @@ public class RentalOffer {
         List<FieldHistory> fieldHistories = new LinkedList<>();
 
         if (newOfferVersion.getPrice() != this.price)
-            fieldHistories.add(new FieldHistory("price", String.valueOf(this.price), String.valueOf(newOfferVersion.price)));
+            fieldHistories.add(new FieldHistory("price", String.valueOf(newOfferVersion.price), String.valueOf(this.price)));
         if (!newOfferVersion.getLink().equals(this.link))
-            fieldHistories.add(new FieldHistory("link", String.valueOf(this.link), String.valueOf(newOfferVersion.link)));
+            fieldHistories.add(new FieldHistory("link", String.valueOf(newOfferVersion.link), String.valueOf(this.link)));
         if (newOfferVersion.getArea() != this.area)
-            fieldHistories.add(new FieldHistory("area", String.valueOf(this.area), String.valueOf(newOfferVersion.area)));
+            fieldHistories.add(new FieldHistory("area", String.valueOf(newOfferVersion.area), String.valueOf(this.area)));
 
         if (!fieldHistories.isEmpty()) {
-            this.offerHistories.addAll(fieldHistories.stream().map(fieldHistory -> new OfferHistory(Instant.now(), OfferStatus.UPDATED, fieldHistory)).collect(Collectors.toList()));
+            this.offerHistories.addAll(fieldHistories.stream().map(fieldHistory -> new OfferHistory(Instant.now(), OfferStatus.UPDATED, fieldHistory, this)).collect(Collectors.toList()));
             return true;
         }
         return false;

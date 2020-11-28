@@ -53,7 +53,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
             List<RentalOffer> newOffers = rentalSearchInfos.values().stream().map(RentalOffer::fromRentalOfferDTO).collect(Collectors.toList());
             offersToPersist.addAll(newOffers);
-            rentalOfferRepository.saveAll(offersToPersist);
+            rentalOfferRepository.saveList(offersToPersist);
 
             offersToNotifyAbout.addAll(rentalSearchInfos.values());
             log.info("Persisted and should notify about new offers {} ", offersToNotifyAbout);

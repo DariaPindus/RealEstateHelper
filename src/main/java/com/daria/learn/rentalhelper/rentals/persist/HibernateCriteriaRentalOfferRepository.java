@@ -10,11 +10,11 @@ import javax.persistence.Query;
 import java.util.Optional;
 
 @Repository
-public class CustomRentalOfferRepositoryImpl implements CustomRentalOfferRepository {
+public class HibernateCriteriaRentalOfferRepository implements CustomRentalOfferRepository {
 
     private final SessionFactory sessionFactory;
 
-    public CustomRentalOfferRepositoryImpl(SessionFactory sessionFactory) {
+    public HibernateCriteriaRentalOfferRepository(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 

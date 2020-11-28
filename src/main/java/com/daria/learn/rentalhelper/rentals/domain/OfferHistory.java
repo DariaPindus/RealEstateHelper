@@ -22,19 +22,24 @@ public class OfferHistory {
     @Getter @Setter
     @Nullable
     private FieldHistory fieldHistory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Getter @Setter
+    private RentalOffer rentalOffer;
 
     public OfferHistory() {
     }
 
-    public OfferHistory(Instant time) {
+    public OfferHistory(Instant time, RentalOffer rentalOffer) {
         this.time = time;
         this.status = OfferStatus.NEW;
         this.fieldHistory = null;
+        this.rentalOffer = rentalOffer;
     }
 
-    public OfferHistory(Instant time, OfferStatus offerStatus, FieldHistory history) {
+    public OfferHistory(Instant time, OfferStatus offerStatus, FieldHistory history, RentalOffer rentalOffer) {
         this.time = time;
         this.status = offerStatus;
         this.fieldHistory = history;
+        this.rentalOffer = rentalOffer;
     }
 }

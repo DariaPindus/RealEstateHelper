@@ -1,0 +1,31 @@
+Tables: 
+OfferHistory
+RentalOffer
+RentalOffer_OfferHistory
+
+Fields: 
+OfferHistory
+- id
+- fieldName
+- fieldValue
+- oldValue
+- status
+- time
+
+RentalOffer:
+- id
+- agency
+- area
+- furnished
+- link
+- name 
+- postalCode
+- price
+- searchString
+
+RentalOffer_OfferHistory:
+- RentalOffer_id
+- offerHistories_id
+
+
+select count(*) from RentalOffer ro where exists (select 1 from RentalOffer_OfferHistory j join OfferHistory oh where j.RentalOffer_id=ro.id and oh.status="UPDATED");

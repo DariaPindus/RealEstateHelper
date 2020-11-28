@@ -4,7 +4,7 @@ import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
-import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.RentalPersistenceFacade;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -31,7 +31,7 @@ public class RentalPersistenceIT {
     RentalPersistenceFacade rentalPersistenceFacade;
 
     @Autowired
-    RentalOfferRepository rentalOfferRepository;
+    JpaMethodRentalOfferRepository rentalOfferRepository;
 
     private final String repeatingName = "Apartment on 5th St";
 

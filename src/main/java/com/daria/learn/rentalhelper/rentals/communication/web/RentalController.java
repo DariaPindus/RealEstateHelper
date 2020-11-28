@@ -1,14 +1,17 @@
 package com.daria.learn.rentalhelper.rentals.communication.web;
 
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import com.daria.learn.rentalhelper.rentals.RentalNotificationFacade;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 import com.daria.learn.rentalhelper.rentals.jobs.ScheduledRentalFetchingJob;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Profile(ApplicationProfiles.NOT_TEST_PROFILE)
 public class RentalController {
 
     private final RentalNotificationFacade notificationFacade;
