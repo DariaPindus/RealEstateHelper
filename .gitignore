@@ -38,3 +38,5 @@ credentials.txt
 logs/
 
 *.pem
+
+rental-logs/
