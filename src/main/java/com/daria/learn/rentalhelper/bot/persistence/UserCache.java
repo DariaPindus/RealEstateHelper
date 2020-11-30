@@ -7,17 +7,25 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-public interface UserCache {
-    Optional<BotStateEnum> getUserState(Integer userId);
+/**
+ * @param <T> is type of chat identifier
+ */
+public interface UserCache<T> {
+    Optional<BotStateEnum> getUserState(T userChatId);
 
-    Optional<UserPreference> getUserPreference(Integer userId);
+    Optional<UserPreference> getUserPreference(T userChatId);
 
-    void setUserPreferenceFromMessage(Message message, @Nullable UserPreference userPreference);
+    void setUserPreference(T userChatId, @Nullable UserPreference userPreference);
 
-    void setUserStateFromMessage(Message message, BotStateEnum stateEnum);
+    void setUserState(T userChatId, BotStateEnum stateEnum);
 
     List<UserBotInfo> getSubscribedUserInfos();
+
+    Locale getUserLocale(T userChatId);
+
+    void setUserLocale(T userChatId, Locale userLocale);
 }

@@ -6,9 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import java.util.Locale;
+
 @AllArgsConstructor
 public class UserBotInfo {
-    private final Integer userId;
     @Getter
     private final Long chatId;
     @Getter @Setter
@@ -16,10 +17,13 @@ public class UserBotInfo {
     @Getter @Setter
     @Nullable
     private UserPreference userPreference;
+    @Getter @Setter
+    private Locale userLocale;
 
-    public UserBotInfo(Integer userId, Long chatId) {
-        this.userId = userId;
+    public UserBotInfo(Long chatId, BotStateEnum state, UserPreference userPreference) {
         this.chatId = chatId;
+        this.state = state;
+        this.userPreference = userPreference;
     }
 
 }

@@ -1,10 +1,10 @@
 package com.daria.learn.rentalhelper.bot.handle.statehandle;
 
+import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.exceptions.CannotParseUserPreferenceResponseException;
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.model.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -20,10 +20,10 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     private final String NUMBER_REGEX =  "[0-9][0-9,\\.]+";
     private final String ANSWER_REGEX = "[1-3]\\.\\s?[0-9+-]*";
 
-    private final UserCache userCache;
-    private final MessageSource messageSource;
+    private final UserCache<Long> userCache;
+    private final BotMessageSource messageSource;
 
-    public SetPreferenceBotStateHandler(UserCache userCache, MessageSource messageSource) {
+    public SetPreferenceBotStateHandler(UserCache<Long> userCache, BotMessageSource messageSource) {
         this.userCache = userCache;
         this.messageSource = messageSource;
     }
@@ -44,17 +44,18 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     public SendMessage replyToMessage(Message message) {
         String userResponse = message.getText();
 
-        String messageText =  messageSource.getMessage("bot.saved-preferences.reply", null, Locale.getDefault());
+        Locale userLocale = userCache.getUserLocale(message.getChatId());
+        String messageText =  messageSource.getMessage("bot.saved-preferences.reply", null, userLocale);
         if (wasCancelled(userResponse)) {
-            messageText = messageSource.getMessage("bot.cancelled.reply", null, Locale.getDefault());
+            messageText = messageSource.getMessage("bot.cancelled.reply", null, userLocale);
         } else if (shouldBeCleared(userResponse)) {
-            messageText = messageSource.getMessage("bot.cleared-preferences.reply", null, Locale.getDefault());
-            userCache.setUserPreferenceFromMessage(message, null);
-            userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
+            messageText = messageSource.getMessage("bot.cleared-preferences.reply", null, userLocale);
+            userCache.setUserPreference(message.getChatId(), null);
+            userCache.setUserState(message.getChatId(), BotStateEnum.SUBSCRIBED);
         } else {
             UserPreference userPreference = tryParseUserPreference(userResponse);
-            userCache.setUserPreferenceFromMessage(message, userPreference);
-            userCache.setUserStateFromMessage(message, BotStateEnum.SUBSCRIBED);
+            userCache.setUserPreference(message.getChatId(), userPreference);
+            userCache.setUserState(message.getChatId(), BotStateEnum.SUBSCRIBED);
         }
 
         SendMessage responseMessage = new SendMessage();
@@ -64,11 +65,11 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     }
 
     private boolean wasCancelled(String userResponse) {
-        return userResponse.toLowerCase().trim().equals("отменить");
+        return messageSource.isSameMessage(userResponse, "user.cancel");
     }
 
     private boolean shouldBeCleared(String userResponse) {
-        return userResponse.toLowerCase().trim().equals("очистить");
+        return messageSource.isSameMessage(userResponse, "user.clean");
     }
 
     private UserPreference tryParseUserPreference(String userResponse) {

@@ -11,43 +11,39 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class LocalUserCache implements UserCache {
+public class LocalUserCache implements UserCache<Long> {
 
     private static final int MAX_USERS_AMOUNT = 100;
-    private final Map<Integer, UserBotInfo> userBotMap = new HashMap<>();
+    private final Map<Long, UserBotInfo> userBotMap = new HashMap<>();
 
     @Override
-    public Optional<BotStateEnum> getUserState(Integer userId) {
-        return Optional.ofNullable(userBotMap.get(userId)).map(UserBotInfo::getState);
+    public Optional<BotStateEnum> getUserState(Long userChatId) {
+        return Optional.ofNullable(userBotMap.get(userChatId)).map(UserBotInfo::getState);
     }
 
     @Override
-    public Optional<UserPreference> getUserPreference(Integer userId) {
-        return Optional.ofNullable(userBotMap.get(userId)).map(UserBotInfo::getUserPreference);
+    public Optional<UserPreference> getUserPreference(Long userChatId) {
+        return Optional.ofNullable(userBotMap.get(userChatId)).map(UserBotInfo::getUserPreference);
     }
 
     @Override
-    public void setUserPreferenceFromMessage(Message message, UserPreference userPreference) {
-        Integer userId = message.getFrom().getId();
-        Long chatId = message.getChatId();
-        if (userBotMap.containsKey(userId)) {
-            UserBotInfo userBotInfo = userBotMap.get(userId);
+    public void setUserPreference(Long userChatId, UserPreference userPreference) {
+        if (userBotMap.containsKey(userChatId)) {
+            UserBotInfo userBotInfo = userBotMap.get(userChatId);
             userBotInfo.setState(BotStateEnum.SUBSCRIBED);
             userBotInfo.setUserPreference(userPreference);
         } else {
-            UserBotInfo userBotInfo = new UserBotInfo(userId, chatId, BotStateEnum.SUBSCRIBED, userPreference);
-            safePutToMap(userId, userBotInfo);
+            UserBotInfo userBotInfo = new UserBotInfo(userChatId, BotStateEnum.SUBSCRIBED, userPreference);
+            safePutToMap(userChatId, userBotInfo);
         }
     }
 
     @Override
-    public void setUserStateFromMessage(Message message, BotStateEnum stateEnum) {
-        Integer userId = message.getFrom().getId();
-        Long chatId = message.getChatId();
-        if (userBotMap.containsKey(userId)) {
-            userBotMap.get(userId).setState(stateEnum);
+    public void setUserState(Long userChatId, BotStateEnum stateEnum) {
+        if (userBotMap.containsKey(userChatId)) {
+            userBotMap.get(userChatId).setState(stateEnum);
         } else {
-            safePutToMap(userId, new UserBotInfo(userId, chatId, stateEnum, null));
+            safePutToMap(userChatId, new UserBotInfo(userChatId, stateEnum, null));
         }
     }
 
@@ -59,8 +55,21 @@ public class LocalUserCache implements UserCache {
                 .collect(Collectors.toList());
     }
 
-    private void safePutToMap(Integer userId, UserBotInfo userBotInfo) {
-        if (userBotMap.size() >= MAX_USERS_AMOUNT)
+    @Override
+    public Locale getUserLocale(Long userChatId) {
+        return Optional.ofNullable(userBotMap.get(userChatId)).map(UserBotInfo::getUserLocale).orElse(Locale.getDefault());
+    }
+
+    @Override
+    public void setUserLocale(Long userChatId, Locale userLocale) {
+        if (userBotMap.containsKey(userChatId))
+            userBotMap.get(userChatId).setUserLocale(userLocale);
+        else
+            safePutToMap(userChatId, new UserBotInfo(userChatId, BotStateEnum.INIT, null, userLocale));
+    }
+
+    private void safePutToMap(Long userId, UserBotInfo userBotInfo) {
+        if (!userBotMap.containsKey(userId) && userBotMap.size() >= MAX_USERS_AMOUNT)
             throw new ExceededMaximumSubscriptionsAmountException();
         userBotMap.put(userId, userBotInfo);
     }

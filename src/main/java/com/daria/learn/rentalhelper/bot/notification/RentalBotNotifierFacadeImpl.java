@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
 
     private final RentalNotifierBot notifierBot;
-    private final UserCache userCache;
+    private final UserCache<Long> userCache;
 
-    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache userCache) {
+    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache<Long> userCache) {
         this.notifierBot = notifierBot;
         this.userCache = userCache;
     }
