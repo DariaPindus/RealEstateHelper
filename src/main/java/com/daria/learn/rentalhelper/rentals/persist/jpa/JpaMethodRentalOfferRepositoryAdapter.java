@@ -1,10 +1,8 @@
 package com.daria.learn.rentalhelper.rentals.persist.jpa;
 
-import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile(ApplicationProfiles.JPA_METHOD_PROFILE)
+//@Profile(ApplicationProfiles.JPA_METHOD_PROFILE)
 public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferRepository {
 
     private static final String IMPLEMENTATION_NAME = "JPA method";
@@ -56,12 +54,12 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedByFieldName(String fieldName) {
-        return jpaMethodRentalOfferRepository.findByOfferHistories_FieldHistoryFieldNameIs(fieldName);
+    public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
+        return jpaMethodRentalOfferRepository.findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(fieldName);
     }
 
     @Override
-    public List<RentalOffer> findAllPriceGrewUpInLastMonth() {
+    public List<RentalOffer> findAllPriceGrewUpInLastWeek() {
         throw unsupportedException("findAllPriceGrewUp", IMPLEMENTATION_NAME);
     }
 

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -22,8 +23,8 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     @Query("select ro from RentalOffer ro where ro.searchString in ?1")
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name=?1")
-    Optional<RentalOffer> findOfferHistoryByName(String name);
+    @Query(nativeQuery = true, value = "select ro, ro.offerHistories from RentalOffer ro where ro.name=:name limit 1000")
+    Optional<RentalOffer> findOfferHistoryByName(@Param("name") String name);
 
     @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name like %?1%")
     List<RentalOffer> findAllByNameContains(String subname);
@@ -37,8 +38,8 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllUpdatedAfter(Instant time);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.fieldHistory.fieldName = ?1")
-    List<RentalOffer> findAllUpdatedByFieldName(String fieldName);
+    @Query(nativeQuery = true, value = "select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName limit 1000")
+    List<RentalOffer> findThousandUpdatedByFieldName(@Param("fieldName") String fieldName);
 
     @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllPriceGrewUp(Instant since);
@@ -53,8 +54,8 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
         return countCreatedInLastMonth(Instant.now().minus(1, ChronoUnit.MONTHS));
     }
 
-    default List<RentalOffer> findAllPriceGrewUpInLastMonth() {
-        return findAllPriceGrewUp(Instant.now().minus(1, ChronoUnit.MONTHS));
+    default List<RentalOffer> findAllPriceGrewUpInLastWeek() {
+        return findAllPriceGrewUp(Instant.now().minus(1, ChronoUnit.WEEKS));
     }
 
     @Override
@@ -66,4 +67,7 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     default List<RentalOffer> findAllByAgencyPaged(String name, Pageable pageable) {
         return findAllByAgency(name, pageable);
     }
+
+    @Query("select distinct ro.agency from RentalOffer ro")
+    List<String> findDistinctAgencies();
 }

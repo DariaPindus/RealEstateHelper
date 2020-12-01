@@ -78,16 +78,16 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedByFieldName(String fieldName) {
+    public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedByFieldName");
         q.setParameter(1, fieldName);
         return q.getResultList();
     }
 
     @Override
-    public List<RentalOffer> findAllPriceGrewUpInLastMonth() {
+    public List<RentalOffer> findAllPriceGrewUpInLastWeek() {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllPriceGrewUp");
-        q.setParameter(1, Instant.now().minus(1, ChronoUnit.MONTHS));
+        q.setParameter(1, Instant.now().minus(1, ChronoUnit.WEEKS));
         return q.getResultList();
     }
 

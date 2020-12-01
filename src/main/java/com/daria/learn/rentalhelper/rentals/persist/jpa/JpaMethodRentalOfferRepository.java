@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile(ApplicationProfiles.JPA_METHOD_PROFILE)
+//@Profile(ApplicationProfiles.JPA_METHOD_PROFILE)
 public interface JpaMethodRentalOfferRepository extends CrudRepository<RentalOffer, Integer> {
 
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
@@ -30,7 +30,7 @@ public interface JpaMethodRentalOfferRepository extends CrudRepository<RentalOff
 
     List<RentalOffer> findByOfferHistories_TimeGreaterThan(Instant time);
 
-    List<RentalOffer> findByOfferHistories_FieldHistoryFieldNameIs(String fieldName);
+    List<RentalOffer> findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(String fieldName);
 
     long countByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant time, OfferStatus status);
 }

@@ -82,8 +82,8 @@ public class SqlDataLoader {
     private List<OfferHistory> getRandomHistories(int historySize, RentalOffer rentalOffer) {
         List<OfferHistory> histories = new ArrayList<>();
         for (int k = 0; k < historySize; k++) {
-            Instant creationTime = Instant.now().minus(new Random().nextInt(40), ChronoUnit.DAYS);
-            FieldHistory fieldHistory = new FieldHistory(fields.get(new Random().nextInt(fields.size())), String.valueOf(new Random().nextInt()), String.valueOf(new Random().nextInt()));
+            Instant creationTime = Instant.now().minus(new Random().nextInt(120), ChronoUnit.DAYS);
+            FieldHistory fieldHistory = new FieldHistory(fields.get(new Random().nextInt(fields.size())), String.valueOf(new Random().nextInt(10000)), String.valueOf(new Random().nextInt(10000)));
             histories.add(new OfferHistory(creationTime, statuses[new Random().nextInt(statuses.length - 1)], fieldHistory, rentalOffer));
         }
         return histories;

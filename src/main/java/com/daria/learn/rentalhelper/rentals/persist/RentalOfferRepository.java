@@ -23,9 +23,9 @@ public interface RentalOfferRepository {
 
     List<RentalOffer> findAllUpdatedAfter(Instant time);
 
-    List<RentalOffer> findAllUpdatedByFieldName(String fieldName);
+    List<RentalOffer> findThousandUpdatedByFieldName(String fieldName);
 
-    List<RentalOffer> findAllPriceGrewUpInLastMonth();
+    List<RentalOffer> findAllPriceGrewUpInLastWeek();
 
     long countAll();
 

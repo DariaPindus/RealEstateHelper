@@ -28,4 +28,21 @@ RentalOffer_OfferHistory:
 - offerHistories_id
 
 
-select count(*) from RentalOffer ro where exists (select 1 from RentalOffer_OfferHistory j join OfferHistory oh where j.RentalOffer_id=ro.id and oh.status="UPDATED");
+> select count(*) from RentalOffer ro where exists (select 1 from RentalOffer_OfferHistory j join OfferHistory oh where j.RentalOffer_id=ro.id and oh.status="UPDATED");
+> select count(distinct (ro.RentalOffer_id)) from RentalOffer_OfferHistory ro join OfferHistory oh on oh.id=ro.offerHistories_id
+WHERE YEAR(oh.time) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
+AND MONTH(oh.time) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH);
+> select count(distinct (ro.RentalOffer_id)) from RentalOffer_OfferHistory ro join OfferHistory oh on oh.id=ro.offerHistories_id
+WHERE oh.time >= DATE(NOW()) - INTERVAL 7 DAY;
+
+
+select oh.id, oh.time, CONVERT(oh.fieldValue, unsigned) as a, CONVERT(oh.oldValue, unsigned) as b
+		from OfferHistory oh
+		where (CONVERT(oh.fieldValue, unsigned) < 1000000 and CONVERT(oh.oldValue, unsigned) < 1000000) and
+        oh.fieldName="price" ;
+-- select distinct ro.RentalOffer_id from RentalOffer_OfferHistory ro join
+-- 	(select oh.id, oh.time, CONVERT(oh.fieldValue, unsigned) - CONVERT(oh.oldValue, unsigned) as diff
+-- 		from OfferHistory oh
+-- 		where oh.fieldName="price" and oh.time >= DATE(NOW()) - INTERVAL 7 DAY and diff > 0)
+-- 	as histories
+-- on histories.id=ro.offerHistories_id;

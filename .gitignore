@@ -36,7 +36,7 @@ build/
 out/
 credentials.txt
 logs/
+rental-logs/
+sql_tables.txt
 
 *.pem
-
-rental-logs/
