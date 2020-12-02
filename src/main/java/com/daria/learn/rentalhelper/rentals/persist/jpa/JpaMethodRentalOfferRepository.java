@@ -38,6 +38,5 @@ public interface JpaMethodRentalOfferRepository extends CrudRepository<RentalOff
     @EntityGraph(attributePaths = {"offerHistories"})
     List<RentalOffer> findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(String fieldName);
 
-    @EntityGraph(attributePaths = {"offerHistories"})
     long countByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant time, OfferStatus status);
 }

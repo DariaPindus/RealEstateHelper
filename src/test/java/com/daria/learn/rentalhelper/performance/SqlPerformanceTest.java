@@ -92,7 +92,7 @@ public class SqlPerformanceTest {
         ExecutionDetails updatedAfterDetails = executeLogged("jpaMethod_findAllUpdatedAfter", () -> jpaMethodRentalOfferRepository.findAllUpdatedAfter(timeToCheck));
         executionResults.add(updatedAfterDetails);
         List<RentalOffer> updatedAfterOffers = (List<RentalOffer>)updatedAfterDetails.getResult();
-//        assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck))); //could not initialize proxy - no Session
+        assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck)));
 
         ExecutionDetails updatedByFieldDetails = executeLogged("jpaMethod_findAllUpdatedByFieldName", () -> jpaMethodRentalOfferRepository.findThousandUpdatedByFieldName("area"));
         executionResults.add(updatedByFieldDetails);
