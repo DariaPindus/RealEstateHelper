@@ -30,7 +30,8 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
 
     @Override
     public Optional<RentalOffer> findOfferHistoryByName(String name) {
-        throw unsupportedException("findOfferHistoryByName", IMPLEMENTATION_NAME);
+        //throw unsupportedException("findOfferHistoryByName", IMPLEMENTATION_NAME);
+        return jpaMethodRentalOfferRepository.findFirstByName(name);
     }
 
     @Override

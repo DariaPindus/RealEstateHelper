@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,11 @@ public class SqlPerformanceTest {
         List<RentalOffer> foundByNameContains = (List<RentalOffer>)nameContainsDetails.getResult();
         assertTrue(!foundByNameContains.isEmpty() && foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().contains(containsStr)));
 
+        ExecutionDetails historyByNameDetails = executeLogged("jpaMethod_findOfferHistoryByName", () -> jpaMethodRentalOfferRepository.findOfferHistoryByName(testName));
+        executionResults.add(historyByNameDetails);
+        RentalOffer historyByName = ((Optional<RentalOffer>)historyByNameDetails.getResult()).get();
+        assertEquals(testHistory.size(), historyByName.getOfferHistories().size());
+        assertTrue(historyByName.getOfferHistories().stream().allMatch(history -> history.getStatus() == OfferStatus.NEW || history.getStatus() == OfferStatus.UPDATED));
 
         ExecutionDetails namePagedDetails = executeLogged("jpaMethod_findAllByAgencyPaged_1", () -> jpaMethodRentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(0, 5)));
         executionResults.add(namePagedDetails);
@@ -103,7 +109,6 @@ public class SqlPerformanceTest {
         executionResults.add(countCreatedLastMonthDetails);
         long createdLastMonthResults = (long)countCreatedLastMonthDetails.getResult();
 
-        assertThrows(UnsupportedOperationException.class,() -> executeLogged("jpaMethod_findOfferHistoryByName", () -> jpaMethodRentalOfferRepository.findOfferHistoryByName(testName)));
     }
 
     private void setup() {
