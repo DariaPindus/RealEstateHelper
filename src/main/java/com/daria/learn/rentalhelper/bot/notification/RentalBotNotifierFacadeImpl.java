@@ -1,8 +1,8 @@
 package com.daria.learn.rentalhelper.bot.notification;
 
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
-import com.daria.learn.rentalhelper.bot.model.OfferMessage;
-import com.daria.learn.rentalhelper.bot.model.UserPreference;
+import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
+import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;

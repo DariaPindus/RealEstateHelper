@@ -2,10 +2,9 @@ package com.daria.learn.rentalhelper.bot.persistence;
 
 import com.daria.learn.rentalhelper.bot.exceptions.ExceededMaximumSubscriptionsAmountException;
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.model.UserBotInfo;
-import com.daria.learn.rentalhelper.bot.model.UserPreference;
+import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
+import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.*;
 import java.util.stream.Collectors;

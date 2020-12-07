@@ -3,7 +3,7 @@ package com.daria.learn.rentalhelper.bot.handle.statehandle;
 import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.exceptions.CannotParseUserPreferenceResponseException;
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.model.UserPreference;
+import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

@@ -1,15 +1,13 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
 import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.model.UserBotInfo;
-import com.daria.learn.rentalhelper.bot.model.UserPreference;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
+import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @param <T> is type of chat identifier
