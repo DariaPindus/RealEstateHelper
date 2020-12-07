@@ -47,7 +47,7 @@ Once the user is added, run standalone (.sh/.bat) to start the server. If starte
 `mvn -e clean package -DskipTests`  
 This command packages the application. Notice that we have configured the Wildfly plugin to execute in the maven install phase with the goal deploy.  
 
-Once the build completes, berowse to http://127.0.0.1:9990/console/index.html#deployments and we can see the deployed WAR file.
+Once the build completes, browse to http://127.0.0.1:9990/console/index.html#deployments and we can see the deployed WAR file.
 
 _Tip in case of java.lang.OutOfMemoryError: Metaspace:_  
 Undeploy and restart wildfly container

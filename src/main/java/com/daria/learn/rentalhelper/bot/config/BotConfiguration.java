@@ -8,7 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Configuration
 public class BotConfiguration {
@@ -22,7 +26,7 @@ public class BotConfiguration {
 
     @Bean
     public ResourceBundleMessageSource messageSource() {
-        Locale.setDefault(new Locale("ru"));
+        Locale.setDefault(Locale.UK);
 
         var source = new ResourceBundleMessageSource();
         source.setBasenames("messages/replies");
@@ -30,5 +34,11 @@ public class BotConfiguration {
 //        source.setUseCodeAsDefaultMessage(true);
 
         return source;
+    }
+
+    @Bean
+    public List<Locale> supportedLocales(@Value("tgbot.supportedLanguages") String supportedLanguagesStr) {
+        return Arrays.stream(Optional.ofNullable(supportedLanguagesStr).map(s -> s.split(",")).orElse(new String[]{Locale.UK.getLanguage()}))
+                .map(Locale::new).collect(Collectors.toList());
     }
 }

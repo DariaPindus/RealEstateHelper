@@ -1,8 +1,8 @@
 package com.daria.learn.rentalhelper.bot.notification;
 
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
-import com.daria.learn.rentalhelper.bot.model.OfferMessage;
-import com.daria.learn.rentalhelper.bot.model.UserPreference;
+import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
+import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
 
     private final RentalNotifierBot notifierBot;
-    private final UserCache userCache;
+    private final UserCache<Long> userCache;
 
-    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache userCache) {
+    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache<Long> userCache) {
         this.notifierBot = notifierBot;
         this.userCache = userCache;
     }

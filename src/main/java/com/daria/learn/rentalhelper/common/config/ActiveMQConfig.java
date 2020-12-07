@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.config;
+package com.daria.learn.rentalhelper.common.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

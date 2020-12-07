@@ -36,5 +36,6 @@ build/
 out/
 credentials.txt
 logs/
+rental-logs/
 
 *.pem

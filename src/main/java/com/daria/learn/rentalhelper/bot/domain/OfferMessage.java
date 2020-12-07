@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.bot.model;
+package com.daria.learn.rentalhelper.bot.domain;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class OfferMessage {
 
     private StringBuilder buildMessage() {
         Instant.now();
-        StringBuilder sb = new StringBuilder("<i>Новые предложения к ");
+        StringBuilder sb = new StringBuilder("<i>New offers by ");
         sb.append(formatter.format(time));
         sb.append("(UTC) </i>\n");
 
