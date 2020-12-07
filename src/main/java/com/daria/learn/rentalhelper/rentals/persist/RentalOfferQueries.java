@@ -13,5 +13,6 @@ import javax.persistence.NamedQuery;
 @NamedQuery(name = "rentalOffer_findAllPriceGrewUp", query = "select distinct ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
 @NamedQuery(name = "rentalOffer_countAll", query = "select count(ro) from RentalOffer ro")
 @NamedQuery(name = "rentalOffer_countCreatedInLastMonth", query = "select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh where oh.rentalOffer.id=ro.id and oh.time>=?1)")
+@NamedQuery(name = "rentalOffer_findAllUpdatedAfterOrdered", query = "select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 order by oh.time")
 public @interface RentalOfferQueries {
 }

@@ -78,6 +78,13 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
+    public List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time) {
+        Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedAfterOrdered");
+        q.setParameter(1, time);
+        return q.getResultList();
+    }
+
+    @Override
     public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedByFieldName");
         q.setParameter(1, fieldName);
@@ -107,5 +114,10 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     @Override
     public void saveList(List<RentalOffer> offers) {
         rentalOfferRepository.saveAll(offers);
+    }
+
+    @Override
+    public String getName() {
+        return "namedQuery";
     }
 }

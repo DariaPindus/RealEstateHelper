@@ -23,6 +23,8 @@ public interface RentalOfferRepository {
 
     List<RentalOffer> findAllUpdatedAfter(Instant time);
 
+    List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time);
+
     List<RentalOffer> findThousandUpdatedByFieldName(String fieldName);
 
     List<RentalOffer> findAllPriceGrewUpInLastWeek();
@@ -36,4 +38,6 @@ public interface RentalOfferRepository {
     default UnsupportedOperationException unsupportedException(String method, String implementation) {
         return new UnsupportedOperationException(String.format(EXCEPTION_MESSAGE_TEMPLATE, method, implementation));
     }
+
+    String getName();
 }

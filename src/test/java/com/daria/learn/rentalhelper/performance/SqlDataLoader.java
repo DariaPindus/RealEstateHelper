@@ -84,7 +84,7 @@ public class SqlDataLoader {
         for (int k = 0; k < historySize; k++) {
             Instant creationTime = Instant.now().minus(new Random().nextInt(120), ChronoUnit.DAYS);
             FieldHistory fieldHistory = new FieldHistory(fields.get(new Random().nextInt(fields.size())), String.valueOf(new Random().nextInt(10000)), String.valueOf(new Random().nextInt(10000)));
-            histories.add(new OfferHistory(creationTime, statuses[new Random().nextInt(statuses.length - 1)], fieldHistory, rentalOffer));
+            histories.add(new OfferHistory(creationTime, statuses[new Random().nextInt(statuses.length)], fieldHistory, rentalOffer));
         }
         return histories;
     }
@@ -99,7 +99,7 @@ public class SqlDataLoader {
         int actLength = length == 0 ? r.nextInt(10) + 3 : length;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < actLength; i++) {
-            sb.append(chars.charAt(r.nextInt(chars.length() - 1)));
+            sb.append(chars.charAt(r.nextInt(chars.length())));
         }
         return sb.toString();
     }

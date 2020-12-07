@@ -55,13 +55,18 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
     }
 
     @Override
+    public List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time) {
+        throw unsupportedException("findAllUpdatedAfterSortedByTimeAsc", IMPLEMENTATION_NAME);
+    }
+
+    @Override
     public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
         return jpaMethodRentalOfferRepository.findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(fieldName);
     }
 
     @Override
     public List<RentalOffer> findAllPriceGrewUpInLastWeek() {
-        throw unsupportedException("findAllPriceGrewUp", IMPLEMENTATION_NAME);
+        throw unsupportedException("findAllPriceGrewUpInLastWeek", IMPLEMENTATION_NAME);
     }
 
     @Override
@@ -77,6 +82,11 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
     @Override
     public void saveList(List<RentalOffer> offers) {
         jpaMethodRentalOfferRepository.saveAll(offers);
+    }
+
+    @Override
+    public String getName() {
+        return "jpamethod";
     }
 
 }

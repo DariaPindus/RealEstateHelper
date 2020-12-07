@@ -6,6 +6,7 @@ import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.NamedQueryRentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepositoryAdapter;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaQueryRentalOfferRepository;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,10 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,69 +45,142 @@ public class SqlPerformanceTest {
 
     @Test
     public void testJpaMethod() {
+        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
+    }
+
+    public void testJpaQuery() {
+        executeTests(jpaQueryRentalOfferRepository, new OrmMethodConfig());
+    }
+
+    public void testNamedQuery() {
+        executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig());
+    }
+
+    private void executeTests(RentalOfferRepository rentalOfferRepository, OrmMethodConfig ormMethodConfig) {
         setup();
 
         RentalOffer testOffer = new RentalOffer(testName, "1212 AA", 1200.0, 21, "hello", false, "dsdsdas");
         List<OfferHistory> testHistory = List.of(new OfferHistory(Instant.now(), OfferStatus.NEW, null, testOffer),new OfferHistory(Instant.now(), OfferStatus.UPDATED, new FieldHistory("area", "51", "21"), testOffer));
         testOffer.setOfferHistories(testHistory);
-        jpaMethodRentalOfferRepository.saveList(List.of(testOffer));
+        rentalOfferRepository.saveList(List.of(testOffer));
 
         List<ExecutionDetails> executionResults = new ArrayList<>();
 
-        ExecutionDetails foundRentals = executeLogged("jpaMethod_findBySearchStringIn", () -> jpaMethodRentalOfferRepository.findBySearchStringIn(List.of(testOffer.getSearchString())));
-        executionResults.add(foundRentals);
-        List<RentalOffer> foundByName = (List<RentalOffer>)foundRentals.getResult();
-        assertTrue(!foundByName.isEmpty() && foundByName.stream().anyMatch(rentalOffer -> rentalOffer.getName().equals(testName)));
+        String name = "";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails foundRentals = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
+                    () -> rentalOfferRepository.findBySearchStringIn(List.of(testOffer.getSearchString())));
+            executionResults.add(foundRentals);
+            List<RentalOffer> foundByName = (List<RentalOffer>) foundRentals.getResult();
+            assertTrue(!foundByName.isEmpty() && foundByName.stream().anyMatch(rentalOffer -> rentalOffer.getName().equals(testName)));
+        }
 
-        String containsStr = "My test 11";
-        ExecutionDetails nameContainsDetails = executeLogged("jpaMethod_findAllByNameContains", () -> jpaMethodRentalOfferRepository.findAllByNameContains(containsStr));
-        executionResults.add(nameContainsDetails);
-        List<RentalOffer> foundByNameContains = (List<RentalOffer>)nameContainsDetails.getResult();
-        assertTrue(!foundByNameContains.isEmpty() && foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().contains(containsStr)));
+        name = "findAllByNameContains";
+        if (ormMethodConfig.isSupported(name)) {
+            String containsStr = "My test 11";
+            ExecutionDetails nameContainsDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
+                    () -> rentalOfferRepository.findAllByNameContains(containsStr));
+            executionResults.add(nameContainsDetails);
+            List<RentalOffer> foundByNameContains = (List<RentalOffer>) nameContainsDetails.getResult();
+            assertTrue(!foundByNameContains.isEmpty() && foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().contains(containsStr)));
+        }
 
-        ExecutionDetails historyByNameDetails = executeLogged("jpaMethod_findOfferHistoryByName", () -> jpaMethodRentalOfferRepository.findOfferHistoryByName(testName));
-        executionResults.add(historyByNameDetails);
-        RentalOffer historyByName = ((Optional<RentalOffer>)historyByNameDetails.getResult()).get();
-        assertEquals(testHistory.size(), historyByName.getOfferHistories().size());
-        assertTrue(historyByName.getOfferHistories().stream().allMatch(history -> history.getStatus() == OfferStatus.NEW || history.getStatus() == OfferStatus.UPDATED));
+        name = "findOfferHistoryByName";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails historyByNameDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
+                    () -> rentalOfferRepository.findOfferHistoryByName(testName));
+            executionResults.add(historyByNameDetails);
+            RentalOffer historyByName = ((Optional<RentalOffer>) historyByNameDetails.getResult()).get();
+            assertEquals(testHistory.size(), historyByName.getOfferHistories().size());
+            assertTrue(historyByName.getOfferHistories().stream().allMatch(history -> history.getStatus() == OfferStatus.NEW || history.getStatus() == OfferStatus.UPDATED));
+        }
 
-        ExecutionDetails namePagedDetails = executeLogged("jpaMethod_findAllByAgencyPaged_1", () -> jpaMethodRentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(0, 5)));
-        executionResults.add(namePagedDetails);
-        List<String> foundByNamePage1 = ((List<RentalOffer>)namePagedDetails.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
-        ExecutionDetails namePagedDetails2 = executeLogged("jpaMethod_findAllByAgencyPaged_2", () -> jpaMethodRentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(2, 5)));
-        executionResults.add(namePagedDetails);
-        List<String> foundByNamePage2 =  ((List<RentalOffer>)namePagedDetails2.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
-        assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains));
+        name = "findAllByAgencyPaged";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails namePagedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_1",
+                    () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(0, 5)));
+            executionResults.add(namePagedDetails);
+            List<String> foundByNamePage1 = ((List<RentalOffer>) namePagedDetails.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
+            ExecutionDetails namePagedDetails2 = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_2", () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(2, 5)));
+            executionResults.add(namePagedDetails);
+            List<String> foundByNamePage2 = ((List<RentalOffer>) namePagedDetails2.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
+            assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains));
+        }
 
-        //add limitations
-        double minPrice = 1900.0;
-        int maxArea = 20;
-        ExecutionDetails multipleFiltersDetails = executeLogged("jpaMethod_findAllByPriceGreaterThanAndAreaLessThan", () -> jpaMethodRentalOfferRepository.findAllByPriceGreaterThanAndAreaLessThan(minPrice, maxArea));
-        executionResults.add(multipleFiltersDetails);
-        List<RentalOffer> multipleFiltersOffers = (List<RentalOffer>)multipleFiltersDetails.getResult();
-        assertTrue(multipleFiltersOffers.stream().allMatch(rentalOffer -> rentalOffer.getPrice() >= minPrice && rentalOffer.getArea() <= maxArea ));
+        name = "findAllByPriceGreaterThanAndAreaLessThan";
+        if (ormMethodConfig.isSupported(name)) {
+            //add limitations
+            double minPrice = 1900.0;
+            int maxArea = 20;
+            ExecutionDetails multipleFiltersDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllByPriceGreaterThanAndAreaLessThan(minPrice, maxArea));
+            executionResults.add(multipleFiltersDetails);
+            List<RentalOffer> multipleFiltersOffers = (List<RentalOffer>) multipleFiltersDetails.getResult();
+            assertTrue(multipleFiltersOffers.stream().allMatch(rentalOffer -> rentalOffer.getPrice() >= minPrice && rentalOffer.getArea() <= maxArea));
+        }
 
-        Instant timeToCheck = Instant.now().minus(3, ChronoUnit.DAYS);
-        ExecutionDetails updatedAfterDetails = executeLogged("jpaMethod_findAllUpdatedAfter", () -> jpaMethodRentalOfferRepository.findAllUpdatedAfter(timeToCheck));
-        executionResults.add(updatedAfterDetails);
-        List<RentalOffer> updatedAfterOffers = (List<RentalOffer>)updatedAfterDetails.getResult();
-        assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck)));
+        name = "findAllUpdatedAfter";
+        if (ormMethodConfig.isSupported(name)) {
+            Instant timeToCheck = Instant.now().minus(3, ChronoUnit.DAYS);
+            ExecutionDetails updatedAfterDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfter(timeToCheck));
+            executionResults.add(updatedAfterDetails);
+            List<RentalOffer> updatedAfterOffers = (List<RentalOffer>) updatedAfterDetails.getResult();
+            assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck)));
+        }
 
-        ExecutionDetails updatedByFieldDetails = executeLogged("jpaMethod_findAllUpdatedByFieldName", () -> jpaMethodRentalOfferRepository.findThousandUpdatedByFieldName("area"));
-        executionResults.add(updatedByFieldDetails);
-        List<RentalOffer> rentalOffers = (List<RentalOffer>)updatedByFieldDetails.getResult();
-        assertTrue(rentalOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getFieldHistory().getFieldName().equals("area"))); //could not initialize proxy - no Session
+        name = "findAllUpdatedAfterSortedByTimeAsc";
+        if (ormMethodConfig.isSupported(name)) {
+            Instant timeToCheck = Instant.now().minus(3, ChronoUnit.DAYS);
+            ExecutionDetails updatedAfterSortedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfterSortedByTimeAsc(timeToCheck));
+            executionResults.add(updatedAfterSortedDetails);
+            List<RentalOffer> updatedAfterSortedOffers = (List<RentalOffer>) updatedAfterSortedDetails.getResult();
+            assertTrue(IntStream.range(0, updatedAfterSortedOffers.size() - 1).allMatch(i -> isSortedByTimeAsc(updatedAfterSortedOffers.get(i), updatedAfterSortedOffers.get(i + 1))));
+        }
 
-        assertThrows(UnsupportedOperationException.class,() -> executeLogged("jpaMethod_findAllPriceGrewUpInLastWeek", () -> jpaMethodRentalOfferRepository.findAllPriceGrewUpInLastWeek()));
+        name = "findAllUpdatedByFieldName";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails updatedByFieldDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findThousandUpdatedByFieldName("area"));
+            executionResults.add(updatedByFieldDetails);
+            List<RentalOffer> rentalOffers = (List<RentalOffer>) updatedByFieldDetails.getResult();
+            assertTrue(rentalOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getFieldHistory().getFieldName().equals("area"))); //could not initialize proxy - no Session
+        }
 
-        ExecutionDetails countAllDetails= executeLogged("jpaMethod_countAll", () -> jpaMethodRentalOfferRepository.countAll());
-        executionResults.add(countAllDetails);
-        long countAllResult = (long)countAllDetails.getResult();
+        name = "findAllPriceGrewUpInLastWeek";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails priceGrewUpDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::findAllPriceGrewUpInLastWeek);
+            executionResults.add(priceGrewUpDetails);
+            List<RentalOffer> rentalOffers = (List<RentalOffer>) priceGrewUpDetails.getResult();
+            assertTrue(rentalOffers.stream().allMatch(rentalOffer ->
+                    rentalOffer.getOfferHistories().stream().anyMatch(offerHistory ->
+                            offerHistory.getFieldHistory().getFieldName().equals("price") && offerHistory.getTime().isAfter(Instant.now().minus(7, ChronoUnit.DAYS)))));
+        }
 
-        ExecutionDetails countCreatedLastMonthDetails = executeLogged("jpaMethod_countCreatedInLastMonth", () -> jpaMethodRentalOfferRepository.countCreatedInLastMonth());
-        executionResults.add(countCreatedLastMonthDetails);
-        long createdLastMonthResults = (long)countCreatedLastMonthDetails.getResult();
+        name = "countAll";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails countAllDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::countAll);
+            executionResults.add(countAllDetails);
+            long countAllResult = (long) countAllDetails.getResult();
+        }
 
+        name = "countCreatedInLastMonth";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails countCreatedLastMonthDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::countCreatedInLastMonth);
+            executionResults.add(countCreatedLastMonthDetails);
+            long createdLastMonthResults = (long) countCreatedLastMonthDetails.getResult();
+        }
+
+        executionResults.forEach(details-> {
+            System.out.println("Method " + details.getFunctionName() + ", time " + details.getDuration());
+        });
+    }
+
+    private boolean isSortedByTimeAsc(RentalOffer rentalOffer1, RentalOffer rentalOffer2) {
+        Optional<OfferHistory> earliestHistory1 = rentalOffer1.getOfferHistories().stream().min(Comparator.comparing(OfferHistory::getTime));
+        Optional<OfferHistory> earliestHistory2 = rentalOffer2.getOfferHistories().stream().min(Comparator.comparing(OfferHistory::getTime));
+        return earliestHistory1.get().getTime().isBefore(earliestHistory2.get().getTime());
+    }
+
+    private String getDisplayedExecutionMethodName(RentalOfferRepository offerRepository, String name) {
+        return offerRepository.getName() + "_" + name;
     }
 
     private void setup() {

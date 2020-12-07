@@ -3,6 +3,7 @@ package com.daria.learn.rentalhelper.rentals.persist.jpa;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -23,8 +24,8 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     @Query("select ro from RentalOffer ro where ro.searchString in ?1")
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
 
-    @Query(nativeQuery = true, value = "select ro, ro.offerHistories from RentalOffer ro where ro.name=:name limit 1000")
-    Optional<RentalOffer> findOfferHistoryByName(@Param("name") String name);
+    @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name=?1")
+    Optional<RentalOffer> findOfferHistoryByName(String name, Pageable pageable);
 
     @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name like %?1%")
     List<RentalOffer> findAllByNameContains(String subname);
@@ -38,8 +39,11 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllUpdatedAfter(Instant time);
 
-    @Query(nativeQuery = true, value = "select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName limit 1000")
-    List<RentalOffer> findThousandUpdatedByFieldName(@Param("fieldName") String fieldName);
+    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 order by oh.time")
+    List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time);
+
+    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
+    List<RentalOffer> findThousandUpdatedByFieldName(String fieldName, Pageable pageable);
 
     @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllPriceGrewUp(Instant since);
@@ -58,6 +62,14 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
         return findAllPriceGrewUp(Instant.now().minus(1, ChronoUnit.WEEKS));
     }
 
+    default Optional<RentalOffer> findOfferHistoryByName(String name) {
+        return findOfferHistoryByName(name, PageRequest.of(0, 1000));
+    }
+
+    default List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
+        return findThousandUpdatedByFieldName(fieldName, PageRequest.of(0, 1000));
+    }
+
     @Override
     default void saveList(List<RentalOffer> offers) {
         saveAll(offers);
@@ -70,4 +82,9 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
 
     @Query("select distinct ro.agency from RentalOffer ro")
     List<String> findDistinctAgencies();
+
+    @Override
+    default String getName() {
+        return "jpaQuery";
+    }
 }
