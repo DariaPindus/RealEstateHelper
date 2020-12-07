@@ -19,33 +19,33 @@ import java.util.Optional;
 //@Profile(ApplicationProfiles.JPA_JPQL_PROFILE)
 @Repository
 @Primary
-public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffer, Integer>, RentalOfferRepository {
+public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOffer, Integer>, RentalOfferRepository {
 
     @Query("select ro from RentalOffer ro where ro.searchString in ?1")
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name=?1")
-    Optional<RentalOffer> findOfferHistoryByName(String name, Pageable pageable);
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories where ro.name=?1")
+    Optional<RentalOffer> findOfferHistoryByName(String name);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro where ro.name like %?1%")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories where ro.name like %?1%")
     List<RentalOffer> findAllByNameContains(String subname);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro where ro.agency=?1")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories where ro.agency=?1")
     List<RentalOffer> findAllByAgency(String name, Pageable pageable);
 
-    @Query("select ro from RentalOffer ro where ro.name=?1 and ro.price > ?2 and ro.area < ?3")
+    @Query("select ro from RentalOffer ro where ro.price >= ?1 and ro.area <= ?2")
     List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllUpdatedAfter(Instant time);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 order by oh.time")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1 order by oh.time")
     List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
     List<RentalOffer> findThousandUpdatedByFieldName(String fieldName, Pageable pageable);
 
-    @Query("select ro, ro.offerHistories from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1")
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1")
     List<RentalOffer> findAllPriceGrewUp(Instant since);
 
     @Query("select count(ro) from RentalOffer ro")
@@ -55,15 +55,11 @@ public interface JpaQueryRentalOfferRepository extends CrudRepository<RentalOffe
     long countCreatedInLastMonth(Instant lastmonth);
 
     default long countCreatedInLastMonth(){
-        return countCreatedInLastMonth(Instant.now().minus(1, ChronoUnit.MONTHS));
+        return countCreatedInLastMonth(Instant.now().minus(30, ChronoUnit.DAYS));
     }
 
     default List<RentalOffer> findAllPriceGrewUpInLastWeek() {
-        return findAllPriceGrewUp(Instant.now().minus(1, ChronoUnit.WEEKS));
-    }
-
-    default Optional<RentalOffer> findOfferHistoryByName(String name) {
-        return findOfferHistoryByName(name, PageRequest.of(0, 1000));
+        throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
     }
 
     default List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {

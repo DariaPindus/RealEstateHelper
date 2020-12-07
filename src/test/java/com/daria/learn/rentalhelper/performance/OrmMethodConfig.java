@@ -16,7 +16,7 @@ public class OrmMethodConfig {
     }
 
     public boolean isSupported(String method) {
-        return unsupportedMethods.contains(method);
+        return !unsupportedMethods.contains(method);
     }
 
 }

@@ -8,7 +8,7 @@ import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.NamedQueryRentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepositoryAdapter;
-import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaQueryRentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.jpa.JpqlQueryRentalOfferRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,7 +35,7 @@ public class SqlPerformanceTest {
     @Autowired
     private JpaMethodRentalOfferRepositoryAdapter jpaMethodRentalOfferRepository;
     @Autowired
-    private JpaQueryRentalOfferRepository jpaQueryRentalOfferRepository;
+    private JpqlQueryRentalOfferRepository jpqlQueryRentalOfferRepository;
     @Autowired
     private NamedQueryRentalOfferRepository namedQueryRentalOfferRepository;
 
@@ -48,12 +48,14 @@ public class SqlPerformanceTest {
         executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
     }
 
+    @Test
     public void testJpaQuery() {
-        executeTests(jpaQueryRentalOfferRepository, new OrmMethodConfig());
+        executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
     }
 
+    @Test
     public void testNamedQuery() {
-        executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig());
+        executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
     }
 
     private void executeTests(RentalOfferRepository rentalOfferRepository, OrmMethodConfig ormMethodConfig) {
@@ -82,6 +84,7 @@ public class SqlPerformanceTest {
                     () -> rentalOfferRepository.findAllByNameContains(containsStr));
             executionResults.add(nameContainsDetails);
             List<RentalOffer> foundByNameContains = (List<RentalOffer>) nameContainsDetails.getResult();
+            assertTrue(noDuplications(foundByNameContains));
             assertTrue(!foundByNameContains.isEmpty() && foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().contains(containsStr)));
         }
 
@@ -97,13 +100,21 @@ public class SqlPerformanceTest {
 
         name = "findAllByAgencyPaged";
         if (ormMethodConfig.isSupported(name)) {
+            int pageSize = 5;
             ExecutionDetails namePagedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_1",
-                    () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(0, 5)));
+                    () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(0, pageSize)));
             executionResults.add(namePagedDetails);
-            List<String> foundByNamePage1 = ((List<RentalOffer>) namePagedDetails.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
-            ExecutionDetails namePagedDetails2 = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_2", () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(2, 5)));
+            Set<String> foundByNamePage1 = ((List<RentalOffer>) namePagedDetails.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toSet());
+            ExecutionDetails namePagedDetails2 = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_2",
+                    () -> rentalOfferRepository.findAllByAgencyPaged(testAgency, PageRequest.of(2,  pageSize)));
             executionResults.add(namePagedDetails);
-            List<String> foundByNamePage2 = ((List<RentalOffer>) namePagedDetails2.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toList());
+            Set<String> foundByNamePage2 = ((List<RentalOffer>) namePagedDetails2.getResult()).stream().map(RentalOffer::getSearchString).collect(Collectors.toSet());
+            assertEquals(((List<RentalOffer>) namePagedDetails.getResult()).size(), foundByNamePage1.size());
+            assertEquals(((List<RentalOffer>) namePagedDetails2.getResult()).size(), foundByNamePage2.size());
+            assertEquals(pageSize, foundByNamePage1.size());
+            assertEquals(pageSize, foundByNamePage2.size());
+            assertTrue(noDuplications((List<RentalOffer>) namePagedDetails.getResult()));
+            assertTrue(noDuplications((List<RentalOffer>) namePagedDetails2.getResult()));
             assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains));
         }
 
@@ -115,6 +126,7 @@ public class SqlPerformanceTest {
             ExecutionDetails multipleFiltersDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllByPriceGreaterThanAndAreaLessThan(minPrice, maxArea));
             executionResults.add(multipleFiltersDetails);
             List<RentalOffer> multipleFiltersOffers = (List<RentalOffer>) multipleFiltersDetails.getResult();
+            assertTrue(noDuplications(multipleFiltersOffers));
             assertTrue(multipleFiltersOffers.stream().allMatch(rentalOffer -> rentalOffer.getPrice() >= minPrice && rentalOffer.getArea() <= maxArea));
         }
 
@@ -124,6 +136,7 @@ public class SqlPerformanceTest {
             ExecutionDetails updatedAfterDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfter(timeToCheck));
             executionResults.add(updatedAfterDetails);
             List<RentalOffer> updatedAfterOffers = (List<RentalOffer>) updatedAfterDetails.getResult();
+            assertTrue(noDuplications(updatedAfterOffers));
             assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck)));
         }
 
@@ -133,6 +146,7 @@ public class SqlPerformanceTest {
             ExecutionDetails updatedAfterSortedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfterSortedByTimeAsc(timeToCheck));
             executionResults.add(updatedAfterSortedDetails);
             List<RentalOffer> updatedAfterSortedOffers = (List<RentalOffer>) updatedAfterSortedDetails.getResult();
+            assertTrue(noDuplications(updatedAfterSortedOffers));
             assertTrue(IntStream.range(0, updatedAfterSortedOffers.size() - 1).allMatch(i -> isSortedByTimeAsc(updatedAfterSortedOffers.get(i), updatedAfterSortedOffers.get(i + 1))));
         }
 
@@ -141,6 +155,7 @@ public class SqlPerformanceTest {
             ExecutionDetails updatedByFieldDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findThousandUpdatedByFieldName("area"));
             executionResults.add(updatedByFieldDetails);
             List<RentalOffer> rentalOffers = (List<RentalOffer>) updatedByFieldDetails.getResult();
+            assertTrue(noDuplications(rentalOffers));
             assertTrue(rentalOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getFieldHistory().getFieldName().equals("area"))); //could not initialize proxy - no Session
         }
 
@@ -149,6 +164,7 @@ public class SqlPerformanceTest {
             ExecutionDetails priceGrewUpDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::findAllPriceGrewUpInLastWeek);
             executionResults.add(priceGrewUpDetails);
             List<RentalOffer> rentalOffers = (List<RentalOffer>) priceGrewUpDetails.getResult();
+            assertTrue(noDuplications(rentalOffers));
             assertTrue(rentalOffers.stream().allMatch(rentalOffer ->
                     rentalOffer.getOfferHistories().stream().anyMatch(offerHistory ->
                             offerHistory.getFieldHistory().getFieldName().equals("price") && offerHistory.getTime().isAfter(Instant.now().minus(7, ChronoUnit.DAYS)))));
@@ -179,15 +195,19 @@ public class SqlPerformanceTest {
         return earliestHistory1.get().getTime().isBefore(earliestHistory2.get().getTime());
     }
 
+    private boolean noDuplications(List<RentalOffer> rentalOffers) {
+        return rentalOffers.stream().map(RentalOffer::getId).collect(Collectors.toSet()).size() == rentalOffers.size();
+    }
+
     private String getDisplayedExecutionMethodName(RentalOfferRepository offerRepository, String name) {
         return offerRepository.getName() + "_" + name;
     }
 
     private void setup() {
         if (!isSetup) {
-            List<String> agencies = jpaQueryRentalOfferRepository.findDistinctAgencies();
+            List<String> agencies = jpqlQueryRentalOfferRepository.findDistinctAgencies();
             testAgency = agencies.get(0);
-            jpaQueryRentalOfferRepository.deleteAll(jpaQueryRentalOfferRepository.findAllByNameContains(testName));
+            jpqlQueryRentalOfferRepository.deleteAll(jpqlQueryRentalOfferRepository.findAllByNameContains(testName));
         }
     }
 

@@ -27,6 +27,7 @@ public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Getter
+    @Column(unique = true)
     private Integer id;
     @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)

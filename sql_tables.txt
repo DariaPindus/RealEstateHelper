@@ -48,3 +48,7 @@ select distinct ro.RentalOffer_id from RentalOffer_OfferHistory ro join
             and CONVERT(oh.fieldValue, unsigned) > CONVERT(oh.oldValue, unsigned))
 	as histories
 on histories.id=ro.offerHistories_id;
+
+---FIND ALL IN LAST MONTH (30 DAYS)---
+select count(distinct ro.RentalOffer_id) from RentalOffer_OfferHistory ro join OfferHistory oh on ro.offerHistories_id=oh.id
+WHERE oh.time >= DATE(NOW()) - INTERVAL 30 DAY;
