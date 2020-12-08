@@ -68,7 +68,7 @@ public class SqlPerformanceTest {
 
         List<ExecutionDetails> executionResults = new ArrayList<>();
 
-        String name = "";
+        String name = "findBySearchStringIn";
         if (ormMethodConfig.isSupported(name)) {
             ExecutionDetails foundRentals = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
                     () -> rentalOfferRepository.findBySearchStringIn(List.of(testOffer.getSearchString())));

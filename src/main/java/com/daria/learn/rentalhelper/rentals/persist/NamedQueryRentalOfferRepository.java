@@ -65,8 +65,8 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     @Override
     public List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllByPriceGreaterThanAndAreaLessThan");
-        q.setParameter(2, price);
-        q.setParameter(3, area);
+        q.setParameter(1, price);
+        q.setParameter(2, area);
         return q.getResultList();
     }
 
@@ -107,7 +107,7 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     @Override
     public long countCreatedInLastMonth() {
         Query q= entityManager.createNamedQuery("rentalOffer_countCreatedInLastMonth");
-        q.setParameter(1, Instant.now().minus(1, ChronoUnit.MONTHS));
+        q.setParameter(1, Instant.now().minus(30, ChronoUnit.DAYS));
         return ((Number)q.getSingleResult()).intValue();
     }
 

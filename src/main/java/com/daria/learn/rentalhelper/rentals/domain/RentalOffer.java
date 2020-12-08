@@ -14,15 +14,26 @@ import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
-@org.hibernate.annotations.NamedQuery(
+@NamedQuery(
         name = "RentalOffer_FindBySearchableFields",
         query = "select ro from RentalOffer ro " +
         "where ro.name=:address and " +
         "ro.agency=:agency and " +
-        "ro.postalCode=:postalCode",
-        timeout = 1
+        "ro.postalCode=:postalCode"
 )
-@RentalOfferQueries
+@NamedQueries(value = {
+        @NamedQuery(name = RentalOfferQueries.COUNT_ALL, query = RentalOfferQueries.COUNT_ALL_QUERY),
+        @NamedQuery(name = RentalOfferQueries.COUNT_CREATED_LAST_MONTH, query = RentalOfferQueries.COUNT_CREATED_LAST_MONTH_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_ALL_PRICE_GREW, query = RentalOfferQueries.FIND_ALL_PRICE_GREW_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_BY_NAME, query = RentalOfferQueries.FIND_BY_NAME_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_ALL_UPDATED_AFTER, query = RentalOfferQueries.FIND_ALL_UPDATED_AFTER_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_ALL_UPDATED_AFTER_ORDERED, query = RentalOfferQueries.FIND_ALL_UPDATED_AFTER_ORDERED_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_BY_AGENCIES_PAGED, query = RentalOfferQueries.FIND_BY_AGENCIES_PAGED_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_BY_PRICE_GREATER_AND_AREA_LESS, query = RentalOfferQueries.FIND_BY_PRICE_GREATER_AND_AREA_LESS_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_BY_NAME_CONTAINS, query = RentalOfferQueries.FIND_BY_NAME_CONTAINS_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_ALL_UPDATED_BY_FIELD, query = RentalOfferQueries.FIND_ALL_UPDATED_BY_FIELD_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_BY_SEARCH_STRING_IN, query = RentalOfferQueries.FIND_BY_SEARCH_STRING_IN_QUERY),
+})
 public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
