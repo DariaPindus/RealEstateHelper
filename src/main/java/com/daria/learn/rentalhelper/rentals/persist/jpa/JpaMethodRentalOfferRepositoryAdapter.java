@@ -76,7 +76,7 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
 
     @Override
     public long countCreatedInLastMonth() {
-        return jpaMethodRentalOfferRepository.countByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant.now().minus(30, ChronoUnit.DAYS), OfferStatus.NEW);
+        return jpaMethodRentalOfferRepository.countDistinctRentalOfferByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant.now().minus(30, ChronoUnit.DAYS), OfferStatus.NEW);
     }
 
     @Override

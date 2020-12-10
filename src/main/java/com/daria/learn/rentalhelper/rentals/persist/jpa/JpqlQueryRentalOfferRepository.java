@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.persist.jpa;
 
+import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import org.springframework.context.annotation.Primary;
@@ -45,21 +46,28 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
     List<RentalOffer> findThousandUpdatedByFieldName(String fieldName, Pageable pageable);
 
-    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1")
-    List<RentalOffer> findAllPriceGrewUp(Instant since);
+//    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where " +
+//            "(select h.id " +
+//            "from OfferHistory h " +
+//            "where h.fieldName=?1 and " +
+//            "h.time >= ?2 and " +
+//            "FUNC('TO_NUMBER', h.fieldValue) > FUNC('TO_NUMBER', h.oldValue) ")
+    @Query("SELECT a FROM RentalOffer a WHERE (SELECT b FROM OfferHistory b WHERE b MEMBER OF a.offerHistories ) ")
+    List<RentalOffer> findAllPriceGrewUp(String fieldName, Instant since);
 
     @Query("select count(ro) from RentalOffer ro")
     long countAll();
 
-    @Query("select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh where oh.rentalOffer.id=ro.id and oh.time>=?1)")
-    long countCreatedInLastMonth(Instant lastmonth);
+    @Query("select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh where oh.rentalOffer.id=ro.id and oh.time>=?1 and oh.status=?2)")
+    long countCreatedInLastMonth(Instant lastmonth, OfferStatus offerStatus);
 
     default long countCreatedInLastMonth(){
-        return countCreatedInLastMonth(Instant.now().minus(30, ChronoUnit.DAYS));
+        return countCreatedInLastMonth(Instant.now().minus(30, ChronoUnit.DAYS), OfferStatus.NEW);
     }
 
     default List<RentalOffer> findAllPriceGrewUpInLastWeek() {
-        throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
+//        throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
+        return findAllPriceGrewUp("price", Instant.now().minus(7, ChronoUnit.DAYS));
     }
 
     default List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {

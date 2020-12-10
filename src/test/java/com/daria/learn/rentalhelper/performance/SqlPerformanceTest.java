@@ -45,11 +45,11 @@ public class SqlPerformanceTest {
 
     @Test
     public void testJpaMethod() {
-        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
+        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllUpdatedAfterSortedByTimeAsc", "findAllPriceGrewUpInLastWeek")));
     }
 
     @Test
-    public void testJpaQuery() {
+    public void testJpqlQuery() {
         executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
     }
 
@@ -213,9 +213,9 @@ public class SqlPerformanceTest {
 
 
     private ExecutionDetails executeLogged(String name, Supplier<Object> function) {
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime() / 1000;
         Object results = function.get();
-        long end = System.currentTimeMillis();
+        long end = System.nanoTime() / 1000;
         return new ExecutionDetails(name, results, end - start);
     }
 

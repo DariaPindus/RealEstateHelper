@@ -30,7 +30,8 @@ public interface RentalOfferQueries {
     String COUNT_ALL_QUERY = "select count(ro) from RentalOffer ro";
 
     String COUNT_CREATED_LAST_MONTH = "rentalOffer_countCreatedInLastMonth";
-    String COUNT_CREATED_LAST_MONTH_QUERY = "select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh where oh.rentalOffer.id=ro.id and oh.time>=?1)";
+    String COUNT_CREATED_LAST_MONTH_QUERY = "select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh " +
+            "where oh.rentalOffer.id=ro.id and oh.time>=?1 and oh.status=?2)";
 
     String FIND_ALL_UPDATED_AFTER_ORDERED = "rentalOffer_findAllUpdatedAfterOrdered";
     String FIND_ALL_UPDATED_AFTER_ORDERED_QUERY = "select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1 order by oh.time";

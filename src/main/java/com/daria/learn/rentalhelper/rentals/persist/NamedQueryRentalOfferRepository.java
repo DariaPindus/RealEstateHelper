@@ -1,6 +1,7 @@
 package com.daria.learn.rentalhelper.rentals.persist;
 
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;
+import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaRentalOfferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,7 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     public long countCreatedInLastMonth() {
         Query q= entityManager.createNamedQuery("rentalOffer_countCreatedInLastMonth");
         q.setParameter(1, Instant.now().minus(30, ChronoUnit.DAYS));
+        q.setParameter(2, OfferStatus.NEW);
         return ((Number)q.getSingleResult()).intValue();
     }
 

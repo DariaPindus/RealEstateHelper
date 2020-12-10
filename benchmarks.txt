@@ -1,0 +1,139 @@
+===========================JPA-METHOD==============================
+Method jpamethod_findBySearchStringIn, time 107282
+Method jpamethod_findAllByNameContains, time 107734
+Method jpamethod_findOfferHistoryByName, time 111151
+Method jpamethod_findAllByAgencyPaged_1, time 8370
+Method jpamethod_findAllByAgencyPaged_1, time 8370
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 123009
+Method jpamethod_findAllUpdatedAfter, time 162588
+Method jpamethod_findAllUpdatedByFieldName, time 4360033
+Method jpamethod_countAll, time 23729
+Method jpamethod_countCreatedInLastMonth, time 139340
+
+Method jpamethod_findBySearchStringIn, time 65419
+Method jpamethod_findAllByNameContains, time 69096
+Method jpamethod_findOfferHistoryByName, time 75113
+Method jpamethod_findAllByAgencyPaged_1, time 7426
+Method jpamethod_findAllByAgencyPaged_1, time 7426
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 86237
+Method jpamethod_findAllUpdatedAfter, time 128272
+Method jpamethod_findAllUpdatedByFieldName, time 3846662
+Method jpamethod_countAll, time 20854
+Method jpamethod_countCreatedInLastMonth, time 140770
+
+Method jpamethod_findBySearchStringIn, time 96388
+Method jpamethod_findAllByNameContains, time 106993
+Method jpamethod_findOfferHistoryByName, time 82580
+Method jpamethod_findAllByAgencyPaged_1, time 7941
+Method jpamethod_findAllByAgencyPaged_1, time 7941
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 121066
+Method jpamethod_findAllUpdatedAfter, time 122882
+Method jpamethod_findAllUpdatedByFieldName, time 4379401
+Method jpamethod_countAll, time 35274
+Method jpamethod_countCreatedInLastMonth, time 163888
+
+Method jpamethod_findBySearchStringIn, time 110413
+Method jpamethod_findAllByNameContains, time 100731
+Method jpamethod_findOfferHistoryByName, time 125420
+Method jpamethod_findAllByAgencyPaged_1, time 8863
+Method jpamethod_findAllByAgencyPaged_1, time 8863
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 185952
+Method jpamethod_findAllUpdatedAfter, time 256724
+Method jpamethod_findAllUpdatedByFieldName, time 8140821
+Method jpamethod_countAll, time 16334
+Method jpamethod_countCreatedInLastMonth, time 188754
+
+===================================================================
+============================JPA-QUERY==============================
+Method jpaQuery_findBySearchStringIn, time 80066
+Method jpaQuery_findAllByNameContains, time 96974
+Method jpaQuery_findOfferHistoryByName, time 53454
+Method jpaQuery_findAllByAgencyPaged_1, time 433151
+Method jpaQuery_findAllByAgencyPaged_1, time 433151
+Method jpaQuery_findAllByPriceGreaterThanAndAreaLessThan, time 77744
+Method jpaQuery_findAllUpdatedAfter, time 126133
+Method jpaQuery_findAllUpdatedAfterSortedByTimeAsc, time 116700
+Method jpaQuery_findAllUpdatedByFieldName, time 4175921
+Method jpaQuery_countAll, time 15505
+Method jpaQuery_countCreatedInLastMonth, time 136044
+
+Method jpaQuery_findBySearchStringIn, time 63777
+Method jpaQuery_findAllByNameContains, time 68090
+Method jpaQuery_findOfferHistoryByName, time 51083
+Method jpaQuery_findAllByAgencyPaged_1, time 390812
+Method jpaQuery_findAllByAgencyPaged_1, time 390812
+Method jpaQuery_findAllByPriceGreaterThanAndAreaLessThan, time 49702
+Method jpaQuery_findAllUpdatedAfter, time 110008
+Method jpaQuery_findAllUpdatedAfterSortedByTimeAsc, time 115956
+Method jpaQuery_findAllUpdatedByFieldName, time 3653652
+Method jpaQuery_countAll, time 24850
+Method jpaQuery_countCreatedInLastMonth, time 152728
+
+Method jpaQuery_findBySearchStringIn, time 48118
+Method jpaQuery_findAllByNameContains, time 68873
+Method jpaQuery_findOfferHistoryByName, time 76864
+Method jpaQuery_findAllByAgencyPaged_1, time 482793
+Method jpaQuery_findAllByAgencyPaged_1, time 482793
+Method jpaQuery_findAllByPriceGreaterThanAndAreaLessThan, time 79651
+Method jpaQuery_findAllUpdatedAfter, time 109730
+Method jpaQuery_findAllUpdatedAfterSortedByTimeAsc, time 122046
+Method jpaQuery_findAllUpdatedByFieldName, time 4320705
+Method jpaQuery_countAll, time 15547
+Method jpaQuery_countCreatedInLastMonth, time 285740
+
+Method jpaQuery_findBySearchStringIn, time 80388
+Method jpaQuery_findAllByNameContains, time 74063
+Method jpaQuery_findOfferHistoryByName, time 52933
+Method jpaQuery_findAllByAgencyPaged_1, time 449569
+Method jpaQuery_findAllByAgencyPaged_1, time 449569
+Method jpaQuery_findAllByPriceGreaterThanAndAreaLessThan, time 80339
+Method jpaQuery_findAllUpdatedAfter, time 110748
+Method jpaQuery_findAllUpdatedAfterSortedByTimeAsc, time 126933
+Method jpaQuery_findAllUpdatedByFieldName, time 4188955
+Method jpaQuery_countAll, time 20297
+Method jpaQuery_countCreatedInLastMonth, time 141595
+
+===================================================================
+============================NAMED-QUERY============================
+
+Method namedQuery_findBySearchStringIn, time 78618
+Method namedQuery_findAllByNameContains, time 73118
+Method namedQuery_findOfferHistoryByName, time 57144
+Method namedQuery_findAllByAgencyPaged_1, time 3808
+Method namedQuery_findAllByAgencyPaged_1, time 3808
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 79177
+Method namedQuery_findAllUpdatedAfter, time 110162
+Method namedQuery_findAllUpdatedAfterSortedByTimeAsc, time 107581
+Method namedQuery_findAllUpdatedByFieldName, time 4444272
+Method namedQuery_countAll, time 10633
+Method namedQuery_countCreatedInLastMonth, time 153948
+
+Method namedQuery_findBySearchStringIn, time 49951
+Method namedQuery_findAllByNameContains, time 73881
+Method namedQuery_findOfferHistoryByName, time 57873
+Method namedQuery_findAllByAgencyPaged_1, time 3825
+Method namedQuery_findAllByAgencyPaged_1, time 3825
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 80609
+Method namedQuery_findAllUpdatedAfter, time 113662
+Method namedQuery_findAllUpdatedAfterSortedByTimeAsc, time 110246
+Method namedQuery_findAllUpdatedByFieldName, time 4949615
+Method namedQuery_countAll, time 10487
+Method namedQuery_countCreatedInLastMonth, time 145824
+
+Method namedQuery_findBySearchStringIn, time 47645
+Method namedQuery_findAllByNameContains, time 65684
+Method namedQuery_findOfferHistoryByName, time 62282
+Method namedQuery_findAllByAgencyPaged_1, time 5335
+Method namedQuery_findAllByAgencyPaged_1, time 5335
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 89023
+Method namedQuery_findAllUpdatedAfter, time 115643
+Method namedQuery_findAllUpdatedAfterSortedByTimeAsc, time 109270
+Method namedQuery_findAllUpdatedByFieldName, time 4577949
+Method namedQuery_countAll, time 14144
+Method namedQuery_countCreatedInLastMonth, time 145414
+
+
+
+
+
+
