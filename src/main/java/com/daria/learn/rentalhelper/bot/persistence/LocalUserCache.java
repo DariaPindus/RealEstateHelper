@@ -1,7 +1,7 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
 import com.daria.learn.rentalhelper.bot.exceptions.ExceededMaximumSubscriptionsAmountException;
-import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import org.springframework.stereotype.Component;

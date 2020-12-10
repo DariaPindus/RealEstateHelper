@@ -13,14 +13,6 @@ import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
-@org.hibernate.annotations.NamedQuery(
-        name = "RentalOffer_FindBySearchableFields",
-        query = "select ro from RentalOffer ro " +
-        "where ro.name=:address and " +
-        "ro.agency=:agency and " +
-        "ro.postalCode=:postalCode",
-        timeout = 1
-)
 public class RentalOffer {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.bot.handle.statehandle;
+package com.daria.learn.rentalhelper.bot.handlers.statehandlers;
 
 import com.daria.learn.rentalhelper.bot.exceptions.BotException;
 import org.springframework.context.MessageSource;

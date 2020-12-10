@@ -1,8 +1,8 @@
 package com.daria.learn.rentalhelper;
 
 import com.daria.learn.rentalhelper.bot.BotMessageSource;
-import com.daria.learn.rentalhelper.bot.handle.BotHandlerFacadeImpl;
-import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.handlers.BotHandlerFacadeImpl;
+import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;

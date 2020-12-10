@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot;
 
-import com.daria.learn.rentalhelper.bot.handle.BotHandlerFacade;
+import com.daria.learn.rentalhelper.bot.handlers.BotHandlerFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

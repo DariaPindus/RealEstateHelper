@@ -1,7 +1,7 @@
-package com.daria.learn.rentalhelper.bot.handle;
+package com.daria.learn.rentalhelper.bot.handlers;
 
 import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
-import com.daria.learn.rentalhelper.bot.handle.statehandle.*;
+import com.daria.learn.rentalhelper.bot.handlers.statehandlers.*;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

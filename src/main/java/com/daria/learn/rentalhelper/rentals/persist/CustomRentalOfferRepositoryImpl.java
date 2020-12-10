@@ -18,21 +18,6 @@ public class CustomRentalOfferRepositoryImpl implements CustomRentalOfferReposit
         this.sessionFactory = sessionFactory;
     }
 
-    @Deprecated
-    public Optional<RentalOffer> findExistingOffer(RentalOffer offer) {
-        Session session = sessionFactory.getCurrentSession();
-        Query query = session.createNamedQuery("RentalOffer_FindBySearchableFields", RentalOffer.class)
-                .setParameter("address", offer.getName())
-                .setParameter("agency", offer.getAgency())
-                .setParameter("postalCode", offer.getPostalCode());
-        try {
-            Object existingOffer = query.getSingleResult();
-            return Optional.of((RentalOffer)existingOffer);
-        } catch (NoResultException noResultException) {
-            return Optional.empty();
-        }
-    }
-
     @Override
     public Optional<RentalOffer> findOfferHistoryById(Integer id) {
         Session session = sessionFactory.getCurrentSession();

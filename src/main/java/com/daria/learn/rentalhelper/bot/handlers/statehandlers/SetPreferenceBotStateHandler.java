@@ -1,8 +1,8 @@
-package com.daria.learn.rentalhelper.bot.handle.statehandle;
+package com.daria.learn.rentalhelper.bot.handlers.statehandlers;
 
 import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.exceptions.CannotParseUserPreferenceResponseException;
-import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
 import org.springframework.stereotype.Component;

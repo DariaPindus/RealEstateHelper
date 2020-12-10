@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

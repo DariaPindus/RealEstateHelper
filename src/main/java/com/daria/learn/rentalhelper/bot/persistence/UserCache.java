@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.persistence;
 
-import com.daria.learn.rentalhelper.bot.handle.BotStateEnum;
+import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 

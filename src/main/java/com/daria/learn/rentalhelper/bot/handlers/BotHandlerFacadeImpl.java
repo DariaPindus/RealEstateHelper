@@ -1,7 +1,7 @@
-package com.daria.learn.rentalhelper.bot.handle;
+package com.daria.learn.rentalhelper.bot.handlers;
 
 import com.daria.learn.rentalhelper.bot.exceptions.BotException;
-import com.daria.learn.rentalhelper.bot.handle.statehandle.ExceptionalBotStateHandler;
+import com.daria.learn.rentalhelper.bot.handlers.statehandlers.ExceptionalBotStateHandler;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

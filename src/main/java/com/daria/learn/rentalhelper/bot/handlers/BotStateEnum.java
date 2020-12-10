@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.bot.handle;
+package com.daria.learn.rentalhelper.bot.handlers;
 
 public enum  BotStateEnum {
     INIT,

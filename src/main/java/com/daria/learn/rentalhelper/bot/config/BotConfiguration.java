@@ -1,7 +1,7 @@
 package com.daria.learn.rentalhelper.bot.config;
 
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
-import com.daria.learn.rentalhelper.bot.handle.BotHandlerFacade;
+import com.daria.learn.rentalhelper.bot.handlers.BotHandlerFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
