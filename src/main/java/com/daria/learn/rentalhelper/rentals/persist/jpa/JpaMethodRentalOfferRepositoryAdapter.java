@@ -1,11 +1,14 @@
 package com.daria.learn.rentalhelper.rentals.persist.jpa;
 
+import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -29,7 +32,7 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
     }
 
     @Override
-    public Optional<RentalOffer> findOfferHistoryByName(String name) {
+    public Optional<RentalOffer> findOfferHistoriesByOfferName(String name) {
         //throw unsupportedException("findOfferHistoryByName", IMPLEMENTATION_NAME);
         return jpaMethodRentalOfferRepository.findFirstByName(name);
     }
@@ -51,21 +54,16 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
 
     @Override
     public List<RentalOffer> findAllUpdatedAfter(Instant time) {
-        return jpaMethodRentalOfferRepository.findByOfferHistories_TimeGreaterThan(time);
+        return jpaMethodRentalOfferRepository.findByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(time, OfferStatus.UPDATED);
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time) {
-        throw unsupportedException("findAllUpdatedAfterSortedByTimeAsc", IMPLEMENTATION_NAME);
+    public List<ImmutablePair<RentalOffer, OfferHistory>> findAllModifiedAfterSortedByTimeDesc(Instant time) {
+        throw unsupportedException("findAllModifiedAfterSortedByTimeDesc", IMPLEMENTATION_NAME);
     }
 
     @Override
-    public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
-        return jpaMethodRentalOfferRepository.findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(fieldName);
-    }
-
-    @Override
-    public List<RentalOffer> findAllPriceGrewUpInLastWeek() {
+    public List<RentalOffer> findAllPriceGrewUpInLast2WeeksLimit5000() {
         throw unsupportedException("findAllPriceGrewUpInLastWeek", IMPLEMENTATION_NAME);
     }
 

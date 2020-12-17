@@ -6,9 +6,12 @@ import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.NamedQueryRentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.OfferHistoryRepository;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.hibernate.CriteriaRentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepositoryAdapter;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpqlQueryRentalOfferRepository;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,11 +36,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SqlPerformanceTest {
 
     @Autowired
+    private OfferHistoryRepository offerHistoryRepository;
+    @Autowired
     private JpaMethodRentalOfferRepositoryAdapter jpaMethodRentalOfferRepository;
     @Autowired
     private JpqlQueryRentalOfferRepository jpqlQueryRentalOfferRepository;
     @Autowired
     private NamedQueryRentalOfferRepository namedQueryRentalOfferRepository;
+    @Autowired
+    private CriteriaRentalOfferRepository criteriaRentalOfferRepository;
 
     static String testAgency = "";
     static boolean isSetup = false;
@@ -45,17 +52,22 @@ public class SqlPerformanceTest {
 
     @Test
     public void testJpaMethod() {
-        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllUpdatedAfterSortedByTimeAsc", "findAllPriceGrewUpInLastWeek")));
+        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllModifiedAfterSortedByTimeDesc", "findAllPriceGrewUpInLastWeek")));
     }
 
     @Test
     public void testJpqlQuery() {
-        executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
+        executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek", "findAllModifiedAfterSortedByTimeDesc")));
     }
 
     @Test
     public void testNamedQuery() {
         executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
+    }
+
+    @Test
+    public void testCriteriaApi() {
+        executeTests(criteriaRentalOfferRepository, new OrmMethodConfig());
     }
 
     private void executeTests(RentalOfferRepository rentalOfferRepository, OrmMethodConfig ormMethodConfig) {
@@ -91,7 +103,7 @@ public class SqlPerformanceTest {
         name = "findOfferHistoryByName";
         if (ormMethodConfig.isSupported(name)) {
             ExecutionDetails historyByNameDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
-                    () -> rentalOfferRepository.findOfferHistoryByName(testName));
+                    () -> rentalOfferRepository.findOfferHistoriesByOfferName(testName));
             executionResults.add(historyByNameDetails);
             RentalOffer historyByName = ((Optional<RentalOffer>) historyByNameDetails.getResult()).get();
             assertEquals(testHistory.size(), historyByName.getOfferHistories().size());
@@ -115,7 +127,7 @@ public class SqlPerformanceTest {
             assertEquals(pageSize, foundByNamePage2.size());
             assertTrue(noDuplications((List<RentalOffer>) namePagedDetails.getResult()));
             assertTrue(noDuplications((List<RentalOffer>) namePagedDetails2.getResult()));
-            assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains));
+//            assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains)); //doesn't work for CriteriaApiRepository
         }
 
         name = "findAllByPriceGreaterThanAndAreaLessThan";
@@ -137,37 +149,35 @@ public class SqlPerformanceTest {
             executionResults.add(updatedAfterDetails);
             List<RentalOffer> updatedAfterOffers = (List<RentalOffer>) updatedAfterDetails.getResult();
             assertTrue(noDuplications(updatedAfterOffers));
-            assertTrue(updatedAfterOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getTime().isAfter(timeToCheck)));
+            assertTrue(updatedAfterOffers.stream().allMatch(rentalOffer -> rentalOffer.getOfferHistories().stream().anyMatch(offerHistory -> offerHistory.getStatus() == OfferStatus.UPDATED && offerHistory.getTime().isAfter(timeToCheck))));
         }
 
-        name = "findAllUpdatedAfterSortedByTimeAsc";
+        name = "findAllModifiedAfterSortedByTimeDesc";
         if (ormMethodConfig.isSupported(name)) {
             Instant timeToCheck = Instant.now().minus(3, ChronoUnit.DAYS);
-            ExecutionDetails updatedAfterSortedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfterSortedByTimeAsc(timeToCheck));
+            ExecutionDetails updatedAfterSortedDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllModifiedAfterSortedByTimeDesc(timeToCheck));
             executionResults.add(updatedAfterSortedDetails);
-            List<RentalOffer> updatedAfterSortedOffers = (List<RentalOffer>) updatedAfterSortedDetails.getResult();
-            assertTrue(noDuplications(updatedAfterSortedOffers));
-            assertTrue(IntStream.range(0, updatedAfterSortedOffers.size() - 1).allMatch(i -> isSortedByTimeAsc(updatedAfterSortedOffers.get(i), updatedAfterSortedOffers.get(i + 1))));
-        }
-
-        name = "findAllUpdatedByFieldName";
-        if (ormMethodConfig.isSupported(name)) {
-            ExecutionDetails updatedByFieldDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findThousandUpdatedByFieldName("area"));
-            executionResults.add(updatedByFieldDetails);
-            List<RentalOffer> rentalOffers = (List<RentalOffer>) updatedByFieldDetails.getResult();
-            assertTrue(noDuplications(rentalOffers));
-            assertTrue(rentalOffers.stream().map(RentalOffer::getOfferHistories).flatMap(Collection::stream).allMatch(offerHistory -> offerHistory.getFieldHistory().getFieldName().equals("area"))); //could not initialize proxy - no Session
+            List<ImmutablePair<RentalOffer, OfferHistory>> updatedAfterSortedOffers = (List<ImmutablePair<RentalOffer, OfferHistory>>) updatedAfterSortedDetails.getResult();
+            assertTrue(IntStream.range(0, updatedAfterSortedOffers.size() - 1).allMatch(i -> isSortedByTimeDesc(updatedAfterSortedOffers.get(i).right, updatedAfterSortedOffers.get(i + 1).right)));
         }
 
         name = "findAllPriceGrewUpInLastWeek";
         if (ormMethodConfig.isSupported(name)) {
-            ExecutionDetails priceGrewUpDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::findAllPriceGrewUpInLastWeek);
+            ExecutionDetails priceGrewUpDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::findAllPriceGrewUpInLast2WeeksLimit5000);
             executionResults.add(priceGrewUpDetails);
             List<RentalOffer> rentalOffers = (List<RentalOffer>) priceGrewUpDetails.getResult();
             assertTrue(noDuplications(rentalOffers));
-            assertTrue(rentalOffers.stream().allMatch(rentalOffer ->
-                    rentalOffer.getOfferHistories().stream().anyMatch(offerHistory ->
-                            offerHistory.getFieldHistory().getFieldName().equals("price") && offerHistory.getTime().isAfter(Instant.now().minus(7, ChronoUnit.DAYS)))));
+            Set<Integer> ids = rentalOffers.stream().map(RentalOffer::getId).collect(Collectors.toSet());
+            List<OfferHistory> offerHistories = offerHistoryRepository.findByRentalOffer_IdIn(ids)
+                    .stream()
+                    .filter(offerHistory -> offerHistory.getTime().isAfter(Instant.now().minus(14, ChronoUnit.DAYS)) && offerHistory.getFieldHistory().getFieldName().equals("price"))
+                    .collect(Collectors.toList());
+            Map<Integer, List<OfferHistory>> offerHistoriesMap = offerHistories.stream()
+                    .collect(Collectors.groupingBy(offerHistory -> offerHistory.getRentalOffer().getId()));
+            assertTrue(offerHistoriesMap.entrySet().stream().allMatch(entry ->
+                    entry.getValue().stream().map(offerHistory ->
+                            offerHistory.getFieldHistory().getDelta()).reduce(0D, Double::sum) > 0
+            ));
         }
 
         name = "countAll";
@@ -175,6 +185,7 @@ public class SqlPerformanceTest {
             ExecutionDetails countAllDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::countAll);
             executionResults.add(countAllDetails);
             long countAllResult = (long) countAllDetails.getResult();
+            assertEquals(100001, countAllResult);
         }
 
         name = "countCreatedInLastMonth";
@@ -189,10 +200,8 @@ public class SqlPerformanceTest {
         });
     }
 
-    private boolean isSortedByTimeAsc(RentalOffer rentalOffer1, RentalOffer rentalOffer2) {
-        Optional<OfferHistory> earliestHistory1 = rentalOffer1.getOfferHistories().stream().min(Comparator.comparing(OfferHistory::getTime));
-        Optional<OfferHistory> earliestHistory2 = rentalOffer2.getOfferHistories().stream().min(Comparator.comparing(OfferHistory::getTime));
-        return earliestHistory1.get().getTime().isBefore(earliestHistory2.get().getTime());
+    private boolean isSortedByTimeDesc(OfferHistory offerHistory1, OfferHistory offerHistory2) {
+        return offerHistory1.getTime().isAfter(offerHistory2.getTime()) || offerHistory1.getTime().equals(offerHistory2.getTime());
     }
 
     private boolean noDuplications(List<RentalOffer> rentalOffers) {

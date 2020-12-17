@@ -1,9 +1,11 @@
 package com.daria.learn.rentalhelper.rentals.persist;
 
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;
+import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaRentalOfferRepository;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,7 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
-    public Optional<RentalOffer> findOfferHistoryByName(String name) {
+    public Optional<RentalOffer> findOfferHistoriesByOfferName(String name) {
         try {
             Query q = entityManager.createNamedQuery("rentalOffer_findByName");
             q.setParameter(1, name);
@@ -75,25 +77,19 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     public List<RentalOffer> findAllUpdatedAfter(Instant time) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedAfter");
         q.setParameter(1, time);
+        q.setParameter(2, OfferStatus.UPDATED);
         return q.getResultList();
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time) {
+    public List<ImmutablePair<RentalOffer, OfferHistory>> findAllModifiedAfterSortedByTimeDesc(Instant time) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedAfterOrdered");
         q.setParameter(1, time);
         return q.getResultList();
     }
 
     @Override
-    public List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
-        Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedByFieldName");
-        q.setParameter(1, fieldName);
-        return q.getResultList();
-    }
-
-    @Override
-    public List<RentalOffer> findAllPriceGrewUpInLastWeek() {
+    public List<RentalOffer> findAllPriceGrewUpInLast2WeeksLimit5000() {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllPriceGrewUp");
         q.setParameter(1, Instant.now().minus(1, ChronoUnit.WEEKS));
         return q.getResultList();

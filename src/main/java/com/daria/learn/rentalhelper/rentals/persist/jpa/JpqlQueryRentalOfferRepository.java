@@ -1,8 +1,10 @@
 package com.daria.learn.rentalhelper.rentals.persist.jpa;
 
+import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -26,7 +29,7 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
 
     @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories where ro.name=?1")
-    Optional<RentalOffer> findOfferHistoryByName(String name);
+    Optional<RentalOffer> findOfferHistoriesByOfferName(String name);
 
     @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories where ro.name like %?1%")
     List<RentalOffer> findAllByNameContains(String subname);
@@ -37,11 +40,11 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     @Query("select ro from RentalOffer ro where ro.price >= ?1 and ro.area <= ?2")
     List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area);
 
-    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1")
-    List<RentalOffer> findAllUpdatedAfter(Instant time);
+    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1 and oh.status=?2")
+    List<RentalOffer> findAllUpdatedAfter(Instant time, OfferStatus status);
 
-    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.time >= ?1 order by oh.time")
-    List<RentalOffer> findAllUpdatedAfterSortedByTimeAsc(Instant time);
+    @Query("select new org.apache.commons.lang3.tuple.ImmutablePair(ro, oh) from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 order by oh.time desc")
+    List<ImmutablePair<RentalOffer, OfferHistory>> findAllModifiedAfterSortedByTimeDesc(Instant time);
 
     @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
     List<RentalOffer> findThousandUpdatedByFieldName(String fieldName, Pageable pageable);
@@ -52,8 +55,7 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
 //            "where h.fieldName=?1 and " +
 //            "h.time >= ?2 and " +
 //            "FUNC('TO_NUMBER', h.fieldValue) > FUNC('TO_NUMBER', h.oldValue) ")
-    @Query("SELECT a FROM RentalOffer a WHERE (SELECT b FROM OfferHistory b WHERE b MEMBER OF a.offerHistories ) ")
-    List<RentalOffer> findAllPriceGrewUp(String fieldName, Instant since);
+//    List<RentalOffer> findAllPriceGrewUp(String fieldName, Instant since);
 
     @Query("select count(ro) from RentalOffer ro")
     long countAll();
@@ -65,13 +67,9 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
         return countCreatedInLastMonth(Instant.now().minus(30, ChronoUnit.DAYS), OfferStatus.NEW);
     }
 
-    default List<RentalOffer> findAllPriceGrewUpInLastWeek() {
-//        throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
-        return findAllPriceGrewUp("price", Instant.now().minus(7, ChronoUnit.DAYS));
-    }
-
-    default List<RentalOffer> findThousandUpdatedByFieldName(String fieldName) {
-        return findThousandUpdatedByFieldName(fieldName, PageRequest.of(0, 1000));
+    default List<RentalOffer> findAllPriceGrewUpInLast2WeeksLimit5000() {
+        throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
+//        return findAllPriceGrewUp("price", Instant.now().minus(7, ChronoUnit.DAYS));
     }
 
     @Override
@@ -90,5 +88,10 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     @Override
     default String getName() {
         return "jpaQuery";
+    }
+
+    @Override
+    default List<RentalOffer> findAllUpdatedAfter(Instant time) {
+        return findAllUpdatedAfter(time, OfferStatus.UPDATED);
     }
 }

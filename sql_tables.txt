@@ -28,14 +28,7 @@ RentalOffer_OfferHistory:
 - offerHistories_id
 
 
-> select count(*) from RentalOffer ro where exists (select 1 from RentalOffer_OfferHistory j join OfferHistory oh where j.RentalOffer_id=ro.id and oh.status="UPDATED");
-> select count(distinct (ro.RentalOffer_id)) from RentalOffer_OfferHistory ro join OfferHistory oh on oh.id=ro.offerHistories_id
-WHERE YEAR(oh.time) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
-AND MONTH(oh.time) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH);
-> select count(distinct (ro.RentalOffer_id)) from RentalOffer_OfferHistory ro join OfferHistory oh on oh.id=ro.offerHistories_id
-WHERE oh.time >= DATE(NOW()) - INTERVAL 7 DAY;
-
-
+---FIND ALL PRICE GREW UP LAST 14 DAYS---
 select oh.id, oh.time, CONVERT(oh.fieldValue, unsigned) as a, CONVERT(oh.oldValue, unsigned) as b
 		from OfferHistory oh
 		where (CONVERT(oh.fieldValue, unsigned) < 1000000 and CONVERT(oh.oldValue, unsigned) < 1000000) and
@@ -48,7 +41,38 @@ select distinct ro.RentalOffer_id from RentalOffer_OfferHistory ro join
             and CONVERT(oh.fieldValue, unsigned) > CONVERT(oh.oldValue, unsigned))
 	as histories
 on histories.id=ro.offerHistories_id;
+select ro.* from RentalOffer ro join
+	(select ohs.RentalOffer_id as offer_id, sum(ohs.delta) as sm from
+		(select oh.delta, oh.rentalOffer_id from OfferHistory oh
+			where oh.fieldName="price" and
+			oh.time >= DATE(NOW()) - INTERVAL 14 DAY
+			order by oh.time)
+		as ohs
+	group by ohs.RentalOffer_id
+	having sm > 0) as sub
+on ro.id=sub.offer_id
+OR
+select ro.* from RentalOffer ro join
+	(select oh.rentalOffer_id as offer_id, sum(oh.delta) as sm from OfferHistory oh
+			where oh.fieldName="price" and
+			oh.time >= DATE(NOW()) - INTERVAL 14 DAY
+	group by oh.RentalOffer_id
+	having sm > 0) as sub
+on ro.id=sub.offer_id
 
 ---FIND ALL IN LAST MONTH (30 DAYS)---
-select count(distinct ro.RentalOffer_id) from RentalOffer_OfferHistory ro join OfferHistory oh on ro.offerHistories_id=oh.id
-WHERE oh.time >= DATE(NOW()) - INTERVAL 30 DAY;
+select count(distinct oh.rentalOffer_id) from OfferHistory oh
+WHERE oh.status="NEW" and oh.time >=date_sub(now(), interval 30 day);
+
+---FIND ALL UPDATED IN LAST 7 DAYS---
+select ro.id, ro.name, ro.price, oh.status, oh.time from RentalOffer ro
+	join RentalOffer_OfferHistory roh on roh.RentalOffer_id = ro.id
+	join OfferHistory oh on roh.offerHistories_id
+    where oh.status="UPDATED" and oh.time >= DATE(NOW()) - INTERVAL 7 DAY
+
+
+
+
+notes:
+select distinct ro.* from RentalOffer ro join RentalOffer_OfferHistory roh on ro.id=roh.RentalOffer_id join OfferHistory oh on roh.offerHistories_id=oh.id
+	order by oh.time asc; - this produces "Expression #1 of ORDER BY clause is not in SELECT list ..."

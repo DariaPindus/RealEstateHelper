@@ -34,7 +34,7 @@ public interface JpaMethodRentalOfferRepository extends CrudRepository<RentalOff
     List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area);
 
     @EntityGraph(attributePaths = {"offerHistories"})
-    List<RentalOffer> findByOfferHistories_TimeGreaterThan(Instant time);
+    List<RentalOffer> findByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant time, OfferStatus status);
 
     @EntityGraph(attributePaths = {"offerHistories"})
     List<RentalOffer> findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(String fieldName);
