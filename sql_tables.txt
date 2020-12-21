@@ -60,7 +60,7 @@ select ro.* from RentalOffer ro join
 	having sm > 0) as sub
 on ro.id=sub.offer_id
 
----FIND ALL IN LAST MONTH (30 DAYS)---
+---FIND CREATED IN LAST MONTH (30 DAYS)---
 select count(distinct oh.rentalOffer_id) from OfferHistory oh
 WHERE oh.status="NEW" and oh.time >=date_sub(now(), interval 30 day);
 
@@ -70,7 +70,9 @@ select ro.id, ro.name, ro.price, oh.status, oh.time from RentalOffer ro
 	join OfferHistory oh on roh.offerHistories_id
     where oh.status="UPDATED" and oh.time >= DATE(NOW()) - INTERVAL 7 DAY
 
-
+---FIND AGENCY WITH MOST CHANGES IN 30 DAYS---
+select ro.agency, count(oh.id) as cnt from OfferHistory oh join RentalOffer ro on oh.rentalOffer_id=ro.id
+where oh.time >= date_sub(now(), interval 30 day) group by ro.agency order by cnt desc limit 1
 
 
 notes:

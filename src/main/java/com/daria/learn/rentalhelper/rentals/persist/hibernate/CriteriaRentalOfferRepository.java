@@ -95,17 +95,9 @@ public class CriteriaRentalOfferRepository implements RentalOfferRepository {
 
     @Override
     public List<RentalOffer> findAllPriceGrewUpInLast2WeeksLimit5000() {
-        // select ro from RentalOffer where ro.id in
-//        (select oh.rentalOffer_id as offer_id from OfferHistory oh
-//        where oh.fieldName="price" and
-//        oh.time >= DATE(NOW()) - INTERVAL 14 DAY
-//        group by oh.RentalOffer_id
-//        having sum(oh.delta) > 0)
-
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RentalOffer> criteria = builder.createQuery(RentalOffer.class);
         Root<RentalOffer> root = criteria.from( RentalOffer.class );
-        Join<RentalOffer, OfferHistory> offerHistories = root.join("offerHistories");
         Subquery<Integer> selectIdFromSum = criteria.subquery(Integer.class);
         Root<OfferHistory> offerHistoryRoot = selectIdFromSum.from(OfferHistory.class);
         selectIdFromSum
@@ -154,6 +146,24 @@ public class CriteriaRentalOfferRepository implements RentalOfferRepository {
     @Override
     public String getName() {
         return "criteria-api";
+    }
+
+    @Override
+    public Optional<ImmutablePair<String, Long>> getAgencyWithMostOffersLast30Days() {
+        //select ro.agency, count(oh.id) as cnt from OfferHistory oh join RentalOffer ro on oh.rentalOffer_id=ro.id
+        //where oh.time >= date_sub(now(), interval 30 day) group by ro.agency order by cnt desc limit 1
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = builder.createTupleQuery();
+        Root<RentalOffer> root = criteria.from( RentalOffer.class );
+        Join<RentalOffer, OfferHistory> offerHistories = root.join("offerHistories");
+        Expression<Long> counter = builder.count(offerHistories.get("id"));
+        criteria.multiselect(root.get("agency"), counter)
+                .groupBy(root.get("agency"))
+                .where(builder.greaterThanOrEqualTo(offerHistories.get("time"), Instant.now().minus(30, ChronoUnit.DAYS)))
+                .orderBy(builder.desc(counter));
+        List<Tuple> results = entityManager.createQuery(criteria).getResultList();
+        return results.isEmpty() ? Optional.empty() :
+                Optional.of(new ImmutablePair<>((String)results.get(0).get(0), (Long)results.get(0).get(1)));
     }
 
     private CriteriaQuery<RentalOffer> getWhereCriteria(ExpressionBuilder whereExpression) {

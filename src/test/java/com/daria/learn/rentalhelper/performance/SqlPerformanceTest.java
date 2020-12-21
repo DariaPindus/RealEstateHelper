@@ -12,6 +12,9 @@ import com.daria.learn.rentalhelper.rentals.persist.hibernate.CriteriaRentalOffe
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepositoryAdapter;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpqlQueryRentalOfferRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,9 +53,23 @@ public class SqlPerformanceTest {
     static boolean isSetup = false;
     private static String testName = "Apartment My test 11";
 
+    private static long EXPECTED_COUNT_ALL;
+    private static long EXPECTED_COUNT_CREATED_LAST_MONTH;
+    private static ImmutablePair<String, Long> EXPECTED_COUNT_AGENCY_WITH_MOST;
+
+    /**
+     * use this to set expected variables like count-results (after checking through Workbench, i.e.)
+     */
+    @BeforeAll
+    public static void setExpectedValues() {
+        EXPECTED_COUNT_ALL = 100001;
+        EXPECTED_COUNT_AGENCY_WITH_MOST = new ImmutablePair<>("rrqocxvood", 748L);
+        EXPECTED_COUNT_CREATED_LAST_MONTH = 15084;
+    }
+
     @Test
     public void testJpaMethod() {
-        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllModifiedAfterSortedByTimeDesc", "findAllPriceGrewUpInLastWeek")));
+        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllModifiedAfterSortedByTimeDesc", "findAllPriceGrewUpInLastWeek", "getAgencyWithMostOffersLast30Days")));
     }
 
     @Test
@@ -87,6 +104,16 @@ public class SqlPerformanceTest {
             executionResults.add(foundRentals);
             List<RentalOffer> foundByName = (List<RentalOffer>) foundRentals.getResult();
             assertTrue(!foundByName.isEmpty() && foundByName.stream().anyMatch(rentalOffer -> rentalOffer.getName().equals(testName)));
+        }
+
+        name = "getAgencyWithMostOffersLast30Days";
+        if (ormMethodConfig.isSupported(name)) {
+            ExecutionDetails countCreatedLastMonthDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::getAgencyWithMostOffersLast30Days);
+            executionResults.add(countCreatedLastMonthDetails);
+            Optional<ImmutablePair<String, Long>> createdLastMonthResults = (Optional<ImmutablePair<String, Long>>) countCreatedLastMonthDetails.getResult();
+            assertTrue(createdLastMonthResults.isPresent());
+            assertEquals(EXPECTED_COUNT_AGENCY_WITH_MOST.left, createdLastMonthResults.get().left);
+            assertEquals(EXPECTED_COUNT_AGENCY_WITH_MOST.right, createdLastMonthResults.get().right);
         }
 
         name = "findAllByNameContains";
@@ -185,7 +212,7 @@ public class SqlPerformanceTest {
             ExecutionDetails countAllDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::countAll);
             executionResults.add(countAllDetails);
             long countAllResult = (long) countAllDetails.getResult();
-            assertEquals(100001, countAllResult);
+            assertEquals(EXPECTED_COUNT_ALL, countAllResult);
         }
 
         name = "countCreatedInLastMonth";
@@ -193,7 +220,9 @@ public class SqlPerformanceTest {
             ExecutionDetails countCreatedLastMonthDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::countCreatedInLastMonth);
             executionResults.add(countCreatedLastMonthDetails);
             long createdLastMonthResults = (long) countCreatedLastMonthDetails.getResult();
+            assertEquals(EXPECTED_COUNT_CREATED_LAST_MONTH, createdLastMonthResults);
         }
+
 
         executionResults.forEach(details-> {
             System.out.println("Method " + details.getFunctionName() + ", time " + details.getDuration());

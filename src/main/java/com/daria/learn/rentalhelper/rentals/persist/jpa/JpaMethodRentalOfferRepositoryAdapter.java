@@ -87,4 +87,9 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
         return "jpamethod";
     }
 
+    @Override
+    public Optional<ImmutablePair<String, Long>> getAgencyWithMostOffersLast30Days() {
+        throw unsupportedException("getAgencyWithMostOffersLast30Days", IMPLEMENTATION_NAME);
+    }
+
 }

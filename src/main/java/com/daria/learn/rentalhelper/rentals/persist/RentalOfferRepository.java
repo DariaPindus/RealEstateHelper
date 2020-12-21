@@ -75,4 +75,5 @@ public interface RentalOfferRepository {
     //TODO: add dynamic query: i.e. preference
 
     //TODO: add aggregation: i.e. count offers by agency (group by agency)
+    Optional<ImmutablePair<String, Long>> getAgencyWithMostOffersLast30Days();
 }

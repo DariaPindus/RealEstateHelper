@@ -118,4 +118,12 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     public String getName() {
         return "namedQuery";
     }
+
+    @Override
+    public Optional<ImmutablePair<String, Long>> getAgencyWithMostOffersLast30Days() {
+        Query q = entityManager.createNamedQuery("rentalOffer_getAgencyWithMostOffersLast30Days");
+        q.setParameter(1, Instant.now().minus(30, ChronoUnit.DAYS));
+        List<ImmutablePair<String, Long>> results = q.getResultList();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
 }

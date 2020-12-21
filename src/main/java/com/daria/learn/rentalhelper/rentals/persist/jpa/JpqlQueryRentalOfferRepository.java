@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Tuple;
+import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -49,19 +50,14 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where oh.fieldHistory.fieldName = :fieldName")
     List<RentalOffer> findThousandUpdatedByFieldName(String fieldName, Pageable pageable);
 
-//    @Query("select distinct ro from RentalOffer ro join fetch ro.offerHistories oh where " +
-//            "(select h.id " +
-//            "from OfferHistory h " +
-//            "where h.fieldName=?1 and " +
-//            "h.time >= ?2 and " +
-//            "FUNC('TO_NUMBER', h.fieldValue) > FUNC('TO_NUMBER', h.oldValue) ")
-//    List<RentalOffer> findAllPriceGrewUp(String fieldName, Instant since);
-
     @Query("select count(ro) from RentalOffer ro")
     long countAll();
 
     @Query("select count(ro) from RentalOffer ro where exists (select 1 from ro.offerHistories oh where oh.rentalOffer.id=ro.id and oh.time>=?1 and oh.status=?2)")
     long countCreatedInLastMonth(Instant lastmonth, OfferStatus offerStatus);
+
+    @Query("select new org.apache.commons.lang3.tuple.ImmutablePair(ro.agency, count(oh.id)) from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 group by ro.agency order by count(oh.id) desc")
+    List<ImmutablePair<String, Long>> getAgencyWithMostOffersAfterTime(Instant time, Pageable pageable);
 
     default long countCreatedInLastMonth(){
         return countCreatedInLastMonth(Instant.now().minus(30, ChronoUnit.DAYS), OfferStatus.NEW);
@@ -69,7 +65,6 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
 
     default List<RentalOffer> findAllPriceGrewUpInLast2WeeksLimit5000() {
         throw unsupportedException("findAllPriceGrewUpInLastWeek", "JpqlQueryRepository");
-//        return findAllPriceGrewUp("price", Instant.now().minus(7, ChronoUnit.DAYS));
     }
 
     @Override
@@ -94,4 +89,11 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
     default List<RentalOffer> findAllUpdatedAfter(Instant time) {
         return findAllUpdatedAfter(time, OfferStatus.UPDATED);
     }
+
+    @Override
+    default Optional<ImmutablePair<String, Long>> getAgencyWithMostOffersLast30Days() {
+        List<ImmutablePair<String, Long>> results = getAgencyWithMostOffersAfterTime(Instant.now().minus(30, ChronoUnit.DAYS), PageRequest.of(0, 1));
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
 }
