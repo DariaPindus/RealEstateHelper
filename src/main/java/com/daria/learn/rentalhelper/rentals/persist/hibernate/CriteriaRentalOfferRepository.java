@@ -63,6 +63,15 @@ public class CriteriaRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
+    public List<RentalOffer> findAllSortedByPriceAscPaged(Pageable pageable) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<RentalOffer> criteria = builder.createQuery( RentalOffer.class );
+        Root<RentalOffer> root = criteria.from( RentalOffer.class );
+        criteria.select( root ).orderBy(builder.asc(root.get("price")));
+        return entityManager.createQuery(criteria).setFirstResult((int)pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+    }
+
+    @Override
     public List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area) {
         CriteriaQuery<RentalOffer> criteria = getWhereCriteria((builder, root) ->
                 builder.and(builder.greaterThanOrEqualTo(root.get("price"), price), builder.lessThanOrEqualTo(root.get("area"), area)));
@@ -70,7 +79,7 @@ public class CriteriaRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedAfter(Instant time) {
+    public List<RentalOffer> findAllWithHistoryUpdatedAfter(Instant time) {
         CriteriaQuery<RentalOffer> criteria = getWhereCriteriaWithOfferHistories((builder, root, offerHistories) -> builder.and(
                 builder.greaterThanOrEqualTo(offerHistories.get("time"), time),
                 builder.equal(offerHistories.get("status"), OfferStatus.UPDATED)));

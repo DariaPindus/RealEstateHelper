@@ -5,10 +5,11 @@ import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Tuple;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -48,12 +49,17 @@ public class JpaMethodRentalOfferRepositoryAdapter implements RentalOfferReposit
     }
 
     @Override
+    public List<RentalOffer> findAllSortedByPriceAscPaged(Pageable pageable) {
+        return jpaMethodRentalOfferRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("price")));
+    }
+
+    @Override
     public List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area) {
         return jpaMethodRentalOfferRepository.findAllByPriceGreaterThanAndAreaLessThan(price, area);
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedAfter(Instant time) {
+    public List<RentalOffer> findAllWithHistoryUpdatedAfter(Instant time) {
         return jpaMethodRentalOfferRepository.findByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(time, OfferStatus.UPDATED);
     }
 

@@ -9,11 +9,10 @@ import com.daria.learn.rentalhelper.rentals.persist.NamedQueryRentalOfferReposit
 import com.daria.learn.rentalhelper.rentals.persist.OfferHistoryRepository;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.hibernate.CriteriaRentalOfferRepository;
+import com.daria.learn.rentalhelper.rentals.persist.hibernate.NativeSQLRentalOfferRepository;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpaMethodRentalOfferRepositoryAdapter;
 import com.daria.learn.rentalhelper.rentals.persist.jpa.JpqlQueryRentalOfferRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,8 @@ public class SqlPerformanceTest {
     private NamedQueryRentalOfferRepository namedQueryRentalOfferRepository;
     @Autowired
     private CriteriaRentalOfferRepository criteriaRentalOfferRepository;
+    @Autowired
+    private NativeSQLRentalOfferRepository nativeSQLRentalOfferRepository;
 
     static String testAgency = "";
     static boolean isSetup = false;
@@ -62,29 +63,44 @@ public class SqlPerformanceTest {
      */
     @BeforeAll
     public static void setExpectedValues() {
-        EXPECTED_COUNT_ALL = 100001;
-        EXPECTED_COUNT_AGENCY_WITH_MOST = new ImmutablePair<>("rrqocxvood", 748L);
-        EXPECTED_COUNT_CREATED_LAST_MONTH = 15084;
+        EXPECTED_COUNT_ALL = 200001;
+        EXPECTED_COUNT_AGENCY_WITH_MOST = new ImmutablePair<>("eojua", 836L);
+        EXPECTED_COUNT_CREATED_LAST_MONTH = 31427;
     }
 
     @Test
     public void testJpaMethod() {
-        executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllModifiedAfterSortedByTimeDesc", "findAllPriceGrewUpInLastWeek", "getAgencyWithMostOffersLast30Days")));
+        IntStream.range(0, 3).forEach(i ->
+            executeTests(jpaMethodRentalOfferRepository, new OrmMethodConfig(Set.of("findAllModifiedAfterSortedByTimeDesc", "findAllPriceGrewUpInLast2WeeksLimit5000", "getAgencyWithMostOffersLast30Days")))
+        );
     }
 
     @Test
     public void testJpqlQuery() {
-        executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek", "findAllModifiedAfterSortedByTimeDesc")));
+        IntStream.range(0, 3).forEach(i ->
+            executeTests(jpqlQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLast2WeeksLimit5000", "findAllModifiedAfterSortedByTimeDesc")))
+        );
     }
 
     @Test
     public void testNamedQuery() {
-        executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLastWeek")));
+        IntStream.range(0, 3).forEach(i ->
+            executeTests(namedQueryRentalOfferRepository, new OrmMethodConfig(Set.of("findAllPriceGrewUpInLast2WeeksLimit5000")))
+        );
     }
 
     @Test
     public void testCriteriaApi() {
-        executeTests(criteriaRentalOfferRepository, new OrmMethodConfig());
+        IntStream.range(0, 3).forEach(i ->
+            executeTests(criteriaRentalOfferRepository, new OrmMethodConfig())
+        );
+    }
+
+    @Test
+    public void testNativeQuery() {
+        IntStream.range(0, 3).forEach(i ->
+            executeTests(nativeSQLRentalOfferRepository, new OrmMethodConfig(Set.of("findAllUpdatedAfter")))
+        );
     }
 
     private void executeTests(RentalOfferRepository rentalOfferRepository, OrmMethodConfig ormMethodConfig) {
@@ -118,16 +134,17 @@ public class SqlPerformanceTest {
 
         name = "findAllByNameContains";
         if (ormMethodConfig.isSupported(name)) {
-            String containsStr = "My test 11";
+            String containsStr = "my Test 11";
             ExecutionDetails nameContainsDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
                     () -> rentalOfferRepository.findAllByNameContains(containsStr));
             executionResults.add(nameContainsDetails);
             List<RentalOffer> foundByNameContains = (List<RentalOffer>) nameContainsDetails.getResult();
             assertTrue(noDuplications(foundByNameContains));
-            assertTrue(!foundByNameContains.isEmpty() && foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().contains(containsStr)));
+            assertFalse(foundByNameContains.isEmpty());
+            assertTrue(foundByNameContains.stream().allMatch(rentalOffer -> rentalOffer.getName().toLowerCase().contains(containsStr.toLowerCase())));
         }
 
-        name = "findOfferHistoryByName";
+        name = "findOfferHistoriesByOfferName";
         if (ormMethodConfig.isSupported(name)) {
             ExecutionDetails historyByNameDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name),
                     () -> rentalOfferRepository.findOfferHistoriesByOfferName(testName));
@@ -157,6 +174,26 @@ public class SqlPerformanceTest {
 //            assertTrue(foundByNamePage1.stream().noneMatch(foundByNamePage2::contains)); //doesn't work for CriteriaApiRepository
         }
 
+        name = "findAllSortedByPriceAscPaged";
+        if (ormMethodConfig.isSupported(name)) {
+            int pageSize = 5;
+            ExecutionDetails sortedByPriceDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_1",
+                    () -> rentalOfferRepository.findAllSortedByPriceAscPaged(PageRequest.of(2, pageSize)));
+            executionResults.add(sortedByPriceDetails);
+            List<RentalOffer> sortedByPrice1 = (List<RentalOffer>) sortedByPriceDetails.getResult();
+            ExecutionDetails sortedByPriceDetails2 = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name) + "_2",
+                    () -> rentalOfferRepository.findAllSortedByPriceAscPaged(PageRequest.of(3,  pageSize)));
+            executionResults.add(sortedByPriceDetails);
+            List<RentalOffer> sortedByPrice2 = (List<RentalOffer>) sortedByPriceDetails2.getResult();
+            assertEquals(pageSize, sortedByPrice1.size());
+            assertEquals(pageSize, sortedByPrice2.size());
+            assertTrue(noDuplications(sortedByPrice1));
+            assertTrue(noDuplications(sortedByPrice2));
+            List<RentalOffer> merged = new ArrayList<>(sortedByPrice1);
+            merged.addAll(sortedByPrice2);
+            assertTrue(IntStream.range(0, merged.size() - 1).allMatch(i -> merged.get(i).getPrice() <= merged.get(i + 1).getPrice()));
+        }
+
         name = "findAllByPriceGreaterThanAndAreaLessThan";
         if (ormMethodConfig.isSupported(name)) {
             //add limitations
@@ -172,7 +209,7 @@ public class SqlPerformanceTest {
         name = "findAllUpdatedAfter";
         if (ormMethodConfig.isSupported(name)) {
             Instant timeToCheck = Instant.now().minus(3, ChronoUnit.DAYS);
-            ExecutionDetails updatedAfterDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllUpdatedAfter(timeToCheck));
+            ExecutionDetails updatedAfterDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), () -> rentalOfferRepository.findAllWithHistoryUpdatedAfter(timeToCheck));
             executionResults.add(updatedAfterDetails);
             List<RentalOffer> updatedAfterOffers = (List<RentalOffer>) updatedAfterDetails.getResult();
             assertTrue(noDuplications(updatedAfterOffers));
@@ -188,7 +225,7 @@ public class SqlPerformanceTest {
             assertTrue(IntStream.range(0, updatedAfterSortedOffers.size() - 1).allMatch(i -> isSortedByTimeDesc(updatedAfterSortedOffers.get(i).right, updatedAfterSortedOffers.get(i + 1).right)));
         }
 
-        name = "findAllPriceGrewUpInLastWeek";
+        name = "findAllPriceGrewUpInLast2WeeksLimit5000";
         if (ormMethodConfig.isSupported(name)) {
             ExecutionDetails priceGrewUpDetails = executeLogged(getDisplayedExecutionMethodName(rentalOfferRepository, name), rentalOfferRepository::findAllPriceGrewUpInLast2WeeksLimit5000);
             executionResults.add(priceGrewUpDetails);
@@ -223,10 +260,17 @@ public class SqlPerformanceTest {
             assertEquals(EXPECTED_COUNT_CREATED_LAST_MONTH, createdLastMonthResults);
         }
 
+        printResults(executionResults);
 
+        isSetup = false;
+    }
+
+    private void printResults(List<ExecutionDetails> executionResults) {
+        System.out.println("\n=============RESULTS==========");
         executionResults.forEach(details-> {
             System.out.println("Method " + details.getFunctionName() + ", time " + details.getDuration());
         });
+        System.out.println("=============RESULTS==========\n");
     }
 
     private boolean isSortedByTimeDesc(OfferHistory offerHistory1, OfferHistory offerHistory2) {

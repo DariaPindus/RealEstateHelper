@@ -35,11 +35,13 @@ public interface RentalOfferRepository {
     List<RentalOffer> findAllByNameContains(String subname);
 
     /**
-     * @param name {@link RentalOffer#name} to find
+     * @param agency {@link RentalOffer#agency} to find
      * @param pageable - contains info about pageSize and offset of results
      * @return list of {@link RentalOffer} with size no more than @param pageable.getPageSize() elements
      */
-    List<RentalOffer> findAllByAgencyPaged(String name, Pageable pageable);
+    List<RentalOffer> findAllByAgencyPaged(String agency, Pageable pageable);
+
+    List<RentalOffer> findAllSortedByPriceAscPaged(Pageable pageable);
 
     List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area);
 
@@ -49,7 +51,7 @@ public interface RentalOfferRepository {
      * (have {@link OfferHistory#status} == {@link OfferStatus#UPDATED})
      * after given time
      */
-    List<RentalOffer> findAllUpdatedAfter(Instant time);
+    List<RentalOffer> findAllWithHistoryUpdatedAfter(Instant time);
 
     /**
      * @param time - time after which records should be updated

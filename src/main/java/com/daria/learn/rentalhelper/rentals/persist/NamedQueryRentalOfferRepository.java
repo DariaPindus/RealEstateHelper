@@ -66,6 +66,14 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
+    public List<RentalOffer> findAllSortedByPriceAscPaged(Pageable pageable) {
+        Query q = entityManager.createNamedQuery("rentalOffer_findAllSortedByPriceAscPaged");
+        q.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
+        q.setMaxResults(pageable.getPageSize());
+        return q.getResultList();
+    }
+
+    @Override
     public List<RentalOffer> findAllByPriceGreaterThanAndAreaLessThan(double price, int area) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllByPriceGreaterThanAndAreaLessThan");
         q.setParameter(1, price);
@@ -74,7 +82,7 @@ public class NamedQueryRentalOfferRepository implements RentalOfferRepository {
     }
 
     @Override
-    public List<RentalOffer> findAllUpdatedAfter(Instant time) {
+    public List<RentalOffer> findAllWithHistoryUpdatedAfter(Instant time) {
         Query q = entityManager.createNamedQuery("rentalOffer_findAllUpdatedAfter");
         q.setParameter(1, time);
         q.setParameter(2, OfferStatus.UPDATED);

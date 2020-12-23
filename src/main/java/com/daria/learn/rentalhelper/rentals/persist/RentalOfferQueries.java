@@ -39,4 +39,6 @@ public interface RentalOfferQueries {
     String GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS = "rentalOffer_getAgencyWithMostOffersLast30Days";
     String GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS_QUERY = "select new org.apache.commons.lang3.tuple.ImmutablePair(ro.agency, count(oh.id)) from RentalOffer ro join ro.offerHistories oh where oh.time >= ?1 group by ro.agency order by count(oh.id) desc";
 
+    String FIND_ALL_SORTED_BY_PRICE_ASC = "rentalOffer_findAllSortedByPriceAscPaged";
+    String FIND_ALL_SORTED_BY_PRICE_ASC_QUERY = "select ro from RentalOffer ro order by ro.price";
 }

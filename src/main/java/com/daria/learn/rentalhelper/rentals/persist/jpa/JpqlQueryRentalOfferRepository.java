@@ -82,11 +82,11 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
 
     @Override
     default String getName() {
-        return "jpaQuery";
+        return "jpqlQuery";
     }
 
     @Override
-    default List<RentalOffer> findAllUpdatedAfter(Instant time) {
+    default List<RentalOffer> findAllWithHistoryUpdatedAfter(Instant time) {
         return findAllUpdatedAfter(time, OfferStatus.UPDATED);
     }
 
@@ -96,4 +96,6 @@ public interface JpqlQueryRentalOfferRepository extends CrudRepository<RentalOff
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
+    @Query("select ro from RentalOffer ro order by ro.price")
+    List<RentalOffer> findAllSortedByPriceAscPaged(Pageable pageable);
 }

@@ -55,7 +55,7 @@ OR
 select ro.* from RentalOffer ro join
 	(select oh.rentalOffer_id as offer_id, sum(oh.delta) as sm from OfferHistory oh
 			where oh.fieldName="price" and
-			oh.time >= DATE(NOW()) - INTERVAL 14 DAY
+			oh.time >= date_sub(now(), interval 14 day)
 	group by oh.RentalOffer_id
 	having sm > 0) as sub
 on ro.id=sub.offer_id

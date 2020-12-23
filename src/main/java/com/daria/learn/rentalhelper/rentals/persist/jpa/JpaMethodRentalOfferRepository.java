@@ -40,4 +40,6 @@ public interface JpaMethodRentalOfferRepository extends CrudRepository<RentalOff
     List<RentalOffer> findFirst1000ByOfferHistories_FieldHistoryFieldNameIs(String fieldName);
 
     long countDistinctRentalOfferByOfferHistories_TimeGreaterThanAndOfferHistories_StatusIs(Instant time, OfferStatus status);
+
+    List<RentalOffer> findAll(Pageable pageable);
 }

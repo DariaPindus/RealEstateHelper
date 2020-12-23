@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
         @NamedQuery(name = RentalOfferQueries.FIND_BY_NAME_CONTAINS, query = RentalOfferQueries.FIND_BY_NAME_CONTAINS_QUERY),
         @NamedQuery(name = RentalOfferQueries.FIND_ALL_UPDATED_BY_FIELD, query = RentalOfferQueries.FIND_ALL_UPDATED_BY_FIELD_QUERY),
         @NamedQuery(name = RentalOfferQueries.FIND_BY_SEARCH_STRING_IN, query = RentalOfferQueries.FIND_BY_SEARCH_STRING_IN_QUERY),
-        @NamedQuery(name = RentalOfferQueries.GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS, query = RentalOfferQueries.GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS_QUERY)
+        @NamedQuery(name = RentalOfferQueries.GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS, query = RentalOfferQueries.GET_AGENCY_WITH_MOST_OFFERS_IN_30_DAYS_QUERY),
+        @NamedQuery(name = RentalOfferQueries.FIND_ALL_SORTED_BY_PRICE_ASC, query = RentalOfferQueries.FIND_ALL_SORTED_BY_PRICE_ASC_QUERY)
 })
 public class RentalOffer {
     @Id
