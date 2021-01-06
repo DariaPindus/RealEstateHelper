@@ -7,6 +7,8 @@ Enter mysql
 To start Mysql:  
 `sudo service mysqld start`
 
+_In case of problems (i.e. running docker-compose fails in main-service (Spring boot app) with_ `Access denied for user 'appuser'@'172.24.0.4' `). The reason can be with MySql password - it works for sure when password contains alpha-numeric characters (Hello, security, my old friend :))  
+
 ### ActiveMQ config
 - Install activemq  
 - Go to installation folder (/your/path/apache-activemq-5.16.0/bin/) and run  
@@ -61,3 +63,7 @@ To check this and find id of a proces: `sudo netstat -nlp | grep 8080`
 Bot creation is pretty straight-forward. Details could be found here: https://core.telegram.org/bots#2-how-do-bots-work  
 > There's a… bot for that. Just talk to BotFather (described below) and follow a few simple steps.   
 > Once you've created a bot and received your authorization token, head down to the Bot API manual to see what you can teach your bot to do.
+
+
+### Docker
+For correct docker-compose execution with `docker-compose run` file with name ".env" should exist in current (app) folder.

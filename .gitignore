@@ -39,3 +39,4 @@ logs/
 rental-logs/
 
 *.pem
+.env
