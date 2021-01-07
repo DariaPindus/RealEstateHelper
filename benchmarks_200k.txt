@@ -1,0 +1,212 @@
+===========JPA-METHOD===================
+Method jpamethod_findBySearchStringIn, time 178967
+Method jpamethod_findAllByNameContains, time 122326
+Method jpamethod_findOfferHistoriesByOfferName, time 118952
+Method jpamethod_findAllByAgencyPaged_1, time 6398
+Method jpamethod_findAllByAgencyPaged_1, time 6398
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 125857
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 125857
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 167436
+Method jpamethod_findAllUpdatedAfter, time 590086
+Method jpamethod_countAll, time 20551
+Method jpamethod_countCreatedInLastMonth, time 462680
+
+Method jpamethod_findBySearchStringIn, time 93718
+Method jpamethod_findAllByNameContains, time 116707
+Method jpamethod_findOfferHistoriesByOfferName, time 114805
+Method jpamethod_findAllByAgencyPaged_1, time 3941
+Method jpamethod_findAllByAgencyPaged_1, time 3941
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 163754
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 163754
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 96680
+Method jpamethod_findAllUpdatedAfter, time 413674
+Method jpamethod_countAll, time 26912
+Method jpamethod_countCreatedInLastMonth, time 428895
+
+Method jpamethod_findAllByNameContains, time 118666
+Method jpamethod_findOfferHistoriesByOfferName, time 106113
+Method jpamethod_findAllByAgencyPaged_1, time 3330
+Method jpamethod_findAllByAgencyPaged_1, time 3330
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 114551
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 114551
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 86665
+Method jpamethod_findAllUpdatedAfter, time 349210
+Method jpamethod_countAll, time 12819
+Method jpamethod_countCreatedInLastMonth, time 413153
+
+=================JPQL=========================
+
+Method jpqlQuery_findBySearchStringIn, time 92620
+Method jpqlQuery_getAgencyWithMostOffersLast30Days, time 943537
+Method jpqlQuery_findAllByNameContains, time 144771
+Method jpqlQuery_findOfferHistoriesByOfferName, time 105106
+Method jpqlQuery_findAllByAgencyPaged_1, time 529776
+Method jpqlQuery_findAllByAgencyPaged_1, time 529776
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 103115
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 103115
+Method jpqlQuery_findAllByPriceGreaterThanAndAreaLessThan, time 106393
+Method jpqlQuery_findAllUpdatedAfter, time 356680
+Method jpqlQuery_countAll, time 14819
+Method jpqlQuery_countCreatedInLastMonth, time 352137
+
+Method jpqlQuery_findBySearchStringIn, time 147996
+Method jpqlQuery_getAgencyWithMostOffersLast30Days, time 936763
+Method jpqlQuery_findAllByNameContains, time 119148
+Method jpqlQuery_findOfferHistoriesByOfferName, time 99193
+Method jpqlQuery_findAllByAgencyPaged_1, time 216075
+Method jpqlQuery_findAllByAgencyPaged_1, time 216075
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 143370
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 143370
+Method jpqlQuery_findAllByPriceGreaterThanAndAreaLessThan, time 83227
+Method jpqlQuery_findAllUpdatedAfter, time 357724
+Method jpqlQuery_countAll, time 46661
+Method jpqlQuery_countCreatedInLastMonth, time 459630
+
+Method jpqlQuery_findBySearchStringIn, time 83678
+Method jpqlQuery_getAgencyWithMostOffersLast30Days, time 661399
+Method jpqlQuery_findAllByNameContains, time 116572
+Method jpqlQuery_findOfferHistoriesByOfferName, time 102352
+Method jpqlQuery_findAllByAgencyPaged_1, time 190028
+Method jpqlQuery_findAllByAgencyPaged_1, time 190028
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 104758
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 104758
+Method jpqlQuery_findAllByPriceGreaterThanAndAreaLessThan, time 81748
+Method jpqlQuery_findAllUpdatedAfter, time 360927
+Method jpqlQuery_countAll, time 15897
+Method jpqlQuery_countCreatedInLastMonth, time 542315
+
+=================NAMED=======================
+
+Method namedQuery_findBySearchStringIn, time 150540
+Method namedQuery_getAgencyWithMostOffersLast30Days, time 828996
+Method namedQuery_findAllByNameContains, time 119066
+Method namedQuery_findOfferHistoriesByOfferName, time 97835
+Method namedQuery_findAllByAgencyPaged_1, time 3178
+Method namedQuery_findAllByAgencyPaged_1, time 3178
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 100286
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 100286
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 136067
+Method namedQuery_findAllUpdatedAfter, time 526725
+Method namedQuery_findAllModifiedAfterSortedByTimeDesc, time 6436377
+Method namedQuery_countAll, time 13717
+Method namedQuery_countCreatedInLastMonth, time 332758
+
+Method namedQuery_findBySearchStringIn, time 82623
+Method namedQuery_getAgencyWithMostOffersLast30Days, time 625406
+Method namedQuery_findAllByNameContains, time 119592
+Method namedQuery_findOfferHistoriesByOfferName, time 96821
+Method namedQuery_findAllByAgencyPaged_1, time 1327
+Method namedQuery_findAllByAgencyPaged_1, time 1327
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 98308
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 98308
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 84288
+Method namedQuery_findAllUpdatedAfter, time 317271
+Method namedQuery_findAllModifiedAfterSortedByTimeDesc, time 4293541
+Method namedQuery_countAll, time 20599
+Method namedQuery_countCreatedInLastMonth, time 318103
+
+Method namedQuery_findBySearchStringIn, time 94533
+Method namedQuery_getAgencyWithMostOffersLast30Days, time 619033
+Method namedQuery_findAllByNameContains, time 124202
+Method namedQuery_findOfferHistoriesByOfferName, time 98305
+Method namedQuery_findAllByAgencyPaged_1, time 1399
+Method namedQuery_findAllByAgencyPaged_1, time 1399
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 99705
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 99705
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 81975
+Method namedQuery_findAllUpdatedAfter, time 298693
+Method namedQuery_findAllModifiedAfterSortedByTimeDesc, time 3012378
+Method namedQuery_countAll, time 9916
+Method namedQuery_countCreatedInLastMonth, time 322125
+
+==================CRITERIA===================
+
+Method criteria-api_findBySearchStringIn, time 182042
+Method criteria-api_getAgencyWithMostOffersLast30Days, time 668875
+Method criteria-api_findAllByNameContains, time 126624
+Method criteria-api_findOfferHistoriesByOfferName, time 113500
+Method criteria-api_findAllByAgencyPaged_1, time 4742
+Method criteria-api_findAllByAgencyPaged_1, time 4742
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 108936
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 108936
+Method criteria-api_findAllByPriceGreaterThanAndAreaLessThan, time 142047
+Method criteria-api_findAllUpdatedAfter, time 788662
+Method criteria-api_findAllModifiedAfterSortedByTimeDesc, time 15285705
+Method criteria-api_findAllPriceGrewUpInLast2WeeksLimit5000, time 1091043
+Method criteria-api_countAll, time 37813
+Method criteria-api_countCreatedInLastMonth, time 793042
+
+Method criteria-api_findBySearchStringIn, time 85040
+Method criteria-api_getAgencyWithMostOffersLast30Days, time 1246619
+Method criteria-api_findAllByNameContains, time 109181
+Method criteria-api_findOfferHistoriesByOfferName, time 104740
+Method criteria-api_findAllByAgencyPaged_1, time 2141
+Method criteria-api_findAllByAgencyPaged_1, time 2141
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 102678
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 102678
+Method criteria-api_findAllByPriceGreaterThanAndAreaLessThan, time 84768
+Method criteria-api_findAllUpdatedAfter, time 502129
+Method criteria-api_findAllModifiedAfterSortedByTimeDesc, time 17922506
+Method criteria-api_findAllPriceGrewUpInLast2WeeksLimit5000, time 1409672
+Method criteria-api_countAll, time 19137
+Method criteria-api_countCreatedInLastMonth, time 640236
+
+Method criteria-api_findBySearchStringIn, time 109057
+Method criteria-api_getAgencyWithMostOffersLast30Days, time 1329787
+Method criteria-api_findAllByNameContains, time 122281
+Method criteria-api_findOfferHistoriesByOfferName, time 105242
+Method criteria-api_findAllByAgencyPaged_1, time 1982
+Method criteria-api_findAllByAgencyPaged_1, time 1982
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 108164
+Method criteria-api_findAllSortedByPriceAscPaged_1, time 108164
+Method criteria-api_findAllByPriceGreaterThanAndAreaLessThan, time 93894
+Method criteria-api_findAllUpdatedAfter, time 444864
+Method criteria-api_findAllModifiedAfterSortedByTimeDesc, time 21060003
+Method criteria-api_findAllPriceGrewUpInLast2WeeksLimit5000, time 994299
+Method criteria-api_countAll, time 84802
+Method criteria-api_countCreatedInLastMonth, time 475256
+
+==============NATIVE===========================
+
+Method NativeEntitySQLRentalOfferRepository_findBySearchStringIn, time 190402
+Method NativeEntitySQLRentalOfferRepository_getAgencyWithMostOffersLast30Days, time 973669
+Method NativeEntitySQLRentalOfferRepository_findAllByNameContains, time 159324
+Method NativeEntitySQLRentalOfferRepository_findOfferHistoriesByOfferName, time 184139
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 4735
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 4735
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 171848
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 171848
+Method NativeEntitySQLRentalOfferRepository_findAllByPriceGreaterThanAndAreaLessThan, time 230034
+Method NativeEntitySQLRentalOfferRepository_findAllModifiedAfterSortedByTimeDesc, time 938444
+Method NativeEntitySQLRentalOfferRepository_findAllPriceGrewUpInLast2WeeksLimit5000, time 2722157
+Method NativeEntitySQLRentalOfferRepository_countAll, time 22220
+Method NativeEntitySQLRentalOfferRepository_countCreatedInLastMonth, time 211979
+
+Method NativeEntitySQLRentalOfferRepository_findBySearchStringIn, time 99959
+Method NativeEntitySQLRentalOfferRepository_getAgencyWithMostOffersLast30Days, time 495711
+Method NativeEntitySQLRentalOfferRepository_findAllByNameContains, time 115675
+Method NativeEntitySQLRentalOfferRepository_findOfferHistoriesByOfferName, time 118011
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 1692
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 1692
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 99251
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 99251
+Method NativeEntitySQLRentalOfferRepository_findAllByPriceGreaterThanAndAreaLessThan, time 100435
+Method NativeEntitySQLRentalOfferRepository_findAllModifiedAfterSortedByTimeDesc, time 573655
+Method NativeEntitySQLRentalOfferRepository_findAllPriceGrewUpInLast2WeeksLimit5000, time 1771927
+Method NativeEntitySQLRentalOfferRepository_countAll, time 17988
+Method NativeEntitySQLRentalOfferRepository_countCreatedInLastMonth, time 199448
+
+Method NativeEntitySQLRentalOfferRepository_findBySearchStringIn, time 90220
+Method NativeEntitySQLRentalOfferRepository_getAgencyWithMostOffersLast30Days, time 512759
+Method NativeEntitySQLRentalOfferRepository_findAllByNameContains, time 127058
+Method NativeEntitySQLRentalOfferRepository_findOfferHistoriesByOfferName, time 115247
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 1825
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 1825
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 109417
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 109417
+Method NativeEntitySQLRentalOfferRepository_findAllByPriceGreaterThanAndAreaLessThan, time 84322
+Method NativeEntitySQLRentalOfferRepository_findAllModifiedAfterSortedByTimeDesc, time 545580
+Method NativeEntitySQLRentalOfferRepository_findAllPriceGrewUpInLast2WeeksLimit5000, time 1506297
+Method NativeEntitySQLRentalOfferRepository_countAll, time 18493
+Method NativeEntitySQLRentalOfferRepository_countCreatedInLastMonth, time 180815
+

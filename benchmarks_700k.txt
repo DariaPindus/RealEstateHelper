@@ -1,0 +1,71 @@
+=============JPA METHOD==========
+Method jpamethod_findBySearchStringIn, time 378
+Method jpamethod_findAllByNameContains, time 434
+Method jpamethod_findOfferHistoriesByOfferName, time 406
+Method jpamethod_findAllByAgencyPaged_1, time 3
+Method jpamethod_findAllByAgencyPaged_1, time 3
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 570
+Method jpamethod_findAllSortedByPriceAscPaged_1, time 570
+Method jpamethod_findAllByPriceGreaterThanAndAreaLessThan, time 388
+Method jpamethod_findAllUpdatedAfter, time 1805
+Method jpamethod_countAll, time 134
+Method jpamethod_countCreatedInLastMonth, time 3698
+
+=============JPQL Query==========
+Method jpqlQuery_findBySearchStringIn, time 377
+Method jpqlQuery_getAgencyWithMostOffersLast30Days, time 8829
+Method jpqlQuery_findAllByNameContains, time 776
+Method jpqlQuery_findOfferHistoriesByOfferName, time 368
+Method jpqlQuery_findAllByAgencyPaged_1, time 569
+Method jpqlQuery_findAllByAgencyPaged_1, time 569
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 399
+Method jpqlQuery_findAllSortedByPriceAscPaged_1, time 399
+Method jpqlQuery_findAllByPriceGreaterThanAndAreaLessThan, time 335
+Method jpqlQuery_findAllUpdatedAfter, time 1597
+Method jpqlQuery_countAll, time 135
+Method jpqlQuery_countCreatedInLastMonth, time 2800
+
+=============NAMED QUERY==========
+Method namedQuery_findBySearchStringIn, time 329
+Method namedQuery_getAgencyWithMostOffersLast30Days, time 8388
+Method namedQuery_findAllByNameContains, time 771
+Method namedQuery_findOfferHistoriesByOfferName, time 355
+Method namedQuery_findAllByAgencyPaged_1, time 2
+Method namedQuery_findAllByAgencyPaged_1, time 2
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 357
+Method namedQuery_findAllSortedByPriceAscPaged_1, time 357
+Method namedQuery_findAllByPriceGreaterThanAndAreaLessThan, time 347
+Method namedQuery_findAllUpdatedAfter, time 1791
+Method namedQuery_findAllModifiedAfterSortedByTimeDesc, time 19334
+Method namedQuery_countAll, time 100
+Method namedQuery_countCreatedInLastMonth, time 2832
+
+=============NATIVE SQL==========
+Method NativeEntitySQLRentalOfferRepository_findBySearchStringIn, time 389
+Method NativeEntitySQLRentalOfferRepository_getAgencyWithMostOffersLast30Days, time 2857
+Method NativeEntitySQLRentalOfferRepository_findAllByNameContains, time 418
+Method NativeEntitySQLRentalOfferRepository_findOfferHistoriesByOfferName, time 392
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 2,6
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 2,6
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 391
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 391
+Method NativeEntitySQLRentalOfferRepository_findAllByPriceGreaterThanAndAreaLessThan, time 341
+Method NativeEntitySQLRentalOfferRepository_findAllModifiedAfterSortedByTimeDesc, time 2593
+Method NativeEntitySQLRentalOfferRepository_findAllPriceGrewUpInLast2WeeksLimit5000, time 19443
+Method NativeEntitySQLRentalOfferRepository_countAll, time 1117
+Method NativeEntitySQLRentalOfferRepository_countCreatedInLastMonth, time 866
+
+=============CRITERIA==========
+Method NativeEntitySQLRentalOfferRepository_findBySearchStringIn, time 639
+Method NativeEntitySQLRentalOfferRepository_getAgencyWithMostOffersLast30Days, time 4239
+Method NativeEntitySQLRentalOfferRepository_findAllByNameContains, time 453
+Method NativeEntitySQLRentalOfferRepository_findOfferHistoriesByOfferName, time 447
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 4
+Method NativeEntitySQLRentalOfferRepository_findAllByAgencyPaged_1, time 4
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 400
+Method NativeEntitySQLRentalOfferRepository_findAllSortedByPriceAscPaged_1, time 400
+Method NativeEntitySQLRentalOfferRepository_findAllByPriceGreaterThanAndAreaLessThan, time 586
+Method NativeEntitySQLRentalOfferRepository_findAllModifiedAfterSortedByTimeDesc, time 4324
+Method NativeEntitySQLRentalOfferRepository_findAllPriceGrewUpInLast2WeeksLimit5000, time 23480
+Method NativeEntitySQLRentalOfferRepository_countAll, time 1416
+Method NativeEntitySQLRentalOfferRepository_countCreatedInLastMonth, time 1021
