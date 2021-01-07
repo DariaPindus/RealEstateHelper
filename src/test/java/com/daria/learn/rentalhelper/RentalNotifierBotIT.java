@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
 @AutoConfigureMockMvc
-@ActiveProfiles({ApplicationProfiles.TEST_PROFILE})
+@ActiveProfiles({ApplicationProfiles.TEST_PROFILE, ApplicationProfiles.WITH_MOCK_TG_BOT})
 public class RentalNotifierBotIT {
 
     @Autowired

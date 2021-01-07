@@ -1,6 +1,8 @@
 package com.daria.learn.rentalhelper.bot.notification;
 
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
+import com.daria.learn.rentalhelper.bot.TelegramRentalNotifierBot;
+import com.daria.learn.rentalhelper.bot.domain.BotOutgoingMessage;
 import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserCache;
@@ -27,17 +29,13 @@ public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
 
     @Override
     public void notifySubscribedUsers(RentalOffersListDTO rentalOffersListDTO) {
-        List<SendMessage> messagesToSend = userCache.getSubscribedUserInfos().stream()
+        List<BotOutgoingMessage> messagesToSend = userCache.getSubscribedUserInfos().stream()
                 .map(userBotInfo -> {
                     RentalOffersListDTO personalisedOffers = getPersonalisedRentalList(rentalOffersListDTO, userBotInfo.getUserPreference());
                     if (personalisedOffers.size() < 1)
                         return null;
                     String messageText = new OfferMessage(personalisedOffers.getRentalOfferDTOS(), Instant.now()).getMessage();
-                    SendMessage sendMessage = new SendMessage();
-                    sendMessage.setParseMode(OfferMessage.getParseMode());
-                    sendMessage.setText(messageText);
-                    sendMessage.setChatId(userBotInfo.getChatId().toString());
-                    return sendMessage;
+                    return new BotOutgoingMessage(messageText, userBotInfo.getChatId().toString());
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

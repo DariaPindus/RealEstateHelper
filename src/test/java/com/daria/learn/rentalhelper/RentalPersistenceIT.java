@@ -1,5 +1,6 @@
 package com.daria.learn.rentalhelper;
 
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import static org.junit.Assert.*;
 @TestPropertySource(locations="classpath:test.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles({ApplicationProfiles.WITH_MOCK_TG_BOT})
 public class RentalPersistenceIT {
 
     @Autowired
