@@ -41,7 +41,7 @@ docker-push:
   services:
     - name: docker:dind
   before_script:
-    - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD
+    - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   script:
     - echo "Pushing app to docker registry..."
     - docker push $DOCKER_REGISTRY:$APP_VERSION
