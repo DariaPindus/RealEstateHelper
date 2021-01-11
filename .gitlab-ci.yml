@@ -1,0 +1,47 @@
+#example: https://gitlab.com/alan.mangroo/gitlabcidemo/-/blob/master/.gitlab-ci.yml
+cache:
+  paths:
+    - maven.repository/
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=maven.repository/"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  APP_VERSION: "1.1"
+  DOCKER_REGISTRY: "dariap/rental-helper-bot"
+
+stages:
+  - test
+  - package
+  - docker-push
+  - deploy
+
+maven-test:
+  image: maven:3-jdk-11
+  stage: test
+  script:
+    - echo "Testing app..."
+    - mvn clean test
+
+maven-package:
+  image: maven:3-jdk-11
+  stage: package
+  script:
+    - echo "Packaging app..."
+    - mvn $MAVEN_CLI_OPTS -DskipTests=true install
+    - mkdir target/dependency
+    - (cd target/dependency; jar -xf ../*.jar)
+  artifacts:
+    paths:
+      - target/*.jar
+      - target/dependency
+
+docker-push:
+  image: docker:latest
+  stage: docker-push
+  services:
+    - name: docker:dind
+  before_script:
+    - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD
+  script:
+    - echo "Pushing app to docker registry..."
+    - docker push $DOCKER_REGISTRY:$APP_VERSION
