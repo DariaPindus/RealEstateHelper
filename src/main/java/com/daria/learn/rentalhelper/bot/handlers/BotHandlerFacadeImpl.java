@@ -2,7 +2,6 @@ package com.daria.learn.rentalhelper.bot.handlers;
 
 import com.daria.learn.rentalhelper.bot.exceptions.BotException;
 import com.daria.learn.rentalhelper.bot.handlers.statehandlers.ExceptionalBotStateHandler;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,6 +55,6 @@ public class BotHandlerFacadeImpl implements  BotHandlerFacade {
 
     private SendMessage processCallbackQuery(CallbackQuery callbackQuery) {
         //TODO implement
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
