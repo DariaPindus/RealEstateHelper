@@ -14,7 +14,7 @@ services:
     networks:
       - common-network
     volumes:
-      - $HOME/rental-db:/var/lib/mysql
+      - /data/rental-db:/var/lib/mysql
   activemq:
     image: rmohr/activemq:5.15.9
     container_name: activemq
@@ -24,9 +24,7 @@ services:
     networks:
       - common-network
   main-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: dariap/rental-helper-bot:latest
     depends_on:
       - db-service
       - activemq
@@ -46,7 +44,8 @@ services:
     networks:
       - common-network
     volumes:
-    - $HOME/rental-logs:/opt/jboss/wildfly/bin/rental-logs
+#    - $HOME/rental-logs:/opt/jboss/wildfly/bin/rental-logs
+    - /data/rental-logs:/rental-logs
 
 networks:
   common-network:
