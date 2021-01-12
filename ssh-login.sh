@@ -1,7 +1,8 @@
 mkdir -p ~/.ssh
-echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-   # Sets the permission to 600 to prevent a problem with AWS
-   # that it’s too unprotected.
-chmod 600 ~/.ssh/id_rsa
-'[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+chmod 777 ~/.ssh/id_rsa
+'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 echo "Executed ssh login script.."
