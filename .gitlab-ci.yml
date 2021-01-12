@@ -21,6 +21,7 @@ maven-test:
   script:
     - echo "Testing app..."
     - mvn clean test
+  when: manual
 
 maven-package:
   image: maven:3-jdk-11
@@ -48,12 +49,7 @@ docker-push:
     - docker tag $DOCKER_REGISTRY:latest $DOCKER_REGISTRY:$APP_VERSION
     - docker push $DOCKER_REGISTRY:latest
     - docker push $DOCKER_REGISTRY:$APP_VERSION
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/id_rsa
+    - sh ./ssh-login.sh
     - scp docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
 
 aws-deploy:
@@ -61,12 +57,7 @@ aws-deploy:
   services:
     - name: docker:dind
   script:
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/id_rsa
+    - sh ./ssh-login.sh
     ###### Pull the registry to deployment server and recereate the docker service #####
     - ssh $EC2_USERNAME@$EC2_HOST docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
     - ssh $EC2_USERNAME@$EC2_HOST docker pull $DOCKER_REGISTRY:latest
