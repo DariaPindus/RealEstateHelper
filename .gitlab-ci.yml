@@ -51,7 +51,6 @@ docker-push:
     - docker push $DOCKER_REGISTRY:$APP_VERSION
     - sh ./ssh-login.sh
     - scp -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
-    - scp -o StrictHostKeyChecking=no .env $EC2_USERNAME@$EC2_HOST:~/.env
 
 aws-deploy:
   image: gitlab/dind:latest
