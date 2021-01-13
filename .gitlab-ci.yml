@@ -21,11 +21,12 @@ maven-test:
   script:
     - echo "Testing app..."
     - mvn clean test
-  when: manual
 
 maven-package:
   image: maven:3-jdk-11
   stage: package
+  only:
+    - develop
   script:
     - echo "Packaging app..."
     - mvn $MAVEN_CLI_OPTS -DskipTests=true install
@@ -41,6 +42,8 @@ docker-push:
   services:
     - docker:dind
   stage: docker-push
+  only:
+    - develop
   before_script:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   script:
@@ -57,6 +60,8 @@ aws-deploy:
   services:
     - docker:dind
   stage: deploy
+  only:
+    - develop
   before_script:
     - sh ./ssh-login.sh
   script:
