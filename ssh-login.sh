@@ -1,6 +1,8 @@
-eval $(ssh-agent -s)
-echo $SSH_PRIVATE_KEY > deploy-key
-echo $SSH_PRIVATE_KEY
-## Fix permissions on key file and .ssh folder
-chmod 700 deploy-key; mkdir -p ~/.ssh; chmod 700 ~/.ssh
-ssh-add -k deploy-key
+mkdir -p ~/.ssh
+echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+chmod 700 ~/.ssh/id_rsa
+#'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+echo "Executed ssh login script.."
