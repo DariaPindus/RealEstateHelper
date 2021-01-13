@@ -45,10 +45,11 @@ docker-push:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   script:
     - echo "Pushing app to docker registry..."
-    - docker build -t $DOCKER_REGISTRY:latest .
-    - docker tag $DOCKER_REGISTRY:latest $DOCKER_REGISTRY:$APP_VERSION
-    - docker push $DOCKER_REGISTRY:latest
-    - docker push $DOCKER_REGISTRY:$APP_VERSION
+#    TODO: UNCOMMENT!
+#    - docker build -t $DOCKER_REGISTRY:latest .
+#    - docker tag $DOCKER_REGISTRY:latest $DOCKER_REGISTRY:$APP_VERSION
+#    - docker push $DOCKER_REGISTRY:latest
+#    - docker push $DOCKER_REGISTRY:$APP_VERSION
     - sh ./ssh-login.sh
     - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST date
     - scp -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
