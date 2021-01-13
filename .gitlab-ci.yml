@@ -37,10 +37,10 @@ maven-package:
       - target/dependency
 
 docker-push:
-  image: docker:latest
+  image: gitlab/dind:latest
   stage: docker-push
   services:
-    - name: docker:dind
+    - docker:dind
   before_script:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   script:
