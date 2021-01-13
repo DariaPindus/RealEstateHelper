@@ -1,0 +1,5 @@
+Run Dind docker image locally:
+sudo docker run --privileged --name some-docker -v /home/daria/Documents/jmind/rental-helper:/data -e EXTERNAL_VAR=HELOO_THERE -e SSH_PRIVATE_KEY="$TEMP_VAR" -e DEPLOYMENT_SERVER_IP=$EC2_SERVER docker:dind
+
+Execute command inside docker:
+sudo docker exec some-docker sh /data/ssh-login.sh

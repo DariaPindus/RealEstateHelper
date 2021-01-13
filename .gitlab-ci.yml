@@ -50,8 +50,8 @@ docker-push:
     - docker push $DOCKER_REGISTRY:latest
     - docker push $DOCKER_REGISTRY:$APP_VERSION
     - sh ./ssh-login.sh
-    - ssh $EC2_USERNAME@$EC2_HOST date
-    - scp docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
+    - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST date
+    - scp -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
 
 aws-deploy:
   stage: deploy
