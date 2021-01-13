@@ -38,31 +38,31 @@ maven-package:
 
 docker-push:
   image: gitlab/dind:latest
-  stage: docker-push
   services:
     - docker:dind
+  stage: docker-push
   before_script:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   script:
     - echo "Pushing app to docker registry..."
-#    TODO: UNCOMMENT!
-#    - docker build -t $DOCKER_REGISTRY:latest .
-#    - docker tag $DOCKER_REGISTRY:latest $DOCKER_REGISTRY:$APP_VERSION
-#    - docker push $DOCKER_REGISTRY:latest
-#    - docker push $DOCKER_REGISTRY:$APP_VERSION
+    - docker build -t $DOCKER_REGISTRY:latest .
+    - docker tag $DOCKER_REGISTRY:latest $DOCKER_REGISTRY:$APP_VERSION
+    - docker push $DOCKER_REGISTRY:latest
+    - docker push $DOCKER_REGISTRY:$APP_VERSION
     - sh ./ssh-login.sh
-    - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST date
     - scp -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:~/docker-compose.yml
 
 aws-deploy:
-  stage: deploy
+  image: gitlab/dind:latest
   services:
-    - name: docker:dind
-  script:
+    - docker:dind
+  stage: deploy
+  before_script:
     - sh ./ssh-login.sh
+  script:
     ###### Pull the registry to deployment server and recereate the docker service #####
-    - ssh $EC2_USERNAME@$EC2_HOST docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    - ssh $EC2_USERNAME@$EC2_HOST docker pull $DOCKER_REGISTRY:latest
-    - ssh $EC2_USERNAME@$EC2_HOST docker-compose up -d
+    - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST docker pull $DOCKER_REGISTRY:latest
+    - ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST docker-compose up -d
 
 
