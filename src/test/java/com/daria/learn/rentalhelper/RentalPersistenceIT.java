@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +19,10 @@ import java.util.stream.StreamSupport;
 
 import static org.junit.Assert.*;
 
-@SpringBootTest
-@TestPropertySource(locations="classpath:test.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RentalPersistenceIT {
+@RentalNotifierIT
+public class RentalPersistenceIT extends DatabaseITBase {
 
     @Autowired
     RentalPersistenceFacade rentalPersistenceFacade;
