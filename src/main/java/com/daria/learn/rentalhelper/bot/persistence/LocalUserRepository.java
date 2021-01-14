@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
-public class LocalUserCache implements UserCache<Long> {
+//@Component
+// Deprecated
+public class LocalUserRepository implements UserRepository<Long> {
 
     private static final int MAX_USERS_AMOUNT = 100;
     private final Map<Long, UserBotInfo> userBotMap = new HashMap<>();

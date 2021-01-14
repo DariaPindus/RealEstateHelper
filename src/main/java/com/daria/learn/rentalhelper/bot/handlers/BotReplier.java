@@ -2,7 +2,7 @@ package com.daria.learn.rentalhelper.bot.handlers;
 
 import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
 import com.daria.learn.rentalhelper.bot.handlers.statehandlers.*;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 @Component
 public class BotReplier {
 
-    private final UserCache<Long> userCache;
+    private final UserRepository<Long> userCache;
     private final Map<BotStateEnum, UserBotStateHandler> userBotStateHandlerMap;
 
-    public BotReplier(UserCache<Long> userCache,
+    public BotReplier(UserRepository<Long> userCache,
                       InitBotStateHandler initBotStateHandler,
                       SelectLanguageBotStateHandler selectLanguageBotStateHandler,
                       SetPreferenceBotStateHandler setPreferenceBotStateHandler,
