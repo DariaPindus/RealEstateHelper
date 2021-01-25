@@ -28,6 +28,7 @@ services:
     depends_on:
       - db-service
       - activemq
+      - redis
     ports:
       - 8888:8888
       - 8080:8080
@@ -40,13 +41,21 @@ services:
       - ACTIVEMQ_PASSWORD=amq
       - ACTIVEMQ_USERNAME=amq
       - ACTIVEMQ_URL=tcp://activemq:61616
+      - REDIS_HOST=redis
     container_name: main-service
     networks:
       - common-network
     volumes:
 #    - $HOME/rental-logs:/opt/jboss/wildfly/bin/rental-logs
     - /data/rental-logs:/rental-logs
-
+  redis:
+    image: redis:rc-alpine
+    ports:
+      - 6379:6379
+    volumes:
+    - /data/bot-redis:/data
+    networks:
+      - common-network
 networks:
   common-network:
     driver: bridge

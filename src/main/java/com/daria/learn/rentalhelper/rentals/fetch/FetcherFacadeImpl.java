@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class FetcherFacadeImpl implements FetcherFacade {
@@ -26,6 +27,12 @@ public class FetcherFacadeImpl implements FetcherFacade {
         for (DataSource dataSource : dataSources) {
             resultList.addAll(dataSource.getOffers());
         }
+        logParsedOffers(resultList);
         return resultList;
+    }
+
+    private void logParsedOffers(List<RentalOfferDTO> resultList) {
+        log.info("Rental offers fetched from data sources: \n" +
+                resultList.stream().map(RentalOfferDTO::toString).collect(Collectors.joining("\n")));
     }
 }

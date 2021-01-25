@@ -6,7 +6,7 @@ cache:
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=maven.repository/"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  APP_VERSION: "1.1"
+  APP_VERSION: "1.2"
   DOCKER_REGISTRY: "dariap/rental-helper-bot"
 
 stages:
