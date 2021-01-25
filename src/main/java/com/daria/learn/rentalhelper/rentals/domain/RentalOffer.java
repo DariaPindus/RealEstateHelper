@@ -37,6 +37,8 @@ public class RentalOffer {
     private String link;
     @Getter
     private String searchString;
+    @Getter @Setter
+    private Instant availableSince;
 
     public RentalOffer(String name, String postalCode, double price, int area, String agency, boolean furnished, String link) {
         this.name = name;
@@ -52,6 +54,10 @@ public class RentalOffer {
 
     public static String generateSearchString(String postalCode, int area, String agency) {
         return postalCode + "--" + area + "--" + agency;
+    }
+
+    public static String generateSearchStringFromDTO(RentalOfferDTO rentalOfferDTO) {
+        return generateSearchString(rentalOfferDTO.getPostalCode(), rentalOfferDTO.getArea(), rentalOfferDTO.getAgency());
     }
 
     public static RentalOffer fromRentalOfferDTO(RentalOfferDTO offerDTO) {

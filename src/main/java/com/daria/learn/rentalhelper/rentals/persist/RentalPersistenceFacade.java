@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RentalPersistenceFacade {
     List<RentalOfferDTO> persistNewRentals(List<RentalOfferDTO> rentalOfferDTOS);
+    List<String> getOpenOffersUrls();
 }

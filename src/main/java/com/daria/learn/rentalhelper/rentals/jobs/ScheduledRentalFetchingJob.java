@@ -25,7 +25,6 @@ public class ScheduledRentalFetchingJob {
 
     @Scheduled(fixedDelay = 600000)
     public void fetchRentals() {
-        System.out.println(Instant.now() + "Run fetch rentals");
         List<RentalOfferDTO> offerDTOList = fetcherFacade.fetchOffers();
         rentalNotificationFacade.saveAndNotifyNewRentals(offerDTOList);
     }

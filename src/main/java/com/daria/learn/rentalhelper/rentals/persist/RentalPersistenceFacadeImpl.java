@@ -27,40 +27,33 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
             Map<String, RentalOfferDTO> rentalSearchInfos = new HashMap<>();
             rentalOfferDTOS.forEach(
                     dto -> {
-                        String searchString = RentalOffer.generateSearchString(dto.getPostalCode(), dto.getArea(), dto.getAgency());
+                        String searchString = RentalOffer.generateSearchStringFromDTO(dto);
                         if (rentalSearchInfos.containsKey(searchString))
                             return;
                         rentalSearchInfos.put(searchString, dto);
                     }
             );
 
-            List<RentalOffer> existingOffers = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet());
-            List<RentalOffer> offersToPersist = new LinkedList<>();
-            List<RentalOfferDTO> offersToNotifyAbout = new ArrayList<>();
+            Set<String> existingOffersSearchStrings = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet())
+                    .stream()
+                    .map(RentalOffer::getSearchString)
+                    .collect(Collectors.toSet());
 
-            existingOffers.forEach(offer -> {
-                RentalOfferDTO offerDTO = rentalSearchInfos.get(offer.getSearchString());
-                RentalOffer offerFromDTO = RentalOffer.fromRentalOfferDTO(offerDTO);
-                if (!offer.equals(offerFromDTO))
-                    return;
-                boolean offerWasChanged = offer.updateIfChanged(offerFromDTO);
-                if (offerWasChanged) {
-                    offersToPersist.add(offer);
-                    offersToNotifyAbout.add(offerDTO);
-                }
-                rentalSearchInfos.remove(offer.getSearchString());
-            });
+            List<RentalOffer> newOffers = rentalSearchInfos.values().stream()
+                    .filter(rentalOfferDTO -> !existingOffersSearchStrings.contains(RentalOffer.generateSearchStringFromDTO(rentalOfferDTO)))
+                    .map(RentalOffer::fromRentalOfferDTO).collect(Collectors.toList());
+            rentalOfferRepository.saveAll(newOffers);
 
-            List<RentalOffer> newOffers = rentalSearchInfos.values().stream().map(RentalOffer::fromRentalOfferDTO).collect(Collectors.toList());
-            offersToPersist.addAll(newOffers);
-            rentalOfferRepository.saveAll(offersToPersist);
-
-            offersToNotifyAbout.addAll(rentalSearchInfos.values());
-            log.info("Persisted and should notify about new offers {} ", offersToNotifyAbout);
-            return offersToNotifyAbout;
+            log.info("Persisted and should notify about new offers {} ", newOffers);
+            return rentalOfferDTOS; //TODO: Stub!
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<String> getOpenOffersUrls() {
+        return rentalOfferRepository.findOpenRentalOffers().stream().map(RentalOffer::getLink).collect(Collectors.toList());
     }
 }

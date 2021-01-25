@@ -1,0 +1,4 @@
+1. scheduled run of parsing N latest pages - should return (linked) list where the first (last) element is the last element on the site
+2. this latest offer (link to it) is saved to cache. Retrieval from cache supports quering from DB to get latest inserted
+3. this scheduler just inserts data to DB
+4. batch (scheduled?) job goes through all open offers - to update it status. if links are no longer working - mark offer as closed/deleted. in any other case (created/update) - send this offers to bot queue

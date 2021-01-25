@@ -1,6 +1,7 @@
 package com.daria.learn.rentalhelper.rentals.fetch;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import com.daria.learn.rentalhelper.rentals.sources.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,5 +35,15 @@ public class FetcherFacadeImpl implements FetcherFacade {
     private void logParsedOffers(List<RentalOfferDTO> resultList) {
         log.info("Rental offers fetched from data sources: \n" +
                 resultList.stream().map(RentalOfferDTO::toString).collect(Collectors.joining("\n")));
+    }
+
+    @Override
+    public List<RentalOfferDetailsDTO> fetchOfferDetails(List<String> url) {
+        return null;
+    }
+
+    @Override
+    public Optional<RentalOfferDetailsDTO> fetchOfferDetail(String url) {
+        return Optional.empty();
     }
 }

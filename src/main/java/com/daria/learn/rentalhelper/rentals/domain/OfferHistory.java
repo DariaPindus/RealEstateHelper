@@ -22,6 +22,9 @@ public class OfferHistory {
     @Getter @Setter
     @Nullable
     private FieldHistory fieldHistory;
+    @Getter @Setter
+    @ManyToOne
+    private RentalOffer rentalOffer;
 
     public OfferHistory() {
     }
@@ -36,5 +39,12 @@ public class OfferHistory {
         this.time = time;
         this.status = offerStatus;
         this.fieldHistory = history;
+    }
+
+    public OfferHistory(Instant time, OfferStatus offerStatus, FieldHistory history, RentalOffer rentalOffer) {
+        this.time = time;
+        this.status = offerStatus;
+        this.fieldHistory = history;
+        this.rentalOffer = rentalOffer;
     }
 }
