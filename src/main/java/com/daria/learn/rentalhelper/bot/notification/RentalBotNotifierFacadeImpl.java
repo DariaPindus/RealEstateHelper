@@ -1,15 +1,13 @@
 package com.daria.learn.rentalhelper.bot.notification;
 
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
-import com.daria.learn.rentalhelper.bot.TelegramRentalNotifierBot;
 import com.daria.learn.rentalhelper.bot.domain.BotOutgoingMessage;
 import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,9 +18,9 @@ import java.util.stream.Collectors;
 public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
 
     private final RentalNotifierBot notifierBot;
-    private final UserCache<Long> userCache;
+    private final UserRepository<Long> userCache;
 
-    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache<Long> userCache) {
+    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserRepository<Long> userCache) {
         this.notifierBot = notifierBot;
         this.userCache = userCache;
     }

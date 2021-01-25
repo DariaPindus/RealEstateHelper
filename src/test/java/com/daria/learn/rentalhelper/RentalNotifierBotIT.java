@@ -4,7 +4,7 @@ import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.handlers.BotHandlerFacadeImpl;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +33,7 @@ public class RentalNotifierBotIT {
     BotMessageSource botMessageSource;
 
     @Autowired
-    UserCache<Long> userCache;
+    UserRepository<Long> userCache;
 
     /**
      * 1. user starts conversation - language selection is sent

@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @param <T> is type of chat identifier
  */
-public interface UserCache<T> {
+public interface UserRepository<T> {
     Optional<BotStateEnum> getUserState(T userChatId);
 
     Optional<UserPreference> getUserPreference(T userChatId);

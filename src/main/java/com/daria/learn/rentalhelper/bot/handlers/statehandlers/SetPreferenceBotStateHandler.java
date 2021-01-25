@@ -4,7 +4,7 @@ import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.exceptions.CannotParseUserPreferenceResponseException;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -20,10 +20,10 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     private final String NUMBER_REGEX =  "[0-9][0-9,\\.]+";
     private final String ANSWER_REGEX = "[1-3]\\.\\s?[0-9+-]*";
 
-    private final UserCache<Long> userCache;
+    private final UserRepository<Long> userCache;
     private final BotMessageSource messageSource;
 
-    public SetPreferenceBotStateHandler(UserCache<Long> userCache, BotMessageSource messageSource) {
+    public SetPreferenceBotStateHandler(UserRepository<Long> userCache, BotMessageSource messageSource) {
         this.userCache = userCache;
         this.messageSource = messageSource;
     }
