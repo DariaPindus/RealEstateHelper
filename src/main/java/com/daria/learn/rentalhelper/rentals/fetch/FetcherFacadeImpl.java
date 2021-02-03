@@ -15,21 +15,31 @@ public class FetcherFacadeImpl implements FetcherFacade {
 
     private static final Logger log = LoggerFactory.getLogger(FetcherFacadeImpl.class);
 
-    private final Set<DataSource> dataSources;
+    private final Map<String, DataSource> dataSources;
 
     public FetcherFacadeImpl(Set<DataSource> dataSources) {
-        this.dataSources = dataSources;
+        this.dataSources = dataSources.stream()
+                .collect(Collectors.toMap(DataSource::getSourceName, (dataSource) -> dataSource));
     }
 
     @Override
     public List<RentalOfferDTO> fetchOffers() {
         log.info("Rental fetcher to run");
         List<RentalOfferDTO> resultList = new LinkedList<>();
-        for (DataSource dataSource : dataSources) {
+        for (DataSource dataSource : dataSources.values()) {
             resultList.addAll(dataSource.getOffers());
         }
         logParsedOffers(resultList);
         return resultList;
+    }
+
+    public RentalOfferDetailsDTO fetchOfferDetailFromSource(String source, String url) {
+        return dataSources.get(source).fetchOfferDetail(url);
+    }
+
+    @Override
+    public Set<String> getDataSourcesNames() {
+        return dataSources.keySet();
     }
 
     private void logParsedOffers(List<RentalOfferDTO> resultList) {
@@ -37,13 +47,4 @@ public class FetcherFacadeImpl implements FetcherFacade {
                 resultList.stream().map(RentalOfferDTO::toString).collect(Collectors.joining("\n")));
     }
 
-    @Override
-    public List<RentalOfferDetailsDTO> fetchOfferDetails(List<String> url) {
-        return null;
-    }
-
-    @Override
-    public Optional<RentalOfferDetailsDTO> fetchOfferDetail(String url) {
-        return Optional.empty();
-    }
 }

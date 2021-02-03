@@ -1,20 +1,38 @@
 package com.daria.learn.rentalhelper.rentals.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Embeddable;
+import javax.persistence.*;
+import java.time.Instant;
 
-@Embeddable
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 public class FieldHistory {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Getter
+    private Integer id;
+    @Getter @Setter
+    private Instant time;
+    @Getter @Setter
+    @ManyToOne
+    private RentalOffer rentalOffer;
     @Getter @Setter
     private String fieldName;
-    @Getter @Setter
-    private String fieldValue;
-    @Getter @Setter
-    private String oldValue;
+    @ManyToOne
+    private BaseEntity parent;
+
+    public FieldHistory() {
+    }
+
+    public FieldHistory(Instant time) {
+        this.time = time;
+    }
+
+    public FieldHistory(RentalOffer rentalOffer, String fieldName) {
+        this.rentalOffer = rentalOffer;
+        this.fieldName = fieldName;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.daria.learn.rentalhelper.rentals.persist;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
@@ -41,7 +44,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
             List<RentalOffer> newOffers = rentalSearchInfos.values().stream()
                     .filter(rentalOfferDTO -> !existingOffersSearchStrings.contains(RentalOffer.generateSearchStringFromDTO(rentalOfferDTO)))
-                    .map(RentalOffer::fromRentalOfferDTO).collect(Collectors.toList());
+                    .map(RentalOffer::fromRentalOfferDTO).collect(toList());
             rentalOfferRepository.saveAll(newOffers);
 
             log.info("Persisted and should notify about new offers {} ", newOffers);
@@ -52,8 +55,24 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
         }
     }
 
+
+
     @Override
-    public List<String> getOpenOffersUrls() {
-        return rentalOfferRepository.findOpenRentalOffers().stream().map(RentalOffer::getLink).collect(Collectors.toList());
+    public List<String> getSourceOpenOffersUrls(String source) {
+        return rentalOfferRepository.findOpenRentalOffers(source).stream().map(RentalOffer::getLink).collect(toList());
+    }
+
+    @Override
+    public List<RentalOfferDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
+        Map<String, RentalOfferDetailsDTO> rentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
+        List<RentalOffer> dbOffers = rentalOfferRepository.findByLinkIn(rentalWithLinks.keySet());
+        //TODO: !!! try not to use additional collection
+        List<RentalOffer> toUpdate = new LinkedList<>();
+
+        dbOffers.forEach(dbOffer -> {
+            if (!rentalWithLinks.containsKey(dbOffer.getLink()))
+                return;
+            RentalOfferDetailsDTO detailsDTO = rentalWithLinks.get(dbOffer.getLink())
+        });
     }
 }

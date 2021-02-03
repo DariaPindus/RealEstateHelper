@@ -5,9 +5,10 @@ import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FetcherFacade {
     List<RentalOfferDTO> fetchOffers();
-    List<RentalOfferDetailsDTO> fetchOfferDetails(List<String> url);
-    Optional<RentalOfferDetailsDTO> fetchOfferDetail(String url);
+    RentalOfferDetailsDTO fetchOfferDetailFromSource(String source, String url);
+    Set<String> getDataSourcesNames();
 }

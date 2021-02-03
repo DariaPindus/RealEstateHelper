@@ -3,7 +3,6 @@ package com.daria.learn.rentalhelper.rentals.parsers;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Component;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -11,8 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@Component
 public class ParariusOfferParser implements OfferParser {
+    private final String sourceName;
 
     private static final String POSTAL_CODE_PATTERN = "([0-9]{4}\\s[A-Z]{2})";
     private static final String PRICE_PATTERN = "\\b([0-9,]*)\\b";
@@ -25,6 +24,10 @@ public class ParariusOfferParser implements OfferParser {
     private static final String PRICE_CLASS = "listing-search-item__price";
     private static final String AGENCY_CLASS = "listing-search-item__info";
 
+    public ParariusOfferParser(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
     @Override
     public RentalOfferDTO parseOfferDTO(Element rootElement) {
         String name = rootElement.getElementsByClass(NAME_CLASS).text();
@@ -34,7 +37,7 @@ public class ParariusOfferParser implements OfferParser {
         String agency = rootElement.getElementsByClass(AGENCY_CLASS).text();
         String link = parseLink(rootElement.getElementsByClass(NAME_CLASS));
         int area = parseArea(rootElement.getElementsByClass(AREA_CLASS));
-        return new RentalOfferDTO(name, location, price, area, agency, true, link);
+        return new RentalOfferDTO(name, location, area, agency, link, sourceName);
     }
 
     private int parseArea(Elements elementsByClass) {

@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper;
 
-import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
+import com.daria.learn.rentalhelper.rentals.domain.FieldHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
@@ -44,9 +44,9 @@ public class RentalPersistenceIT extends DatabaseITBase {
         List<RentalOffer> persistedOffers = (List<RentalOffer>)rentalOfferRepository.findAll();
         assertEquals(newRentalOffers.size(), persistedOffers.size());
 
-        List<OfferHistory> offerHistories1 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
-        List<OfferHistory> offerHistories2 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(1).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
-        List<OfferHistory> offerHistories3 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(2).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldHistory> offerHistories1 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldHistory> offerHistories2 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(1).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldHistory> offerHistories3 = rentalOfferRepository.findOfferHistoryById(persistedOffers.get(2).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
         assertEquals(1, offerHistories1.size());
         assertEquals(1, offerHistories2.size());
         assertEquals(1, offerHistories3.size());
@@ -65,7 +65,7 @@ public class RentalPersistenceIT extends DatabaseITBase {
         List<RentalOffer> resaved = StreamSupport.stream(allOffers.spliterator(), false).filter(offer -> offer.getName().equals(repeatingName)).collect(Collectors.toList());
         assertEquals(1, resaved.size());
 
-        List<OfferHistory> resavedOfferHistories = rentalOfferRepository.findOfferHistoryById(resaved.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldHistory> resavedOfferHistories = rentalOfferRepository.findOfferHistoryById(resaved.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
         assertEquals(1, resavedOfferHistories.size());
 
         List<RentalOffer> newPersisted = rentalOfferRepository.findBySearchStringIn(List.of(RentalOffer.generateSearchString(newOffer.getPostalCode(), newOffer.getArea(), newOffer.getAgency())));
@@ -90,9 +90,9 @@ public class RentalPersistenceIT extends DatabaseITBase {
         List<RentalOffer> updated = StreamSupport.stream(allOffers.spliterator(), false).filter(offer -> offer.getName().equals(updatedName)).collect(Collectors.toList());
         assertEquals(1, updated.size());
 
-        List<OfferHistory> offerHistories = rentalOfferRepository.findOfferHistoryById(updated.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldHistory> offerHistories = rentalOfferRepository.findOfferHistoryById(updated.get(0).getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
         assertEquals(2, offerHistories.size());
-        assertTrue(offerHistories.stream().anyMatch(offerHistory -> offerHistory.getStatus() == OfferStatus.UPDATED && offerHistory.getFieldHistory().getFieldName().equals("price")));
+        assertTrue(offerHistories.stream().anyMatch(fieldHistory -> fieldHistory.getStatus() == OfferStatus.UPDATED && fieldHistory.getFieldHistory().getFieldName().equals("price")));
     }
 
     @Test

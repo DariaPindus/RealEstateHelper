@@ -2,7 +2,6 @@ package com.daria.learn.rentalhelper.stubs;
 
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import com.daria.learn.rentalhelper.rentals.domain.FieldHistory;
-import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
@@ -67,7 +66,7 @@ public class SqlDataLoader {
                 RentalOffer offer = new RentalOffer(getRandomName(), getRandomCode(), price,
                         r.nextInt(200) + 10, agencies.get(r.nextInt(agencies.size() - 1)),
                         true, getRandomString(50));
-                List<OfferHistory> histories1 = getRandomHistories(historySize, offer);
+                List<FieldHistory> histories1 = getRandomHistories(historySize, offer);
                 offer.setOfferHistories(histories1);
                 offerList.add(offer);
             }
@@ -77,12 +76,12 @@ public class SqlDataLoader {
         assertTrue(rentalOfferRepository.count() >= numberOfRecords);
     }
 
-    private List<OfferHistory> getRandomHistories(int historySize, RentalOffer rentalOffer) {
-        List<OfferHistory> histories = new ArrayList<>();
+    private List<FieldHistory> getRandomHistories(int historySize, RentalOffer rentalOffer) {
+        List<FieldHistory> histories = new ArrayList<>();
         for (int k = 0; k < historySize; k++) {
             Instant creationTime = Instant.now().minus(new Random().nextInt(120), ChronoUnit.DAYS);
             FieldHistory fieldHistory = new FieldHistory(fields.get(new Random().nextInt(fields.size())), String.valueOf(new Random().nextInt(10000)), String.valueOf(new Random().nextInt(10000)));
-            histories.add(new OfferHistory(creationTime, statuses[new Random().nextInt(statuses.length)], fieldHistory, rentalOffer));
+            histories.add(new FieldHistory(creationTime, statuses[new Random().nextInt(statuses.length)], fieldHistory, rentalOffer));
         }
         return histories;
     }

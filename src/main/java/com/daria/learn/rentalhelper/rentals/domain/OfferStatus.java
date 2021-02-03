@@ -1,8 +1,7 @@
 package com.daria.learn.rentalhelper.rentals.domain;
 
-public enum  OfferStatus {
+public enum OfferStatus {
     NEW,
-    EXISTING,
-    REMOVED,
-    UPDATED
+    UPDATED,
+    REMOVED
 }
