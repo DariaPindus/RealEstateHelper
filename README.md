@@ -67,3 +67,8 @@ Bot creation is pretty straight-forward. Details could be found here: https://co
 
 ### Docker
 For correct docker-compose execution with `docker-compose run` file with name ".env" should exist in current (app) folder.
+
+
+### Tests
+Tests use Testcontainer. They should be run in configured docker environment.   
+Docker should be able to run from current user (without sudo)

@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.parsers;
 
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.BriefRentalOfferDTO;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -29,7 +29,7 @@ public class ParariusOfferParser implements OfferParser {
     }
 
     @Override
-    public RentalOfferDTO parseOfferDTO(Element rootElement) {
+    public BriefRentalOfferDTO parseOfferDTO(Element rootElement) {
         String name = rootElement.getElementsByClass(NAME_CLASS).text();
         String location = parsePostalCode(rootElement.getElementsByClass(LOCATION_CLASS).text());
         double price = parseNumber(rootElement.getElementsByClass(PRICE_CLASS).text());
@@ -37,7 +37,7 @@ public class ParariusOfferParser implements OfferParser {
         String agency = rootElement.getElementsByClass(AGENCY_CLASS).text();
         String link = parseLink(rootElement.getElementsByClass(NAME_CLASS));
         int area = parseArea(rootElement.getElementsByClass(AREA_CLASS));
-        return new RentalOfferDTO(name, location, area, agency, link, sourceName);
+        return new BriefRentalOfferDTO(name, location, area, agency, link, sourceName);
     }
 
     private int parseArea(Elements elementsByClass) {

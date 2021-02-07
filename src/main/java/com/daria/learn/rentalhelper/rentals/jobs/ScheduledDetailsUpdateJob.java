@@ -1,6 +1,9 @@
-package com.daria.learn.rentalhelper.rentals.fetch;
+package com.daria.learn.rentalhelper.rentals.jobs;
 
+import com.daria.learn.rentalhelper.rentals.communication.message.RentalNotificationSender;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
+import com.daria.learn.rentalhelper.rentals.fetch.FetcherFacade;
 import com.daria.learn.rentalhelper.rentals.persist.RentalPersistenceFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +25,19 @@ public class ScheduledDetailsUpdateJob {
 
     private final FetcherFacade fetcherFacade;
     private final RentalPersistenceFacade rentalPersistenceFacade;
+    private final RentalNotificationSender rentalSender;
     private final ExecutorService executorService;
 
-    public ScheduledDetailsUpdateJob(FetcherFacade fetcherFacade, RentalPersistenceFacade rentalPersistenceFacade) {
+    public ScheduledDetailsUpdateJob(FetcherFacade fetcherFacade, RentalPersistenceFacade rentalPersistenceFacade, RentalNotificationSender rentalSender) {
         this.fetcherFacade = fetcherFacade;
         this.rentalPersistenceFacade = rentalPersistenceFacade;
+        this.rentalSender = rentalSender;
         this.executorService = Executors.newFixedThreadPool(10);
     }
 
     @Scheduled(fixedRate = 60000)
     //TODO: possibly run updates from different sources with some delay between each other
+    //TODO: move to RentalNotificationFacade(Impl)?
     public void runUpdateRentalOffers() {
         fetcherFacade.getDataSourcesNames().forEach(this::updateSource);
     }
@@ -39,7 +45,8 @@ public class ScheduledDetailsUpdateJob {
     private void updateSource(String source) {
         List<String> urls = rentalPersistenceFacade.getSourceOpenOffersUrls(source);
         List<RentalOfferDetailsDTO> rentalOfferDetailsDTOS = parallelizedFetchFromSource(urls, source);
-        rentalPersistenceFacade.
+        List<RentalOfferDetailsDTO> updatedOffers = rentalPersistenceFacade.updateRentalDetails(rentalOfferDetailsDTOS);
+        rentalSender.sendMessage(RentalOffersListDTO.fromDetailsDTO(updatedOffers));
     }
 
     private List<RentalOfferDetailsDTO> parallelizedFetchFromSource(List<String> urls, String source){
@@ -56,7 +63,8 @@ public class ScheduledDetailsUpdateJob {
                     .map(Optional::get)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error in paralized fetch from source: " + source + ": " + e.getMessage());
+            return List.of();
         }
     }
 

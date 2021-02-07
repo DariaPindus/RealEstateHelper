@@ -13,9 +13,8 @@ public interface RentalOfferRepository extends CrudRepository<RentalOffer, Integ
 
     List<RentalOffer> findBySearchStringIn(Collection<String> searchStrings);
 
-    @Query("select ro.link from RentalOffer ro where ro.id not in (" +
-            "select distinct oh.rentalOffer from FieldHistory oh " +
-            "where oh.status=com.daria.learn.rentalhelper.rentals.domain.OfferStatus.REMOVED) and ro.source=?1")
+    @Query("select ro.link from RentalOffer ro where ro.isDeleted = false " +
+            "and ro.rentalStatus=com.daria.learn.rentalhelper.rentals.domain.RentalStatus.AVAILABLE")
     List<RentalOffer> findOpenRentalOffers(String source);
 
     List<RentalOffer> findByLinkIn(Collection<String> searchLinks);

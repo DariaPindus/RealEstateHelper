@@ -1,7 +1,7 @@
 package com.daria.learn.rentalhelper.rentals.sources;
 
 import com.daria.learn.rentalhelper.common.SSLHelper;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.BriefRentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import com.daria.learn.rentalhelper.rentals.parsers.OfferDetailParser;
 import com.daria.learn.rentalhelper.rentals.parsers.OfferParser;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ParariusSource implements DataSource {
@@ -43,8 +42,8 @@ public class ParariusSource implements DataSource {
     }
 
     @Override
-    public List<RentalOfferDTO> getOffers() {
-        List<RentalOfferDTO> resultOffers = new ArrayList<>();
+    public List<BriefRentalOfferDTO> getOffers() {
+        List<BriefRentalOfferDTO> resultOffers = new ArrayList<>();
         for (int i = 0; i < LAST_N_PAGES_TO_FETCH; i++) {
             try {
                 Document doc = SSLHelper.getConnection(getNextPageUrl(i)).get();

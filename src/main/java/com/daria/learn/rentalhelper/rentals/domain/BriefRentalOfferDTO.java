@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-public class RentalOfferDTO implements Serializable {
+public class BriefRentalOfferDTO implements Serializable {
     private static final long serialVersionUID = 6825785700959279609L;
     @Getter
     private final String name;
@@ -20,7 +20,7 @@ public class RentalOfferDTO implements Serializable {
     @Getter @Setter
     private String source;
 
-    public RentalOfferDTO(String name, String postalCode, int area, String agency, String link, String source) {
+    public BriefRentalOfferDTO(String name, String postalCode, int area, String agency, String link, String source) {
         this.name = name;
         this.postalCode = postalCode;
         this.area = area;
@@ -36,9 +36,9 @@ public class RentalOfferDTO implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof RentalOfferDTO))
+        if (!(obj instanceof BriefRentalOfferDTO))
             return false;
-        RentalOfferDTO that = (RentalOfferDTO)obj;
+        BriefRentalOfferDTO that = (BriefRentalOfferDTO)obj;
         return that.postalCode.equals(this.postalCode)
                 && that.name.equals(this.name)
                 && that.agency.equals(this.agency);

@@ -3,9 +3,10 @@ package com.daria.learn.rentalhelper.bot.notification;
 import com.daria.learn.rentalhelper.bot.RentalNotifierBot;
 import com.daria.learn.rentalhelper.bot.domain.BotOutgoingMessage;
 import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
+import com.daria.learn.rentalhelper.bot.domain.OutboundRentalOfferDTO;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
-import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,9 @@ import java.util.stream.Collectors;
 public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
 
     private final RentalNotifierBot notifierBot;
-    private final UserRepository<Long> userCache;
+    private final UserCache<Long> userCache;
 
-    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserRepository<Long> userCache) {
+    public RentalBotNotifierFacadeImpl(RentalNotifierBot notifierBot, UserCache<Long> userCache) {
         this.notifierBot = notifierBot;
         this.userCache = userCache;
     }
@@ -43,7 +44,7 @@ public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
     private RentalOffersListDTO getPersonalisedRentalList(RentalOffersListDTO allRentals, UserPreference userPreference) {
         if (userPreference == null)
             return allRentals;
-        List<RentalOfferDTO> offersListDTOS = allRentals.getRentalOfferDTOS().stream().filter(userPreference::isMatching).collect(Collectors.toList());
+        List<OutboundRentalOfferDTO> offersListDTOS = allRentals.getRentalOfferDTOS().stream().filter(userPreference::isMatching).collect(Collectors.toList());
         return new RentalOffersListDTO(offersListDTOS);
     }
 }

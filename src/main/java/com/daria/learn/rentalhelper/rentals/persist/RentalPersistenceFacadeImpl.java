@@ -1,7 +1,7 @@
 package com.daria.learn.rentalhelper.rentals.persist;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.BriefRentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +25,10 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
     @Override
     @Transactional
-    public List<RentalOfferDTO> persistNewRentals(final List<RentalOfferDTO> rentalOfferDTOS) {
+    public List<BriefRentalOfferDTO> persistNewRentals(final List<BriefRentalOfferDTO> briefRentalOfferDTOS) {
         try {
-            Map<String, RentalOfferDTO> rentalSearchInfos = new HashMap<>();
-            rentalOfferDTOS.forEach(
+            Map<String, BriefRentalOfferDTO> rentalSearchInfos = new HashMap<>();
+            briefRentalOfferDTOS.forEach(
                     dto -> {
                         String searchString = RentalOffer.generateSearchStringFromDTO(dto);
                         if (rentalSearchInfos.containsKey(searchString))
@@ -44,18 +44,16 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
             List<RentalOffer> newOffers = rentalSearchInfos.values().stream()
                     .filter(rentalOfferDTO -> !existingOffersSearchStrings.contains(RentalOffer.generateSearchStringFromDTO(rentalOfferDTO)))
-                    .map(RentalOffer::fromRentalOfferDTO).collect(toList());
+                    .map(RentalOffer::fromBriefRentalOfferDTO).collect(toList());
             rentalOfferRepository.saveAll(newOffers);
 
             log.info("Persisted and should notify about new offers {} ", newOffers);
-            return rentalOfferDTOS; //TODO: Stub!
+            return briefRentalOfferDTOS; //TODO: Stub!
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
             throw new RuntimeException(ex);
         }
     }
-
-
 
     @Override
     public List<String> getSourceOpenOffersUrls(String source) {
@@ -63,16 +61,20 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
     }
 
     @Override
-    public List<RentalOfferDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
-        Map<String, RentalOfferDetailsDTO> rentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
-        List<RentalOffer> dbOffers = rentalOfferRepository.findByLinkIn(rentalWithLinks.keySet());
-        //TODO: !!! try not to use additional collection
-        List<RentalOffer> toUpdate = new LinkedList<>();
+    public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
+        Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
 
-        dbOffers.forEach(dbOffer -> {
-            if (!rentalWithLinks.containsKey(dbOffer.getLink()))
-                return;
-            RentalOfferDetailsDTO detailsDTO = rentalWithLinks.get(dbOffer.getLink())
-        });
+        List<RentalOffer> existingOffers = rentalOfferRepository.findByLinkIn(newRentalWithLinks.keySet());
+
+        List<RentalOffer> toUpdate = existingOffers.stream().filter(existingOffer -> {
+            if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
+                return false;
+            RentalOfferDetailsDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
+            return existingOffer.updateIfChanged(detailsDTO);
+        }).collect(toList());
+        rentalOfferRepository.saveAll(toUpdate);
+        log.info("Update rental details, were updated: " + toUpdate.size() + " rental offers");
+
+        return toUpdate.stream().map(RentalOffer::toRentalOfferDetailsDTO).collect(toList());
     }
 }

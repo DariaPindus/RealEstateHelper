@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.fetch;
 
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.BriefRentalOfferDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import com.daria.learn.rentalhelper.rentals.sources.DataSource;
 import org.slf4j.Logger;
@@ -23,9 +23,9 @@ public class FetcherFacadeImpl implements FetcherFacade {
     }
 
     @Override
-    public List<RentalOfferDTO> fetchOffers() {
+    public List<BriefRentalOfferDTO> fetchOffers() {
         log.info("Rental fetcher to run");
-        List<RentalOfferDTO> resultList = new LinkedList<>();
+        List<BriefRentalOfferDTO> resultList = new LinkedList<>();
         for (DataSource dataSource : dataSources.values()) {
             resultList.addAll(dataSource.getOffers());
         }
@@ -42,9 +42,9 @@ public class FetcherFacadeImpl implements FetcherFacade {
         return dataSources.keySet();
     }
 
-    private void logParsedOffers(List<RentalOfferDTO> resultList) {
+    private void logParsedOffers(List<BriefRentalOfferDTO> resultList) {
         log.info("Rental offers fetched from data sources: \n" +
-                resultList.stream().map(RentalOfferDTO::toString).collect(Collectors.joining("\n")));
+                resultList.stream().map(BriefRentalOfferDTO::toString).collect(Collectors.joining("\n")));
     }
 
 }
