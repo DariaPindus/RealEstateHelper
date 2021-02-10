@@ -29,7 +29,7 @@ public class RentalOfferDetailsDTO implements Serializable {
     @Nullable
     private final Instant availableFrom;
     @Getter
-    private final boolean isFurnished;
+    private final Boolean isFurnished;
     @Getter
     private final int area;
     @Getter @Nullable
@@ -37,7 +37,7 @@ public class RentalOfferDetailsDTO implements Serializable {
 
     public RentalOfferDetailsDTO(String name, String link, RentalStatus status, String postalCode,
                                  Double price, Boolean includingServices, Instant availableFrom,
-                                 boolean isFurnished, int area, String agency) {
+                                 Boolean isFurnished, int area, String agency) {
         this.name = name;
         this.link = link;
         this.postalCode = postalCode;

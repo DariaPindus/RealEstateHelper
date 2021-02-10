@@ -8,6 +8,7 @@ import com.daria.learn.rentalhelper.rentals.parsers.OfferParser;
 import com.daria.learn.rentalhelper.rentals.parsers.ParariusOfferDetailsParser;
 import com.daria.learn.rentalhelper.rentals.parsers.ParariusOfferParser;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,11 @@ public class ParariusSource implements DataSource {
         try {
             Document doc = SSLHelper.getConnection(url).get();
             Elements elements = doc.select(DETAILS_MAIN_ELEMENT_SELECTOR);
-            return offerDetailParser.parseOfferDetailsDTO(elements.first());
+
+            if (isNotAvailable(doc))
+                return RentalOfferDetailsDTO.missed(url);
+
+            return offerDetailParser.parseOfferDetailsDTO(elements.first(), NAME);
         } catch (Exception ex) {
             log.error("ParariusSource couldn't fetch: " + url + ". Exception: " + ex.getMessage());
             return RentalOfferDetailsDTO.missed(url);
@@ -73,5 +78,13 @@ public class ParariusSource implements DataSource {
         return pageIndex < 1 ? PARARIUS_BASE_URL : PARARIUS_BASE_URL + "/page-" + (pageIndex + 1);
     }
 
+    private boolean isNotAvailable(Document doc) {
+        Element notificationElement = doc.getElementsByClass("page__row page__row--notifications").first();
+        if (notificationElement != null) {
+            Element notificationTitleElement = notificationElement.getElementsByClass("notification__title").first();
+            return notificationTitleElement != null && notificationTitleElement.text().toLowerCase().contains("not available");
+        }
+        return false;
+    }
 
 }

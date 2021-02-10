@@ -91,10 +91,10 @@ public class RentalOffer extends BaseEntity<Integer> {
                     new OfferHistory(Instant.now(), RentalOfferFieldNames.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
             this.price = offerDetailsDTO.getPrice();
         }
-        if (offerDetailsDTO.isFurnished() != this.furnished) {
+        if (offerDetailsDTO.getIsFurnished() != this.furnished) {
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.isFurnished()), String.valueOf(this.furnished), this));
-            this.furnished = offerDetailsDTO.isFurnished();
+                    new OfferHistory(Instant.now(), RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished()   ), String.valueOf(this.furnished), this));
+            this.furnished = offerDetailsDTO.getIsFurnished();
         }
         if (offerDetailsDTO.getAvailableFrom() != null && !offerDetailsDTO.getAvailableFrom().equals(this.availableFrom)) {
             offerChangeHistories.add(
