@@ -67,7 +67,7 @@ public class ParariusSource implements DataSource {
             if (isNotAvailable(doc))
                 return RentalOfferDetailsDTO.missed(url);
 
-            return offerDetailParser.parseOfferDetailsDTO(elements.first(), NAME);
+            return offerDetailParser.parseOfferDetailsDTO(elements.first(), url);
         } catch (Exception ex) {
             log.error("ParariusSource couldn't fetch: " + url + ". Exception: " + ex.getMessage());
             return RentalOfferDetailsDTO.missed(url);

@@ -35,7 +35,7 @@ public class ScheduledDetailsUpdateJob {
         this.executorService = Executors.newFixedThreadPool(10);
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedDelay = 600000)
     //TODO: possibly run updates from different sources with some delay between each other
     //TODO: move to RentalNotificationFacade(Impl)?
     public void runUpdateRentalOffers() {
@@ -53,7 +53,7 @@ public class ScheduledDetailsUpdateJob {
         try {
             List<Callable<RentalOfferDetailsDTO>> callables = new LinkedList<>();
             for (String url : urls) {
-                callables.add(() -> fetcherFacade.fetchOfferDetailFromSource(url, source));
+                callables.add(() -> fetcherFacade.fetchOfferDetailFromSource(source, url));
             }
             List<Future<RentalOfferDetailsDTO>> futures = executorService.invokeAll(callables);
 

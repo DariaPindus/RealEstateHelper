@@ -17,7 +17,7 @@ public class RentalOfferInMemoryRepository extends InMemoryRepository<RentalOffe
 
     @Override
     public List<RentalOffer> findOpenRentalOffers(String source) {
-        return storage.values().stream().filter(rentalOffer -> !rentalOffer.isDeleted() && rentalOffer.getRentalStatus() == RentalStatus.AVAILABLE).collect(toList());
+        return storage.values().stream().filter(rentalOffer -> rentalOffer.getRentalStatus() == RentalStatus.AVAILABLE).collect(toList());
     }
 
     @Override

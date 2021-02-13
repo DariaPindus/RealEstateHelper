@@ -48,7 +48,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
             rentalOfferRepository.saveAll(newOffers);
 
             log.info("Persisted and should notify about new offers {} ", newOffers);
-            return briefRentalOfferDTOS; //TODO: Stub!
+            return briefRentalOfferDTOS;
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
             throw new RuntimeException(ex);
@@ -61,6 +61,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
     }
 
     @Override
+    @Transactional
     public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
         Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
 
@@ -70,7 +71,8 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
             if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
                 return false;
             RentalOfferDetailsDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
-            return existingOffer.updateIfChanged(detailsDTO);
+            existingOffer.updateIfChanged(detailsDTO);
+            return existingOffer.isShouldBeNotifiedAbout();
         }).collect(toList());
         rentalOfferRepository.saveAll(toUpdate);
         log.info("Update rental details, were updated: " + toUpdate.size() + " rental offers");

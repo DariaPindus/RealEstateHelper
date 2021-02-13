@@ -26,8 +26,6 @@ public class ParariusOfferParser extends ParariusParser implements OfferParser {
     public BriefRentalOfferDTO parseOfferDTO(Element rootElement) {
         String name = rootElement.getElementsByClass(NAME_CLASS).text();
         String location = parsePostalCode(rootElement.getElementsByClass(LOCATION_CLASS).text());
-        double price = parseNumber(rootElement.getElementsByClass(PRICE_CLASS).text());
-        //TODO: furnished
         String agency = rootElement.getElementsByClass(AGENCY_CLASS).text();
         String link = parseLink(rootElement.getElementsByClass(NAME_CLASS));
         int area = parseArea(rootElement.getElementsByClass(AREA_CLASS));

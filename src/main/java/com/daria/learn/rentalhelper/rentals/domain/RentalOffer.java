@@ -7,6 +7,7 @@ import org.hibernate.annotations.Cascade;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,12 +36,12 @@ public class RentalOffer extends BaseEntity<Integer> {
     @Getter
     private String source;
     @Getter @Setter
-    private boolean isDeleted;
-    @Getter @Setter
     private RentalStatus rentalStatus;
     @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<OfferHistory> offerHistories;
+    @Transient @Getter
+    private boolean shouldBeNotifiedAbout;
 
     public RentalOffer(String name, String postalCode, int area, String agency, String link, String source) {
         this.name = name;
@@ -51,6 +52,7 @@ public class RentalOffer extends BaseEntity<Integer> {
         this.offerHistories = List.of(new OfferHistory(Instant.now()));
         this.searchString = generateSearchString(postalCode, area, agency);
         this.source = source;
+        this.rentalStatus = RentalStatus.AVAILABLE;
     }
 
     public RentalOffer(String name, String randomCode, double price, int area, String agency, boolean furnished, String link, String source) {
@@ -77,26 +79,34 @@ public class RentalOffer extends BaseEntity<Integer> {
         return new RentalOfferDetailsDTO(name, link, rentalStatus, postalCode, price, null, availableFrom, furnished, area, agency);
     }
 
+    //todo: possibly move to RentalOfferHelper and use map of field to it's processor
     public boolean updateIfChanged(RentalOfferDetailsDTO offerDetailsDTO) {
-        if (offerDetailsDTO.isDeleted() && this.isDeleted)
-            return false;
-
         List<OfferHistory> offerChangeHistories = new LinkedList<>();
+        shouldBeNotifiedAbout = false;
+
+        if (offerDetailsDTO.getStatus() != null && offerDetailsDTO.getStatus() != this.rentalStatus) {
+            if (offerDetailsDTO.isDeleted() && this.rentalStatus == RentalStatus.DELETED)
+                return false;
+            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFieldNames.RENTAL_STATUS_FIELD, offerDetailsDTO.getName(), this.name, this));
+        }
         if (offerDetailsDTO.getName() != null && !offerDetailsDTO.getName().equals(this.name)) {
             offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFieldNames.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
             this.name = offerDetailsDTO.getName();
         }
         if (offerDetailsDTO.getPrice() != null && offerDetailsDTO.getPrice() != this.price) {
+            shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
                     new OfferHistory(Instant.now(), RentalOfferFieldNames.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
             this.price = offerDetailsDTO.getPrice();
         }
-        if (offerDetailsDTO.getIsFurnished() != this.furnished) {
+        if (offerDetailsDTO.getIsFurnished() != null && offerDetailsDTO.getIsFurnished() != this.furnished) {
+            shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished()   ), String.valueOf(this.furnished), this));
+                    new OfferHistory(Instant.now(), RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
             this.furnished = offerDetailsDTO.getIsFurnished();
         }
         if (offerDetailsDTO.getAvailableFrom() != null && !offerDetailsDTO.getAvailableFrom().equals(this.availableFrom)) {
+            shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
                     new OfferHistory(Instant.now(), RentalOfferFieldNames.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
             this.availableFrom = offerDetailsDTO.getAvailableFrom();

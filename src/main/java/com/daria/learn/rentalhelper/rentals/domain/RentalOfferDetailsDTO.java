@@ -17,7 +17,7 @@ public class RentalOfferDetailsDTO implements Serializable {
     private final String link;
     @Getter
     @Nullable
-    private final RentalStatus status; //TODO: enum?
+    private final RentalStatus status;
     @Getter
     private final String postalCode;
     @Getter

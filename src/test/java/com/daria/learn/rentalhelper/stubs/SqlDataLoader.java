@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.daria.learn.rentalhelper.Random.*;
 import static com.daria.learn.rentalhelper.rentals.domain.RentalOfferFieldNames.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,10 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc
 @ActiveProfiles({ApplicationProfiles.TEST_PROFILE})
 public class SqlDataLoader {
-
-    private static final String chars = "abcdefghjklmnopqrstuyxvwz";
-    private static final String uppercase = "ABCDEFGHJKLMOPQRSTUYXWZ";
-    private static final String numbers = "1234567890";
 
     private final OfferStatus[] statuses = OfferStatus.values();
     private final List<String> fields = RentalOfferFieldNames.getAll();
@@ -66,7 +63,7 @@ public class SqlDataLoader {
             for (int j = 0; j < size; j++) {
                 int historySize = r.nextInt(maxNumberOfHistory) + 1;
                 double price = 10 + (2000 - 10) * r.nextDouble();
-                RentalOffer offer = new RentalOffer(getRandomName(), getRandomCode(), price,
+                RentalOffer offer = new RentalOffer(getRandomOfferName(), getRandomPostalCode(), price,
                         r.nextInt(200) + 10, agencies.get(r.nextInt(agencies.size() - 1)),
                         true, getRandomString(50), SOURCE);
                 List<OfferHistory> histories1 = getRandomHistories(historySize, offer);
@@ -110,36 +107,5 @@ public class SqlDataLoader {
         throw new RuntimeException("Unsupported field " + field);
     }
 
-    private static String getRandomName() {
-        boolean isApartment = new Random().nextBoolean();
-        return (isApartment ? "Apartment " : "Room ") + getRandomString(0);
-    }
 
-    private static String getRandomString(int length) {
-        Random r = new Random();
-        int actLength = length == 0 ? r.nextInt(10) + 3 : length;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < actLength; i++) {
-            sb.append(chars.charAt(r.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-
-    private static String getRandomCode() {
-        StringBuilder sb = new StringBuilder();
-        Random r = new Random();
-        for (int i = 0; i < 4; i++) {
-            sb.append(numbers.charAt(r.nextInt(numbers.length() - 1)));
-        }
-        sb.append(" ");
-        for (int i = 0; i < 2; i++) {
-            sb.append(uppercase.charAt(r.nextInt(uppercase.length() - 1)));
-        }
-        return sb.toString();
-    }
-
-    private static int getRandomNumber(int min, int max) {
-        Random r = new Random();
-        return r.nextInt(max) + min;
-    }
 }
