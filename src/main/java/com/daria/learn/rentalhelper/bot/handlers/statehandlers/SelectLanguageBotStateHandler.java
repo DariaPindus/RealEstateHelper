@@ -40,7 +40,7 @@ public class SelectLanguageBotStateHandler implements UserBotStateHandler {
         String locale = message.getText();
         Locale userLocale = new Locale(locale);
         userCache.setUserLocale(message.getChatId(), userLocale);
-        String messageText = messageSource.getMessage("bot.lang-selected.reply", null, userLocale);
+        String messageText = messageSource.getMessage("bot.lang-selected.reply", new Object[]{locale}, userLocale);
         SendMessage responseMessage = new SendMessage();
         responseMessage.setChatId(message.getChatId().toString());
         responseMessage.setText(messageText);

@@ -1,6 +1,5 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
