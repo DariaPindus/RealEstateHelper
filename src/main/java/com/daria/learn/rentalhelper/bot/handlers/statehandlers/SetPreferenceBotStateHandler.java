@@ -102,9 +102,10 @@ public class SetPreferenceBotStateHandler implements UserBotStateHandler {
     }
 
     private Boolean parseFurnished(String preference) {
-        if (!preference.equals("+") && !preference.equals("-"))
+        String formatted = preference.toLowerCase();
+        if (!formatted.equals("+") && !formatted.equals("-") && !formatted.equals("furnished") && !formatted.equals("unfurnished"))
             throw new CannotParseUserPreferenceResponseException();
-        return preference.equals("+");
+        return formatted.equals("+") || formatted.equals("furnished");
     }
 
     private Double parseNumber(String preferenceStr) {
