@@ -4,9 +4,12 @@ import com.daria.learn.rentalhelper.bot.domain.OutboundRentalOfferDTO;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 
+@Table(indexes = @Index(columnList = "link"))
 public class RentalOfferDetailsDTO implements Serializable {
 
     private static final long serialVersionUID = 4532423567270838391L;

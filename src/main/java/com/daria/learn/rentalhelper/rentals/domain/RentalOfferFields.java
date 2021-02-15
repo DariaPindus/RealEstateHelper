@@ -2,7 +2,7 @@ package com.daria.learn.rentalhelper.rentals.domain;
 
 import java.util.List;
 
-public interface RentalOfferFieldNames {
+public interface RentalOfferFields {
     String PRICE_FIELD = "price";
     String RENTAL_STATUS_FIELD = "rental_status";
     String IS_DELETED_FIELD = "is_deleted";

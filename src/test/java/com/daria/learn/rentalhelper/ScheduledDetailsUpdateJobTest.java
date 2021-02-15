@@ -9,7 +9,6 @@ import com.daria.learn.rentalhelper.rentals.jobs.ScheduledDetailsUpdateJob;
 import com.daria.learn.rentalhelper.rentals.persist.RentalPersistenceFacade;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,9 +36,9 @@ public class ScheduledDetailsUpdateJobTest {
     public void setup() {
         Mockito.when(fetcherFacade.fetchOffers()).thenReturn(
                 List.of(
-                        new BriefRentalOfferDTO("Appartment test 1", "1112 AA", 34, "My agency", "/some/link/1", "source"),
-                        new BriefRentalOfferDTO("Appartment test 2", "1112 AB", 41, "My agency", "/some/link/2", "source"),
-                        new BriefRentalOfferDTO("Appartment test 3", "1212 AA", 44, "Another agency", "/some/link/3", "source")));
+                        new BriefRentalOfferDTO("Appartment test 1", "1112 AA", 34, "My agency", "/some/link/1", 1111, "source"),
+                        new BriefRentalOfferDTO("Appartment test 2", "1112 AB", 41, "My agency", "/some/link/2", 1000, "source"),
+                        new BriefRentalOfferDTO("Appartment test 3", "1212 AA", 44, "Another agency", "/some/link/3", 999, "source")));
         Mockito.when(rentalPersistenceFacade.getSourceOpenOffersUrls(any())).thenReturn(List.of());
         Mockito.when(fetcherFacade.fetchOfferDetailFromSource(any(), any())).thenAnswer((Answer<RentalOfferDetailsDTO>) invocationOnMock -> {
             Thread.sleep(200);

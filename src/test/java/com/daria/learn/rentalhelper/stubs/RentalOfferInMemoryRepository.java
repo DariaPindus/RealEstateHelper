@@ -21,13 +21,13 @@ public class RentalOfferInMemoryRepository extends InMemoryRepository<RentalOffe
     }
 
     @Override
-    public List<RentalOffer> findByLinkIn(Collection<String> searchLinks) {
+    public List<RentalOffer> findByLinkIn(List<String> searchLinks) {
         Set<String> linkSet = new HashSet<>(searchLinks);
-        return storage.values().stream().filter(rentalOffer -> linkSet.contains(rentalOffer.getSearchString())).collect(toList());
+        return storage.values().stream().filter(rentalOffer -> searchLinks.contains(rentalOffer.getSearchString())).collect(toList());
     }
 
     @Override
-    public Optional<RentalOffer> findOfferHistoryById(Integer id) {
+    public Optional<RentalOffer> findByIdWithOfferHistories(Integer id) {
         return findById(id);
     }
 

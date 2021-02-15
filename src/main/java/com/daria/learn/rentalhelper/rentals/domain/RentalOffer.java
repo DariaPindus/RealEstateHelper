@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -28,6 +29,7 @@ public class RentalOffer extends BaseEntity<Integer> {
     @Getter @Setter
     private boolean furnished;
     @Getter @Setter
+    @Column(unique = true)
     private String link;
     @Getter
     private String searchString;
@@ -40,25 +42,32 @@ public class RentalOffer extends BaseEntity<Integer> {
     @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<OfferHistory> offerHistories;
-    @Transient @Getter
+    @Getter @Setter
+    private Instant creationTime;
+    @Transient
     private boolean shouldBeNotifiedAbout;
 
-    public RentalOffer(String name, String postalCode, int area, String agency, String link, String source) {
+    public RentalOffer(String name, String postalCode, int area, double price, String agency, String link, String source) {
         this.name = name;
         this.postalCode = postalCode;
+        this.price = price;
         this.area = area;
         this.agency = agency;
         this.link = link;
-        this.offerHistories = List.of(new OfferHistory(Instant.now()));
+        this.offerHistories = new LinkedList<>();
         this.searchString = generateSearchString(postalCode, area, agency);
         this.source = source;
         this.rentalStatus = RentalStatus.AVAILABLE;
+        this.creationTime = Instant.now();
     }
 
-    public RentalOffer(String name, String randomCode, double price, int area, String agency, boolean furnished, String link, String source) {
-        this(name, randomCode, area, agency, link, source);
-        this.price = price;
+    public RentalOffer(String name, String postalCode, double price, int area, String agency, boolean furnished, String link, String source) {
+        this(name, postalCode, area, price, agency, link, source);
         this.furnished = furnished;
+    }
+
+    public boolean shouldBeNotifiedAbout() {
+        return shouldBeNotifiedAbout;
     }
 
     public static String generateSearchString(String postalCode, int area, String agency) {
@@ -71,7 +80,7 @@ public class RentalOffer extends BaseEntity<Integer> {
 
     public static RentalOffer fromBriefRentalOfferDTO(BriefRentalOfferDTO offerDTO) {
         return new RentalOffer(offerDTO.getName(), offerDTO.getPostalCode(),
-                offerDTO.getArea(), offerDTO.getAgency(),
+                offerDTO.getArea(), offerDTO.getPrice(), offerDTO.getAgency(),
                 offerDTO.getLink(), offerDTO.getSource());
     }
 
@@ -79,36 +88,35 @@ public class RentalOffer extends BaseEntity<Integer> {
         return new RentalOfferDetailsDTO(name, link, rentalStatus, postalCode, price, null, availableFrom, furnished, area, agency);
     }
 
-    //todo: possibly move to RentalOfferHelper and use map of field to it's processor
-    public boolean updateIfChanged(RentalOfferDetailsDTO offerDetailsDTO) {
+    public boolean updateFromDetails(RentalOfferDetailsDTO offerDetailsDTO) {
         List<OfferHistory> offerChangeHistories = new LinkedList<>();
-        shouldBeNotifiedAbout = false;
+        shouldBeNotifiedAbout = this.offerHistories.isEmpty();
 
         if (offerDetailsDTO.getStatus() != null && offerDetailsDTO.getStatus() != this.rentalStatus) {
             if (offerDetailsDTO.isDeleted() && this.rentalStatus == RentalStatus.DELETED)
                 return false;
-            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFieldNames.RENTAL_STATUS_FIELD, offerDetailsDTO.getName(), this.name, this));
+            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.RENTAL_STATUS_FIELD, offerDetailsDTO.getStatus().getValue(), this.getRentalStatus().getValue(), this));
+            this.rentalStatus = offerDetailsDTO.getStatus();
         }
         if (offerDetailsDTO.getName() != null && !offerDetailsDTO.getName().equals(this.name)) {
-            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFieldNames.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
+            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
             this.name = offerDetailsDTO.getName();
         }
         if (offerDetailsDTO.getPrice() != null && offerDetailsDTO.getPrice() != this.price) {
             shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFieldNames.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
+                    new OfferHistory(Instant.now(), RentalOfferFields.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
             this.price = offerDetailsDTO.getPrice();
         }
         if (offerDetailsDTO.getIsFurnished() != null && offerDetailsDTO.getIsFurnished() != this.furnished) {
-            shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
+                    new OfferHistory(Instant.now(), RentalOfferFields.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
             this.furnished = offerDetailsDTO.getIsFurnished();
         }
         if (offerDetailsDTO.getAvailableFrom() != null && !offerDetailsDTO.getAvailableFrom().equals(this.availableFrom)) {
             shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFieldNames.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
+                    new OfferHistory(Instant.now(), RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
             this.availableFrom = offerDetailsDTO.getAvailableFrom();
         }
         this.offerHistories.addAll(offerChangeHistories);

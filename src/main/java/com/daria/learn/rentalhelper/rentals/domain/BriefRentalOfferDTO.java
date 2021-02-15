@@ -17,15 +17,18 @@ public class BriefRentalOfferDTO implements Serializable {
     private final String agency;
     @Getter
     private final String link;
+    @Getter
+    private final double price;
     @Getter @Setter
     private String source;
 
-    public BriefRentalOfferDTO(String name, String postalCode, int area, String agency, String link, String source) {
+    public BriefRentalOfferDTO(String name, String postalCode, int area, String agency, String link, double price, String source) {
         this.name = name;
         this.postalCode = postalCode;
         this.area = area;
         this.agency = agency;
         this.link = link;
+        this.price = price;
         this.source = source;
     }
 

@@ -4,7 +4,7 @@ import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import com.daria.learn.rentalhelper.rentals.domain.OfferHistory;
 import com.daria.learn.rentalhelper.rentals.domain.OfferStatus;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferFieldNames;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferFields;
 import com.daria.learn.rentalhelper.rentals.persist.RentalOfferRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.daria.learn.rentalhelper.Random.*;
-import static com.daria.learn.rentalhelper.rentals.domain.RentalOfferFieldNames.*;
+import static com.daria.learn.rentalhelper.rentals.domain.RentalOfferFields.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SqlDataLoader {
 
     private final OfferStatus[] statuses = OfferStatus.values();
-    private final List<String> fields = RentalOfferFieldNames.getAll();
+    private final List<String> fields = RentalOfferFields.getAll();
     private final List<String> agencies = new ArrayList<>();
     private final String SOURCE = "pararius";
 
@@ -99,10 +99,10 @@ public class SqlDataLoader {
                 return new OfferHistory(creationTime, PRICE_FIELD, String.valueOf(getRandomNumber(0, 2000)), String.valueOf(getRandomNumber(0, 2000)), offer);
             case IS_FURNISHED_FIELD: {
                 Random r = new Random();
-                return new OfferHistory(creationTime, RentalOfferFieldNames.IS_FURNISHED_FIELD, String.valueOf(r.nextBoolean()), String.valueOf(r.nextBoolean()), offer);
+                return new OfferHistory(creationTime, RentalOfferFields.IS_FURNISHED_FIELD, String.valueOf(r.nextBoolean()), String.valueOf(r.nextBoolean()), offer);
             }
             case AVAILABLE_FROM_FIELD:
-                return new OfferHistory(creationTime, RentalOfferFieldNames.AVAILABLE_FROM_FIELD, String.valueOf(getRandomTime()), String.valueOf(getRandomTime()), offer);
+                return new OfferHistory(creationTime, RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(getRandomTime()), String.valueOf(getRandomTime()), offer);
         }
         throw new RuntimeException("Unsupported field " + field);
     }

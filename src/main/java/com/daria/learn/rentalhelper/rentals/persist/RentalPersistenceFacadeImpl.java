@@ -65,18 +65,21 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
     public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
         Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
 
-        List<RentalOffer> existingOffers = rentalOfferRepository.findByLinkIn(newRentalWithLinks.keySet());
+        List<RentalOffer> existingOffers = rentalOfferRepository.findByLinkIn(new ArrayList<>(newRentalWithLinks.keySet()));
+        List<RentalOfferDetailsDTO> toNotifyAbout = new LinkedList<>();
 
-        List<RentalOffer> toUpdate = existingOffers.stream().filter(existingOffer -> {
+        for (RentalOffer existingOffer : existingOffers) {
             if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
-                return false;
+                continue;
             RentalOfferDetailsDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
-            existingOffer.updateIfChanged(detailsDTO);
-            return existingOffer.isShouldBeNotifiedAbout();
-        }).collect(toList());
-        rentalOfferRepository.saveAll(toUpdate);
-        log.info("Update rental details, were updated: " + toUpdate.size() + " rental offers");
+            existingOffer.updateFromDetails(detailsDTO);
+            if (existingOffer.shouldBeNotifiedAbout())
+                toNotifyAbout.add(existingOffer.toRentalOfferDetailsDTO());
+        }
 
-        return toUpdate.stream().map(RentalOffer::toRentalOfferDetailsDTO).collect(toList());
+        rentalOfferRepository.saveAll(existingOffers);
+        log.info("Update rental details, should be notified about : " + toNotifyAbout.size() + " rental offers");
+
+        return toNotifyAbout;
     }
 }
