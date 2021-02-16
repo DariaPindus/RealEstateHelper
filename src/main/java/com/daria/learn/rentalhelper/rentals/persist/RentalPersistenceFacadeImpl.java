@@ -47,7 +47,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
                     .map(RentalOffer::fromBriefRentalOfferDTO).collect(toList());
             rentalOfferRepository.saveAll(newOffers);
 
-            log.info("Persisted and should notify about new offers {} ", newOffers);
+            log.info("Persisted new offers {} ", newOffers);
             return briefRentalOfferDTOS;
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
@@ -78,7 +78,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
         }
 
         rentalOfferRepository.saveAll(existingOffers);
-        log.info("Update rental details, should be notified about : " + toNotifyAbout.size() + " rental offers");
+        log.info("Update rental details, should be notified about (" + toNotifyAbout.size() + ") : " + toNotifyAbout);
 
         return toNotifyAbout;
     }
