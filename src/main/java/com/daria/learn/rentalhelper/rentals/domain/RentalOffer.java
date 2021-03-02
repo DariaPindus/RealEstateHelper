@@ -5,22 +5,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
-public class RentalOffer {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Getter
-    private Integer id;
-    @OneToMany @Setter @Getter
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<OfferHistory> offerHistories;
+public class RentalOffer extends BaseEntity<Integer> {
     @Getter @Setter
     private String name;
     @Getter @Setter
@@ -32,58 +27,101 @@ public class RentalOffer {
     @Getter @Setter
     private String agency;
     @Getter @Setter
+    //TODO: nullable?
     private boolean furnished;
     @Getter @Setter
+    @Column(unique = true)
     private String link;
     @Getter
     private String searchString;
+    @Getter @Setter
+    private Instant availableFrom;
+    @Getter
+    private String source;
+    @Getter @Setter
+    private RentalStatus rentalStatus;
+    @OneToMany @Setter @Getter
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<OfferHistory> offerHistories;
+    @Getter @Setter
+    private Instant creationTime;
+    @Transient
+    private boolean shouldBeNotifiedAbout;
 
-    public RentalOffer(String name, String postalCode, double price, int area, String agency, boolean furnished, String link) {
+    public RentalOffer(String name, String postalCode, int area, double price, String agency, String link, String source) {
         this.name = name;
         this.postalCode = postalCode;
         this.price = price;
         this.area = area;
         this.agency = agency;
-        this.furnished = furnished;
         this.link = link;
-        this.offerHistories = List.of(new OfferHistory(Instant.now(), OfferStatus.NEW, null));
+        this.offerHistories = new LinkedList<>();
         this.searchString = generateSearchString(postalCode, area, agency);
+        this.source = source;
+        this.rentalStatus = RentalStatus.AVAILABLE;
+        this.creationTime = Instant.now();
+    }
+
+    public RentalOffer(String name, String postalCode, double price, int area, String agency, boolean furnished, String link, String source) {
+        this(name, postalCode, area, price, agency, link, source);
+        this.furnished = furnished;
+    }
+
+    public boolean shouldBeNotifiedAbout() {
+        return shouldBeNotifiedAbout;
     }
 
     public static String generateSearchString(String postalCode, int area, String agency) {
         return postalCode + "--" + area + "--" + agency;
     }
 
-    public static RentalOffer fromRentalOfferDTO(RentalOfferDTO offerDTO) {
+    public static String generateSearchStringFromDTO(BriefRentalOfferDTO briefRentalOfferDTO) {
+        return generateSearchString(briefRentalOfferDTO.getPostalCode(), briefRentalOfferDTO.getArea(), briefRentalOfferDTO.getAgency());
+    }
+
+    public static RentalOffer fromBriefRentalOfferDTO(BriefRentalOfferDTO offerDTO) {
         return new RentalOffer(offerDTO.getName(), offerDTO.getPostalCode(),
-                offerDTO.getPrice(), offerDTO.getArea(), offerDTO.getAgency(),
-                offerDTO.isFurnished(), offerDTO.getLink());
+                offerDTO.getArea(), offerDTO.getPrice(), offerDTO.getAgency(),
+                offerDTO.getLink(), offerDTO.getSource());
     }
 
-    public boolean updateIfChanged(RentalOffer newRentalOffer) {
-        boolean wasChanged = addOfferHistoryIfChanged(newRentalOffer);
-        this.name = newRentalOffer.getName();
-        this.price = newRentalOffer.getPrice();
-        this.link = newRentalOffer.getLink();
-        this.furnished = newRentalOffer.isFurnished();
-        return wasChanged;
+    public RentalOfferDetailsDTO toRentalOfferDetailsDTO() {
+        return new RentalOfferDetailsDTO(name, link, rentalStatus, postalCode, price, null, availableFrom, furnished, area, agency);
     }
 
-    private boolean addOfferHistoryIfChanged(RentalOffer newOfferVersion) {
-        List<FieldHistory> fieldHistories = new LinkedList<>();
+    public boolean updateFromDetails(RentalOfferDetailsDTO offerDetailsDTO) {
+        List<OfferHistory> offerChangeHistories = new LinkedList<>();
+        shouldBeNotifiedAbout = this.offerHistories.isEmpty();
 
-        if (newOfferVersion.getPrice() != this.price)
-            fieldHistories.add(new FieldHistory("price", String.valueOf(this.price), String.valueOf(newOfferVersion.price)));
-        if (!newOfferVersion.getLink().equals(this.link))
-            fieldHistories.add(new FieldHistory("link", String.valueOf(this.link), String.valueOf(newOfferVersion.link)));
-        if (newOfferVersion.getArea() != this.area)
-            fieldHistories.add(new FieldHistory("area", String.valueOf(this.area), String.valueOf(newOfferVersion.area)));
-
-        if (!fieldHistories.isEmpty()) {
-            this.offerHistories.addAll(fieldHistories.stream().map(fieldHistory -> new OfferHistory(Instant.now(), OfferStatus.UPDATED, fieldHistory)).collect(Collectors.toList()));
-            return true;
+        if (offerDetailsDTO.getStatus() != null && offerDetailsDTO.getStatus() != this.rentalStatus) {
+            if (offerDetailsDTO.isDeleted() && this.rentalStatus == RentalStatus.DELETED)
+                return false;
+            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.RENTAL_STATUS_FIELD, offerDetailsDTO.getStatus().getValue(), this.getRentalStatus().getValue(), this));
+            this.rentalStatus = offerDetailsDTO.getStatus();
         }
-        return false;
+        if (offerDetailsDTO.getName() != null && !offerDetailsDTO.getName().equals(this.name)) {
+            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
+            this.name = offerDetailsDTO.getName();
+        }
+        if (offerDetailsDTO.getPrice() != null && offerDetailsDTO.getPrice() != this.price) {
+            shouldBeNotifiedAbout = true;
+            offerChangeHistories.add(
+                    new OfferHistory(Instant.now(), RentalOfferFields.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
+            this.price = offerDetailsDTO.getPrice();
+        }
+        if (offerDetailsDTO.getIsFurnished() != null && offerDetailsDTO.getIsFurnished() != this.furnished) {
+            offerChangeHistories.add(
+                    new OfferHistory(Instant.now(), RentalOfferFields.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
+            this.furnished = offerDetailsDTO.getIsFurnished();
+        }
+        if (offerDetailsDTO.getAvailableFrom() != null && !offerDetailsDTO.getAvailableFrom().equals(this.availableFrom)) {
+            shouldBeNotifiedAbout = true;
+            offerChangeHistories.add(
+                    new OfferHistory(Instant.now(), RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
+            this.availableFrom = offerDetailsDTO.getAvailableFrom();
+        }
+        this.offerHistories.addAll(offerChangeHistories);
+        return !offerChangeHistories.isEmpty();
     }
 
     @Override

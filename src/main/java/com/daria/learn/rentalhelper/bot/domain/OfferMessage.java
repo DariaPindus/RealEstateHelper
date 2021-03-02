@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -13,13 +13,13 @@ public class OfferMessage {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "dd/MM/yyyy HH:mm" )
             .withZone(ZoneOffset.UTC);
 
-    private final List<RentalOfferDTO> offerDTOS;
+    private final List<OutboundRentalOfferDTO> offerDTOS;
     @Getter
     private final Instant time;
     @Getter
     private static final String parseMode = "HTML";
 
-    public OfferMessage(List<RentalOfferDTO> offerDTOS, Instant time) {
+    public OfferMessage(List<OutboundRentalOfferDTO> offerDTOS, Instant time) {
         this.offerDTOS = offerDTOS;
         this.time = time;
     }
@@ -38,7 +38,7 @@ public class OfferMessage {
             sb.append("<b>");
             sb.append(i + 1);
             sb.append("</b> ");
-            RentalOfferDTO offerDTO = offerDTOS.get(i);
+            OutboundRentalOfferDTO offerDTO = offerDTOS.get(i);
             sb.append("<a href=\"");
             sb.append(offerDTO.getLink());
             sb.append("\">");

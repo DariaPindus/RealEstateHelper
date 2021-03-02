@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 @ActiveProfiles({ApplicationProfiles.TEST_PROFILE, ApplicationProfiles.WITH_MOCK_TG_BOT})
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RentalNotifierIT {
+public @interface RentalNotifierTest {
 }

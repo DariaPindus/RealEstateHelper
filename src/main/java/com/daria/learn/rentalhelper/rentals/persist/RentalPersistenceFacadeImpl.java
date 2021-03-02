@@ -1,7 +1,8 @@
 package com.daria.learn.rentalhelper.rentals.persist;
 
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffer;
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.BriefRentalOfferDTO;
+import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
@@ -22,45 +25,62 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
     @Override
     @Transactional
-    public List<RentalOfferDTO> persistNewRentals(final List<RentalOfferDTO> rentalOfferDTOS) {
+    public List<BriefRentalOfferDTO> persistNewRentals(final List<BriefRentalOfferDTO> briefRentalOfferDTOS) {
         try {
-            Map<String, RentalOfferDTO> rentalSearchInfos = new HashMap<>();
-            rentalOfferDTOS.forEach(
+            Map<String, BriefRentalOfferDTO> rentalSearchInfos = new HashMap<>();
+            briefRentalOfferDTOS.forEach(
                     dto -> {
-                        String searchString = RentalOffer.generateSearchString(dto.getPostalCode(), dto.getArea(), dto.getAgency());
+                        String searchString = RentalOffer.generateSearchStringFromDTO(dto);
                         if (rentalSearchInfos.containsKey(searchString))
                             return;
                         rentalSearchInfos.put(searchString, dto);
                     }
             );
 
-            List<RentalOffer> existingOffers = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet());
-            List<RentalOffer> offersToPersist = new LinkedList<>();
-            List<RentalOfferDTO> offersToNotifyAbout = new ArrayList<>();
+            Set<String> existingOffersSearchStrings = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet())
+                    .stream()
+                    .map(RentalOffer::getSearchString)
+                    .collect(Collectors.toSet());
 
-            existingOffers.forEach(offer -> {
-                RentalOfferDTO offerDTO = rentalSearchInfos.get(offer.getSearchString());
-                RentalOffer offerFromDTO = RentalOffer.fromRentalOfferDTO(offerDTO);
-                if (!offer.equals(offerFromDTO))
-                    return;
-                boolean offerWasChanged = offer.updateIfChanged(offerFromDTO);
-                if (offerWasChanged) {
-                    offersToPersist.add(offer);
-                    offersToNotifyAbout.add(offerDTO);
-                }
-                rentalSearchInfos.remove(offer.getSearchString());
-            });
+            List<RentalOffer> newOffers = rentalSearchInfos.values().stream()
+                    .filter(rentalOfferDTO -> !existingOffersSearchStrings.contains(RentalOffer.generateSearchStringFromDTO(rentalOfferDTO)))
+                    .map(RentalOffer::fromBriefRentalOfferDTO).collect(toList());
+            rentalOfferRepository.saveAll(newOffers);
 
-            List<RentalOffer> newOffers = rentalSearchInfos.values().stream().map(RentalOffer::fromRentalOfferDTO).collect(Collectors.toList());
-            offersToPersist.addAll(newOffers);
-            rentalOfferRepository.saveAll(offersToPersist);
-
-            offersToNotifyAbout.addAll(rentalSearchInfos.values());
-            log.info("Persisted and should notify about new offers {} ", offersToNotifyAbout);
-            return offersToNotifyAbout;
+            log.info("Persisted new offers {} ", newOffers);
+            return briefRentalOfferDTOS;
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<String> getSourceOpenOffersUrls(String source) {
+        return rentalOfferRepository.findOpenRentalOffers(source).stream().map(RentalOffer::getLink).collect(toList());
+    }
+
+    @Override
+    @Transactional
+    //TODO: move logic for shouldbenotifiedabout ?
+    public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
+        Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
+
+        List<RentalOffer> existingOffers = rentalOfferRepository.findByLinkIn(new ArrayList<>(newRentalWithLinks.keySet()));
+        List<RentalOfferDetailsDTO> toNotifyAbout = new LinkedList<>();
+
+        for (RentalOffer existingOffer : existingOffers) {
+            if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
+                continue;
+            RentalOfferDetailsDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
+            existingOffer.updateFromDetails(detailsDTO);
+            if (existingOffer.shouldBeNotifiedAbout())
+                toNotifyAbout.add(existingOffer.toRentalOfferDetailsDTO());
+        }
+
+        rentalOfferRepository.saveAll(existingOffers);
+        log.info("Update rental details, should be notified about (" + toNotifyAbout.size() + ") : " + toNotifyAbout);
+
+        return toNotifyAbout;
     }
 }

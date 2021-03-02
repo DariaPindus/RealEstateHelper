@@ -6,10 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 @AllArgsConstructor
-public class UserBotInfo {
+public class UserBotInfo implements Serializable {
+    private static final long serialVersionUID = 4662180279480511941L;
+
     @Getter
     private final Long chatId;
     @Getter @Setter
@@ -26,4 +29,7 @@ public class UserBotInfo {
         this.userPreference = userPreference;
     }
 
+    public UserBotInfo(Long chatId) {
+        this.chatId = chatId;
+    }
 }

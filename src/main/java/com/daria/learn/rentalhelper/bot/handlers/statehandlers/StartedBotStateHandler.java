@@ -3,7 +3,7 @@ package com.daria.learn.rentalhelper.bot.handlers.statehandlers;
 import com.daria.learn.rentalhelper.bot.BotMessageSource;
 import com.daria.learn.rentalhelper.bot.exceptions.NoMatchingStateHandlersFoundException;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
-import com.daria.learn.rentalhelper.bot.persistence.UserCache;
+import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,11 +16,11 @@ public class StartedBotStateHandler implements UserBotStateHandler {
     private static final String SETUP_MESSAGE_KEY = "user.setup";
     private static final String START_MESSAGE_KEY = "user.start";
 
-    private final UserCache<Long> userCache;
+    private final UserRepository<Long> userRepository;
     private final BotMessageSource messageSource;
 
-    public StartedBotStateHandler(UserCache<Long> userCache, BotMessageSource messageSource) {
-        this.userCache = userCache;
+    public StartedBotStateHandler(UserRepository<Long> userRepository, BotMessageSource messageSource) {
+        this.userRepository = userRepository;
         this.messageSource = messageSource;
     }
 
@@ -45,7 +45,7 @@ public class StartedBotStateHandler implements UserBotStateHandler {
     }
 
     private SendMessage replyWithPreferences(Message message) {
-        userCache.setUserState(message.getChatId(), BotStateEnum.SET_PREFERENCES);
+        userRepository.setUserState(message.getChatId(), BotStateEnum.SET_PREFERENCES);
         String messageText = messageSource.getMessage("bot.set-preferences.reply", null, Locale.getDefault());
         SendMessage responseMessage = new SendMessage();
         responseMessage.setChatId(message.getChatId().toString());
@@ -54,7 +54,7 @@ public class StartedBotStateHandler implements UserBotStateHandler {
     }
 
     private SendMessage replyWithSubscription(Message message) {
-        userCache.setUserState(message.getChatId(), BotStateEnum.SUBSCRIBED);
+        userRepository.setUserState(message.getChatId(), BotStateEnum.SUBSCRIBED);
         String messageText = messageSource.getMessage("bot.subscribed.reply", null, Locale.getDefault());
         SendMessage responseMessage = new SendMessage();
         responseMessage.setChatId(message.getChatId().toString());

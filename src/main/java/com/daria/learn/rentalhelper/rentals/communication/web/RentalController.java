@@ -1,7 +1,6 @@
 package com.daria.learn.rentalhelper.rentals.communication.web;
 
 import com.daria.learn.rentalhelper.common.ApplicationProfiles;
-import com.daria.learn.rentalhelper.rentals.RentalNotificationFacade;
 import com.daria.learn.rentalhelper.rentals.domain.RentalOffersListDTO;
 import com.daria.learn.rentalhelper.rentals.jobs.ScheduledRentalFetchingJob;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,28 +13,27 @@ import org.springframework.web.bind.annotation.*;
 @Profile(ApplicationProfiles.NOT_TEST_PROFILE)
 public class RentalController {
 
-    private final RentalNotificationFacade notificationFacade;
     private final ScheduledRentalFetchingJob job;
     private final String SECRET_HEADER;
 
-    public RentalController(RentalNotificationFacade notificationFacade, ScheduledRentalFetchingJob job, @Value("${controller.header.x-secret.token}") String secretHeader) {
-        this.notificationFacade = notificationFacade;
+    public RentalController(ScheduledRentalFetchingJob job, @Value("${controller.header.x-secret.token}") String secretHeader) {
         this.job = job;
         this.SECRET_HEADER = secretHeader;
     }
 
-    @PostMapping("/rentals")
-    public ResponseEntity<Void> postNewRentalOffer(@RequestHeader("X-Secret") String secret, @RequestBody RentalOffersListDTO rentalOfferDTOs) {
-        if (secret == null || !secret.equals(SECRET_HEADER))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        try {
-            notificationFacade.saveAndNotifyNewRentals(rentalOfferDTOs.getRentalOfferDTOS());
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (Exception ex) {
-            System.out.println("[post new offers] " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+    //TODO:
+//    @PostMapping("/rentals")
+//    public ResponseEntity<Void> postNewRentalOffer(@RequestHeader("X-Secret") String secret, @RequestBody RentalOffersListDTO rentalOfferDTOs) {
+//        if (secret == null || !secret.equals(SECRET_HEADER))
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        try {
+//            notificationFacade.saveAndNotifyNewRentals(rentalOfferDTOs.getRentalOfferDTOS());
+//            return ResponseEntity.status(HttpStatus.OK).build();
+//        } catch (Exception ex) {
+//            System.out.println("[post new offers] " + ex.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     @PostMapping("/refresh")
     public ResponseEntity<Void> refresh(@RequestHeader("X-Secret") String secret) {

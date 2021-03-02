@@ -1,6 +1,5 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDTO;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -23,7 +22,7 @@ public class UserPreference {
         this.furnished = furnished;
     }
 
-    public boolean isMatching(RentalOfferDTO rentalOfferDTO) {
+    public boolean isMatching(OutboundRentalOfferDTO rentalOfferDTO) {
         boolean result = true;
 
         if (maxPrice != null)

@@ -4,13 +4,17 @@ import com.daria.learn.rentalhelper.bot.exceptions.ExceededMaximumSubscriptionsA
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class LocalUserCache implements UserCache<Long> {
+@Profile(ApplicationProfiles.LOCAL_USER_REPO)
+// Deprecated
+public class LocalUserRepository implements UserRepository<Long> {
 
     private static final int MAX_USERS_AMOUNT = 100;
     private final Map<Long, UserBotInfo> userBotMap = new HashMap<>();

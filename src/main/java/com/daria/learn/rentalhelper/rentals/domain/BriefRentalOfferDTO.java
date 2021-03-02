@@ -1,34 +1,35 @@
 package com.daria.learn.rentalhelper.rentals.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
-public class RentalOfferDTO implements Serializable {
+public class BriefRentalOfferDTO implements Serializable {
     private static final long serialVersionUID = 6825785700959279609L;
     @Getter
     private final String name;
     @Getter
     private final String postalCode;
     @Getter
-    private final double price;
-    @Getter
     private final int area;
     @Getter
     private final String agency;
     @Getter
-    private final boolean furnished;
-    @Getter
     private final String link;
+    @Getter
+    private final double price;
+    @Getter @Setter
+    private String source;
 
-    public RentalOfferDTO(String name, String postalCode, double price, int area, String agency, boolean furnished, String link) {
+    public BriefRentalOfferDTO(String name, String postalCode, int area, String agency, String link, double price, String source) {
         this.name = name;
         this.postalCode = postalCode;
-        this.price = price;
         this.area = area;
         this.agency = agency;
-        this.furnished = furnished;
         this.link = link;
+        this.price = price;
+        this.source = source;
     }
 
     @Override
@@ -38,12 +39,11 @@ public class RentalOfferDTO implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof RentalOfferDTO))
+        if (!(obj instanceof BriefRentalOfferDTO))
             return false;
-        RentalOfferDTO that = (RentalOfferDTO)obj;
+        BriefRentalOfferDTO that = (BriefRentalOfferDTO)obj;
         return that.postalCode.equals(this.postalCode)
                 && that.name.equals(this.name)
-                && that.price == this.price
                 && that.agency.equals(this.agency);
     }
 
@@ -52,11 +52,10 @@ public class RentalOfferDTO implements Serializable {
         return "RentalOfferDTO{" +
                 "name='" + name + '\'' +
                 ", postalCode='" + postalCode + '\'' +
-                ", price=" + price +
                 ", area=" + area +
                 ", agency='" + agency + '\'' +
-                ", furnished=" + furnished +
                 ", link='" + link + '\'' +
+                ", source='" + source + '\'' +
                 '}';
     }
 }
