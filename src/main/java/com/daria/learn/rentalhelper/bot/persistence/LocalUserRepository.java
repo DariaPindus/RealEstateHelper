@@ -4,12 +4,15 @@ import com.daria.learn.rentalhelper.bot.exceptions.ExceededMaximumSubscriptionsA
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@Component
+@Component
+@Profile(ApplicationProfiles.LOCAL_USER_REPO)
 // Deprecated
 public class LocalUserRepository implements UserRepository<Long> {
 

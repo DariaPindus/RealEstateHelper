@@ -22,6 +22,6 @@ public interface RentalOfferRepository extends CrudRepository<RentalOffer, Integ
     @Query("SELECT DISTINCT ro FROM RentalOffer ro left join fetch ro.offerHistories oh where ro.link in ?1")
     List<RentalOffer> findByLinkIn(List<String> searchLinks);
 
-    @Query("SELECT DISTINCT ro FROM RentalOffer ro JOIN FETCH ro.offerHistories offerHistories where ro.id=?1")
+    @Query("SELECT DISTINCT ro FROM RentalOffer ro left JOIN FETCH ro.offerHistories offerHistories where ro.id=?1")
     Optional<RentalOffer> findByIdWithOfferHistories(Integer id);
 }

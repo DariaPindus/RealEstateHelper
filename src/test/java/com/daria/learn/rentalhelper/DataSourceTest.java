@@ -5,17 +5,20 @@ import com.daria.learn.rentalhelper.rentals.domain.RentalOfferDetailsDTO;
 import com.daria.learn.rentalhelper.rentals.domain.RentalStatus;
 import com.daria.learn.rentalhelper.rentals.sources.DataSource;
 import com.daria.learn.rentalhelper.rentals.sources.ParariusSource;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataSourceTest {
 
     private DataSource parariusDataSource = new ParariusSource();
-    private List<BriefRentalOfferDTO> briefRentalOfferDTOList;
+    private List<BriefRentalOfferDTO> briefRentalOfferDTOList = null;
 
     @Test
     @Order(1)
@@ -35,14 +38,17 @@ public class DataSourceTest {
     @Test
     @Order(2)
     public void test_fetchOfferDetail() {
+        briefRentalOfferDTOList = parariusDataSource.getOffers();
         String url = briefRentalOfferDTOList.get(0).getLink();
         RentalOfferDetailsDTO detailsDTO = parariusDataSource.fetchOfferDetail(url);
         assertNotSame(detailsDTO.getStatus(), RentalStatus.DELETED);
         assertTrue(detailsDTO.getPrice() > 0);
-        assertNotNull(detailsDTO.getAvailableFrom());
+//        assertNotNull(detailsDTO.getAvailableFrom()); //not for sure
     }
 
     private boolean isNullOrEmpty(String str) {
         return str == null || str.isEmpty() || str.isBlank();
     }
+
+
 }

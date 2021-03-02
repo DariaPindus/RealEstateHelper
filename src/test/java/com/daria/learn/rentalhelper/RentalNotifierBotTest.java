@@ -5,9 +5,12 @@ import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.handlers.BotHandlerFacadeImpl;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -22,9 +25,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @AutoConfigureMockMvc
-@RentalNotifierIT
-@TestPropertySource(locations = {"classpath:inmemory-persistence.properties"})
-public class RentalNotifierBotIT {
+@TestPropertySource(locations="classpath:test.properties")
+@SpringBootTest
+@ActiveProfiles({ApplicationProfiles.TEST_PROFILE, ApplicationProfiles.WITH_MOCK_TG_BOT, ApplicationProfiles.LOCAL_USER_REPO})
+//@TestPropertySource(locations = {"classpath:inmemory-persistence.properties"})
+public class RentalNotifierBotTest {
 
     @Autowired
     BotHandlerFacadeImpl botHandlerFacade;

@@ -5,9 +5,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@RentalNotifierIT
+@RentalNotifierTest
 @Testcontainers
-public class DatabaseITBase {
+// Deprecated
+public class DatabaseTestBase {
     static final MySQLContainer DATABASE = new MySQLContainer("mysql:8.0");
 
     static {

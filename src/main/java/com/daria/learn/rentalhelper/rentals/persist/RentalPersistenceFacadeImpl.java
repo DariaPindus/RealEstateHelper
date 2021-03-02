@@ -62,6 +62,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
     @Override
     @Transactional
+    //TODO: move logic for shouldbenotifiedabout ?
     public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
         Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
 

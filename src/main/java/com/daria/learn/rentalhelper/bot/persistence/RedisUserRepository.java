@@ -3,8 +3,11 @@ package com.daria.learn.rentalhelper.bot.persistence;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
+import com.daria.learn.rentalhelper.common.ApplicationProfiles;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
@@ -13,7 +16,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Repository
+@Component
+@Profile(ApplicationProfiles.NON_LOCAL_USER_REPO)
 public class RedisUserRepository implements UserRepository<Long> {
     private final String USER_HASH = "USER";
 

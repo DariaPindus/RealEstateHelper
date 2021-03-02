@@ -27,6 +27,7 @@ public class RentalOffer extends BaseEntity<Integer> {
     @Getter @Setter
     private String agency;
     @Getter @Setter
+    //TODO: nullable?
     private boolean furnished;
     @Getter @Setter
     @Column(unique = true)
