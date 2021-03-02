@@ -18,9 +18,15 @@ stages:
 maven-test:
   image: maven:3-jdk-11
   stage: test
+  services:
+    - mysql:latest
+  variables:
+    # Configure mysql environment variables (https://hub.docker.com/_/mysql/)
+    MYSQL_DATABASE: $TEST_DB
+    MYSQL_ROOT_PASSWORD: $TEST_PASS
   script:
     - echo "Testing app..."
-    - mvn clean test
+    - mvn -DDB_TEST_URL=$TEST_DB_URL -DDB_TEST_USER=root -DDB_TEST_PASSWORD=$TEST_PASS clean test
 
 maven-package:
   image: maven:3-jdk-11
