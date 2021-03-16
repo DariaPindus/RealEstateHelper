@@ -26,7 +26,7 @@ maven-test:
     MYSQL_ROOT_PASSWORD: $TEST_PASS
   script:
     - echo "Testing app..."
-    - mvn -DDB_TEST_URL=$TEST_DB_URL -DDB_TEST_USER=root -DDB_TEST_PASSWORD=$TEST_PASS clean test
+    - mvn clean test
 
 maven-package:
   image: maven:3-jdk-11
