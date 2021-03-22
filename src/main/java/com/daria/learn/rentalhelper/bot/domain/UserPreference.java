@@ -3,9 +3,11 @@ package com.daria.learn.rentalhelper.bot.domain;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class UserPreference {
+public class UserPreference implements Serializable {
+    private static final long serialVersionUID = -2886920347632094707L;
     @Getter @Nullable
     private final Double maxPrice;
     @Getter @Nullable

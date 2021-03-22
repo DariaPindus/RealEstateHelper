@@ -68,6 +68,9 @@ Bot creation is pretty straight-forward. Details could be found here: https://co
 ### Docker
 For correct docker-compose execution with `docker-compose run` file with name ".env" should exist in current (app) folder.
 
+For local Docker startup execute:  
+` docker run --name my-redis -p 6379:6379 -v ~/redis-pers:/data redis:rc-alpine`  
+`docker run --name my-activemq -p 61616:61616 -p 8161:8161 -d rmohr/activemq:5.15.9`
 
 ### Tests
 Tests use Testcontainer. They should be run in configured docker environment.   
