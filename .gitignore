@@ -37,6 +37,7 @@ out/
 credentials.txt
 logs/
 rental-logs/
+*-logs/
 
 *.pem
 .env

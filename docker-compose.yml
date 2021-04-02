@@ -23,19 +23,39 @@ services:
       - 8161:8161   # web    http://boot2docker:8161/admin (admin:admin)
     networks:
       - common-network
-  main-service:
-    image: dariap/rental-helper-bot:latest
+  rental-fetcher-service:
+    image: dariap/rental-fetcher:latest
     depends_on:
       - db-service
       - activemq
       - redis
     ports:
-      - 8888:8888
-      - 8080:8080
+      - 9010:9010
     environment:
       - DB_URL=jdbc:mysql://db-service:3306/rental_fetches?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useSSL=false&allowPublicKeyRetrieval=true
       - DB_USER=appuser
       - DB_PASSWORD=${MYSQL_PASSWORD_ENV}
+#      - BOT_TOKEN=${BOT_TOKEN_ENV}
+      - SECRET_HEADER_TOKEN=${SECRET_HEADER_ENV}
+      - ACTIVEMQ_PASSWORD=amq
+      - ACTIVEMQ_USERNAME=amq
+      - ACTIVEMQ_URL=tcp://activemq:61616
+#      - REDIS_HOST=redis
+    container_name: main-service
+    networks:
+      - common-network
+    volumes:
+    - /data/rental-fetcher-logs:/rental-fetcher-logs
+  bot-service:
+    image: dariap/rental-bot:latest
+    depends_on:
+      - db-service
+      - activemq
+      - redis
+      - rental-fetcher-service
+    ports:
+      - 9011:9011
+    environment:
       - BOT_TOKEN=${BOT_TOKEN_ENV}
       - SECRET_HEADER_TOKEN=${SECRET_HEADER_ENV}
       - ACTIVEMQ_PASSWORD=amq
@@ -46,8 +66,7 @@ services:
     networks:
       - common-network
     volumes:
-#    - $HOME/rental-logs:/opt/jboss/wildfly/bin/rental-logs
-    - /data/rental-logs:/rental-logs
+      - /data/bot-logs:/bot-logs
   redis:
     image: redis:rc-alpine
     ports:
