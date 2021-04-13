@@ -1,24 +1,26 @@
 package com.daria.learn.rentalhelper.dtos;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 
+@NoArgsConstructor
 public class BriefRentalOfferDTO implements Serializable {
     private static final long serialVersionUID = 6825785700959279609L;
-    @Getter
-    private final String name;
-    @Getter
-    private final String postalCode;
-    @Getter
-    private final int area;
-    @Getter
-    private final String agency;
-    @Getter
-    private final String link;
-    @Getter
-    private final double price;
+    @Getter @Setter
+    private String name;
+    @Getter @Setter
+    private String postalCode;
+    @Getter @Setter
+    private int area;
+    @Getter @Setter
+    private String agency;
+    @Getter @Setter
+    private String link;
+    @Getter @Setter
+    private double price;
     @Getter @Setter
     private String source;
 

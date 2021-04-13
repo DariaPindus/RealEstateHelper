@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface RentalOfferRepository extends CrudRepository<RentalOffer, Integ
 
     @Query("SELECT DISTINCT ro FROM RentalOffer ro left JOIN FETCH ro.offerHistories offerHistories where ro.id=?1")
     Optional<RentalOffer> findByIdWithOfferHistories(Integer id);
+
+    List<RentalOffer> findAllByCreationTimeAfter(Instant time);
 }

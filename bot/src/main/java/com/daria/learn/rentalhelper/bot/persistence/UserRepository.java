@@ -3,8 +3,8 @@ package com.daria.learn.rentalhelper.bot.persistence;
 import com.daria.learn.rentalhelper.bot.handlers.BotStateEnum;
 import com.daria.learn.rentalhelper.bot.domain.UserBotInfo;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,5 +83,10 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
         log.info("Update rental details, should be notified about (" + toNotifyAbout.size() + ") : " + toNotifyAbout);
 
         return toNotifyAbout;
+    }
+
+    @Override
+    public List<BriefRentalOfferDTO> getAllAfter(Instant time) {
+        return rentalOfferRepository.findAllByCreationTimeAfter(time).stream().map(RentalOffer::toBriefRentalOfferDTO).collect(toUnmodifiableList());
     }
 }

@@ -86,6 +86,10 @@ public class RentalOffer extends BaseEntity<Integer> {
                 offerDTO.getLink(), offerDTO.getSource());
     }
 
+    public BriefRentalOfferDTO toBriefRentalOfferDTO() {
+        return new BriefRentalOfferDTO(name, postalCode, area, agency, link, price, source);
+    }
+
     public RentalOfferDetailsDTO toRentalOfferDetailsDTO() {
         return new RentalOfferDetailsDTO(name, link, RentalStatusDTO.fromValue(rentalStatus.getValue()), postalCode, price, null, availableFrom, furnished, area, agency);
     }
