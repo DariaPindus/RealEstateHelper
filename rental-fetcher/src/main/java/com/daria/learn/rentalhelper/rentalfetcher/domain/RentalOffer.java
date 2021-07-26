@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @NoArgsConstructor
@@ -94,7 +95,7 @@ public class RentalOffer extends BaseEntity<Integer> {
         List<OfferHistory> offerChangeHistories = new LinkedList<>();
         shouldBeNotifiedAbout = this.offerHistories.isEmpty();
 
-        RentalStatus newRentalStatus = RentalStatus.fromValue(offerDetailsDTO.getStatus().getValue());
+        RentalStatus newRentalStatus = Optional.ofNullable(offerDetailsDTO.getStatus()).map(RentalStatusDTO::getValue).map(RentalStatus::fromValue).orElse(RentalStatus.OTHER);
         if (offerDetailsDTO.getStatus() != null && newRentalStatus != this.rentalStatus) {
             if (offerDetailsDTO.isDeleted() && this.rentalStatus == RentalStatus.DELETED)
                 return false;
