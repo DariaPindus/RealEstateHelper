@@ -19,9 +19,11 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
 
     private static final Logger log = LoggerFactory.getLogger(RentalPersistenceFacadeImpl.class);
     private final RentalOfferRepository rentalOfferRepository;
+    private final TestHystrix testHystrix;
 
-    public RentalPersistenceFacadeImpl(RentalOfferRepository rentalOfferRepository) {
+    public RentalPersistenceFacadeImpl(RentalOfferRepository rentalOfferRepository, TestHystrix testHystrix) {
         this.rentalOfferRepository = rentalOfferRepository;
+        this.testHystrix = testHystrix;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class RentalPersistenceFacadeImpl implements RentalPersistenceFacade {
     public List<RentalOfferDetailsDTO> updateRentalDetails(List<RentalOfferDetailsDTO> allRentals) {
         Map<String, RentalOfferDetailsDTO> newRentalWithLinks = allRentals.stream().collect(toMap(RentalOfferDetailsDTO::getLink, offerDTO -> offerDTO));
 
-        List<RentalOffer> existingOffers = rentalOfferRepository.findByLinkIn(new ArrayList<>(newRentalWithLinks.keySet()));
+        List<RentalOffer> existingOffers = testHystrix.getExistingOffersFromLinksSet(newRentalWithLinks.keySet());
         List<RentalOfferDetailsDTO> toNotifyAbout = new LinkedList<>();
 
         for (RentalOffer existingOffer : existingOffers) {

@@ -20,12 +20,13 @@ public class ParariusOfferDetailsParser extends ParariusParser implements OfferD
             Map.of("for rent", RentalStatus.AVAILABLE,
                     "under option", RentalStatus.UNDER_OPTION,
                     "deleted", RentalStatus.DELETED);
+    private static final RentalStatus DEFAULT_STATUS = RentalStatus.OTHER;
 
     @Override
     public RentalOfferDetailsDTO parseOfferDetailsDTO(Element rootElement, String link) {
         double price = parsePrice(rootElement);
         String name = rootElement.getElementsByClass("listing-detail-summary__title").text().replace("For rent:", "");
-        Optional<RentalStatus> status = getStatus(rootElement);
+        RentalStatus status = getStatus(rootElement);
         String postalCode = parsePostalCode(rootElement.getElementsByClass("listing-detail-summary__location").text());
         Boolean includingServices = parseServices(rootElement);
         Instant availableFrom = parseAvailabilityDate(rootElement);
@@ -33,7 +34,7 @@ public class ParariusOfferDetailsParser extends ParariusParser implements OfferD
         Boolean isFurnished = parseFurnished(rootElement);
         String agency = parseAgency(rootElement);
 
-        RentalStatusDTO statusDTO = status.map(rentalStatus -> RentalStatusDTO.fromValue(rentalStatus.getValue())).orElse(null);
+        RentalStatusDTO statusDTO = RentalStatusDTO.fromValue(status.getValue());
         return new RentalOfferDetailsDTO(name, link, statusDTO, postalCode,
                 price, includingServices, availableFrom, isFurnished, area, agency);
     }
@@ -88,11 +89,11 @@ public class ParariusOfferDetailsParser extends ParariusParser implements OfferD
         return descrText.toLowerCase().contains("includes");
     }
 
-    private Optional<RentalStatus> getStatus(Element rootElement) {
+    private RentalStatus getStatus(Element rootElement) {
         String text = rootElement.getElementsByClass("listing-features__description listing-features__description--status").text();
         if (text == null || text.isEmpty())
-            return Optional.empty();
+            return DEFAULT_STATUS;
         String formatted = text.trim().toLowerCase();
-        return Optional.ofNullable(statusMap.get(formatted));
+        return Optional.ofNullable(statusMap.get(formatted)).orElse(DEFAULT_STATUS);
     }
 }

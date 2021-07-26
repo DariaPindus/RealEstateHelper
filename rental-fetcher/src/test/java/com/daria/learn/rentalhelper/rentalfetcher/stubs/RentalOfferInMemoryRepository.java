@@ -22,8 +22,7 @@ public class RentalOfferInMemoryRepository extends InMemoryRepository<RentalOffe
     }
 
     @Override
-    public List<RentalOffer> findByLinkIn(List<String> searchLinks) {
-        Set<String> linkSet = new HashSet<>(searchLinks);
+    public List<RentalOffer> findByLinkIn(Collection<String> searchLinks) {
         return storage.values().stream().filter(rentalOffer -> searchLinks.contains(rentalOffer.getSearchString())).collect(toList());
     }
 

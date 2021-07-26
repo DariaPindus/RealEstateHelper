@@ -40,6 +40,7 @@ Add this config to conf file (location in Unix: /path/to/apache-activemq-X/conf/
 Keep in mind, \<PASSWORD> should be configured as env variable for Docker compose
 
 ### Wildfly
+**!Not used anymore!**  
 Download [wildfly](https://www.wildfly.org/downloads/)  
 Once downloaded, unzip and browse to WILDFLY_HOME/bin and run the add-user (.sh/.bat) script  
 http://127.0.0.1:9990/console/index.html  
@@ -65,12 +66,14 @@ Bot creation is pretty straight-forward. Details could be found here: https://co
 > Once you've created a bot and received your authorization token, head down to the Bot API manual to see what you can teach your bot to do.
 
 
-### Docker
+### Local startup
 For correct docker-compose execution with `docker-compose run` file with name ".env" should exist in current (app) folder.
 
 For local Docker startup execute:  
 ` docker run --name my-redis -p 6379:6379 -v ~/redis-pers:/data redis:rc-alpine`  
-`docker run --name my-activemq -p 61616:61616 -p 8161:8161 -d rmohr/activemq:5.15.9`
+`docker run --name my-activemq -p 61616:61616 -p 8161:8161 -d rmohr/activemq:5.15.9`  
+
+Currently app requires `config-server` and `discovery-service` app running
 
 ### Tests
 Tests use Testcontainer. They should be run in configured docker environment.   
