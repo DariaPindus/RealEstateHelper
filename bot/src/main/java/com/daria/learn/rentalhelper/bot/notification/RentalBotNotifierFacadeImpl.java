@@ -4,8 +4,7 @@ import com.daria.learn.rentalhelper.bot.domain.BotOutgoingMessage;
 import com.daria.learn.rentalhelper.bot.domain.OfferMessage;
 import com.daria.learn.rentalhelper.bot.domain.UserPreference;
 import com.daria.learn.rentalhelper.bot.persistence.UserRepository;
-import com.daria.learn.rentalhelper.dtos.OutboundRentalOfferDTO;
-import com.daria.learn.rentalhelper.dtos.RentalOffersListDTO;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -25,13 +24,13 @@ public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
     }
 
     @Override
-    public void notifySubscribedUsers(RentalOffersListDTO rentalOffersListDTO) {
+    public void notifySubscribedUsers(List<DetailRentalOffersDTO> rentalOffersListDTO) {
         List<BotOutgoingMessage> messagesToSend = userCache.getSubscribedUserInfos().stream()
                 .map(userBotInfo -> {
-                    RentalOffersListDTO personalisedOffers = getPersonalisedRentalList(rentalOffersListDTO, userBotInfo.getUserPreference());
-                    if (personalisedOffers.size() < 1)
+                    List<DetailRentalOffersDTO> personalisedOffers = getPersonalisedRentalList(rentalOffersListDTO, userBotInfo.getUserPreference());
+                    if (personalisedOffers.isEmpty())
                         return null;
-                    String messageText = new OfferMessage(personalisedOffers.getRentalOfferDTOS(), Instant.now()).getMessage();
+                    String messageText = new OfferMessage(personalisedOffers, Instant.now()).getMessage();
                     return new BotOutgoingMessage(messageText, userBotInfo.getChatId().toString());
                 })
                 .filter(Objects::nonNull)
@@ -39,10 +38,10 @@ public class RentalBotNotifierFacadeImpl implements RentalBotNotifierFacade {
         notifierBot.sendMessagesToUsers(messagesToSend);
     }
 
-    private RentalOffersListDTO getPersonalisedRentalList(RentalOffersListDTO allRentals, UserPreference userPreference) {
+    private List<DetailRentalOffersDTO> getPersonalisedRentalList(List<DetailRentalOffersDTO> allRentals, UserPreference userPreference) {
         if (userPreference == null)
             return allRentals;
-        List<OutboundRentalOfferDTO> offersListDTOS = allRentals.getRentalOfferDTOS().stream().filter(userPreference::isMatching).collect(Collectors.toList());
-        return new RentalOffersListDTO(offersListDTOS);
+        List<DetailRentalOffersDTO> offersListDTOS = allRentals.stream().filter(userPreference::isMatching).collect(Collectors.toList());
+        return offersListDTOS;
     }
 }

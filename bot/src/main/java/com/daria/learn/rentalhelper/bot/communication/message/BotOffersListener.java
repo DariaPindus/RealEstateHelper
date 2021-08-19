@@ -1,7 +1,7 @@
 package com.daria.learn.rentalhelper.bot.communication.message;
 
 import com.daria.learn.rentalhelper.bot.notification.RentalBotNotifierFacade;
-import com.daria.learn.rentalhelper.dtos.RentalOffersListDTO;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersListDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BotOffersListener implements MessageListener {
@@ -26,10 +28,11 @@ public class BotOffersListener implements MessageListener {
     public void onMessage(Message message) {
         try{
             ObjectMessage objectMessage = (ObjectMessage)message;
-            RentalOffersListDTO offerDTOS = (RentalOffersListDTO)objectMessage.getObject();
-            log.info("Bot offer listener received {} new offers", offerDTOS.size());
-            if (offerDTOS.size() > 0)
-                botNotifierFacade.notifySubscribedUsers(offerDTOS);
+            Optional<DetailRentalOffersListDTO> offerDTOS = Optional.ofNullable((DetailRentalOffersListDTO)objectMessage.getObject());
+            int size = offerDTOS.map(DetailRentalOffersListDTO::getOffersList).map(List::size).orElse(0);
+            log.info("Bot offer listener received {} new offers", size);
+            if (size > 0)
+                botNotifierFacade.notifySubscribedUsers(offerDTOS.get().getOffersList());
         } catch(Exception e) {
             log.error("Exception in bot offer listener: {}", e.getMessage());
         }

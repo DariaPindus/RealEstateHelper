@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.dtos.OutboundRentalOfferDTO;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -25,7 +25,7 @@ public class UserPreference implements Serializable {
         this.furnished = furnished;
     }
 
-    public boolean isMatching(OutboundRentalOfferDTO rentalOfferDTO) {
+    public boolean isMatching(DetailRentalOffersDTO rentalOfferDTO) {
         boolean result = true;
 
         if (maxPrice != null)
@@ -33,7 +33,7 @@ public class UserPreference implements Serializable {
         if (minArea != null)
             result &= rentalOfferDTO.getArea() >= minArea;
         if (furnished != null)
-            result &= rentalOfferDTO.isFurnished() == furnished;
+            result &= rentalOfferDTO.getIsFurnished() == furnished;
 
         return result;
     }

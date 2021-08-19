@@ -1,6 +1,6 @@
 package com.daria.learn.rentalhelper.bot.domain;
 
-import com.daria.learn.rentalhelper.dtos.OutboundRentalOfferDTO;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -13,13 +13,13 @@ public class OfferMessage {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "dd/MM/yyyy HH:mm" )
             .withZone(ZoneOffset.UTC);
 
-    private final List<OutboundRentalOfferDTO> offerDTOS;
+    private final List<DetailRentalOffersDTO> offerDTOS;
     @Getter
     private final Instant time;
     @Getter
     private static final String parseMode = "HTML";
 
-    public OfferMessage(List<OutboundRentalOfferDTO> offerDTOS, Instant time) {
+    public OfferMessage(List<DetailRentalOffersDTO> offerDTOS, Instant time) {
         this.offerDTOS = offerDTOS;
         this.time = time;
     }
@@ -38,7 +38,7 @@ public class OfferMessage {
             sb.append("<b>");
             sb.append(i + 1);
             sb.append("</b> ");
-            OutboundRentalOfferDTO offerDTO = offerDTOS.get(i);
+            DetailRentalOffersDTO offerDTO = offerDTOS.get(i);
             sb.append("<a href=\"");
             sb.append(offerDTO.getLink());
             sb.append("\">");
@@ -46,7 +46,7 @@ public class OfferMessage {
             sb.append("</a>");
             sb.append("  Address: ");
             sb.append(offerDTO.getPostalCode());
-            sb.append(offerDTO.isFurnished() ? ". Furnished. " : ". Not furnished. ");
+            sb.append(offerDTO.getIsFurnished() ? ". Furnished. " : ". Not furnished. ");
             sb.append(offerDTO.getArea());
             sb.append(" m2. ");
             sb.append("Price: ");

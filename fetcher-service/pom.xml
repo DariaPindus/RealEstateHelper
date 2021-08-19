@@ -2,53 +2,58 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>rental-helper-api</module>
-    </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.5.RELEASE</version>
+        <version>2.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.daria.learn</groupId>
-    <artifactId>rental-helper</artifactId>
+    <artifactId>fetcher-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rental-helper</name>
-    <packaging>pom</packaging>
+    <name>fetcher-service</name>
     <description>Demo project for Spring Boot</description>
-
     <properties>
         <java.version>11</java.version>
-        <deploy.jboss.host>127.0.0.1</deploy.jboss.host>
-        <deploy.jboss.port>9990</deploy.jboss.port>
-        <deploy.jboss.username>appuser</deploy.jboss.username>
-        <deploy.jboss.password>!WE9_s;uw$?v</deploy.jboss.password>
-        <junit.jupiter.version>5.7.0</junit.jupiter.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
     </properties>
-
-    <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.daria.learn.rentalhelper</groupId>
+            <artifactId>rental-helper-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

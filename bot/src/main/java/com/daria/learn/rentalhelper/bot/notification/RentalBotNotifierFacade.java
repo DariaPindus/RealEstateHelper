@@ -1,7 +1,10 @@
 package com.daria.learn.rentalhelper.bot.notification;
 
-import com.daria.learn.rentalhelper.dtos.RentalOffersListDTO;
+
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
+
+import java.util.List;
 
 public interface RentalBotNotifierFacade {
-    void notifySubscribedUsers(RentalOffersListDTO rentalOffersListDTO);
+    void notifySubscribedUsers(List<DetailRentalOffersDTO> rentalOffersListDTO);
 }
