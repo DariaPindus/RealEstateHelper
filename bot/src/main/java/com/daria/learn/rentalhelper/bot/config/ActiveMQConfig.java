@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
@@ -32,14 +33,13 @@ public class ActiveMQConfig {
         activeMQConnectionFactory.setPassword(password);
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
         activeMQConnectionFactory.setTrustedPackages(List.of(trustedPackages.split(",")));
-        return  activeMQConnectionFactory;
+        return new CachingConnectionFactory(activeMQConnectionFactory);
     }
 
     @Bean
     public JmsTemplate jmsTemplate(@Autowired ConnectionFactory connectionFactory){
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setConnectionFactory(connectionFactory);
-        jmsTemplate.setPubSubDomain(true);  // enable for Pub Sub to topic. Not Required for Queue.
         return jmsTemplate;
     }
 
@@ -47,7 +47,6 @@ public class ActiveMQConfig {
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(@Autowired ConnectionFactory connectionFactory){
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setPubSubDomain(true);
         return factory;
     }
 }

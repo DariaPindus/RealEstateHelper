@@ -3,7 +3,7 @@ package com.daria.learn.rentalhelper.core;
 import com.daria.learn.rentalhelper.dtos.BriefRentalOfferDTO;
 import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
 import com.daria.learn.rentalhelper.dtos.RentalStatusDTO;
-import com.daria.learn.rentalhelper.core.domain.OfferHistory;
+import com.daria.learn.rentalhelper.core.domain.FieldChange;
 import com.daria.learn.rentalhelper.core.domain.RentalOffer;
 import com.daria.learn.rentalhelper.core.domain.RentalOfferFields;
 import com.daria.learn.rentalhelper.core.domain.RentalStatus;
@@ -57,7 +57,7 @@ public class RentalPersistenceTest {
                 .orElseThrow(() -> new RuntimeException("Rental offer with link " + link + " wasn't saved."));
         assertTrue(isSameRentalOffer(newRentalOffers.get(0), persistedOffer));
 
-        List<OfferHistory> offerHistories1 = rentalOfferRepository.findByIdWithOfferHistories(persistedOffers.get(0).getId())
+        List<FieldChange> offerHistories1 = rentalOfferRepository.findByIdWithOfferHistories(persistedOffers.get(0).getId())
                 .map(RentalOffer::getOfferHistories)
                 .orElseThrow(() -> new RuntimeException("Expected rental offer " + persistedOffers.get(0).getId() + " wasn't found"));
         assertEquals(0, offerHistories1.size());
@@ -112,13 +112,13 @@ public class RentalPersistenceTest {
         assertEquals(updatedPrice, updatedOffer.getPrice(), 0.001);
         assertEquals(updatedAvailability, updatedOffer.getAvailableFrom());
 
-        List<OfferHistory> offerHistories = rentalOfferRepository.findByIdWithOfferHistories(updatedOffer.getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldChange> offerHistories = rentalOfferRepository.findByIdWithOfferHistories(updatedOffer.getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
         assertEquals(3, offerHistories.size());
-        assertTrue(offerHistories.stream().anyMatch(offerHistory -> offerHistory.getFieldName().equals(RentalOfferFields.PRICE_FIELD)));
-        assertTrue(offerHistories.stream().anyMatch(offerHistory -> offerHistory.getFieldName().equals(RentalOfferFields.AVAILABLE_FROM_FIELD)));
+        assertTrue(offerHistories.stream().anyMatch(fieldChange -> fieldChange.getFieldName().equals(RentalOfferFields.PRICE_FIELD)));
+        assertTrue(offerHistories.stream().anyMatch(fieldChange -> fieldChange.getFieldName().equals(RentalOfferFields.AVAILABLE_FROM_FIELD)));
 
         RentalOffer consistentOffer = StreamSupport.stream(allOffers.spliterator(), false).filter(offer -> offer.getName().equals(newOffer2.getName())).findFirst().get();
-        List<OfferHistory> consistentOfferHistories = rentalOfferRepository.findByIdWithOfferHistories(consistentOffer.getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
+        List<FieldChange> consistentOfferHistories = rentalOfferRepository.findByIdWithOfferHistories(consistentOffer.getId()).map(RentalOffer::getOfferHistories).orElse(List.of());
         assertEquals(1, consistentOfferHistories.size());
 
         DetailRentalOffersDTO updatedAgainOfferDTO = fromBriefRentalOfferDTOUpdated(newOffer1, initialPrice, updatedAvailability);
@@ -127,7 +127,7 @@ public class RentalPersistenceTest {
         offerHistories = updatedOffer.getOfferHistories();
         assertEquals(initialPrice, updatedOffer.getPrice(), 0.001);
         assertEquals(4, offerHistories.size());
-        assertEquals(2, offerHistories.stream().filter(offerHistory -> offerHistory.getFieldName().equals(RentalOfferFields.PRICE_FIELD)).count());
+        assertEquals(2, offerHistories.stream().filter(fieldChange -> fieldChange.getFieldName().equals(RentalOfferFields.PRICE_FIELD)).count());
     }
 
     @Test
@@ -183,17 +183,17 @@ public class RentalPersistenceTest {
         assertSame(deletedRental.getRentalStatus(), RentalStatus.DELETED);
         assertEquals(1000, deletedRental.getPrice(), 0.001);
         assertEquals("Apartment 12", deletedRental.getName());
-        assertEquals(55, deletedRental.getArea());
+        assertEquals(Integer.valueOf(55), deletedRental.getArea());
 
-        List<OfferHistory> offerHistories = deletedRental.getOfferHistories();
+        List<FieldChange> offerHistories = deletedRental.getOfferHistories();
         assertEquals(1, offerHistories.size());
-        List<OfferHistory> deletedHistories = offerHistories.stream()
-                .filter(offerHistory -> offerHistory.getFieldName().equals(RentalOfferFields.RENTAL_STATUS_FIELD))
+        List<FieldChange> deletedHistories = offerHistories.stream()
+                .filter(fieldChange -> fieldChange.getFieldName().equals(RentalOfferFields.RENTAL_STATUS_FIELD))
                 .collect(toList());
         assertEquals(1, deletedHistories.size());
         assertEquals(RentalStatus.DELETED.getValue(), deletedHistories.get(0).getNewValue());
 
-        List<RentalOffer> openOffers = rentalOfferRepository.findOpenRentalOffersOfSource(SOURCE);
+        List<RentalOffer> openOffers = rentalOfferRepository.findBySource(SOURCE);
         assertTrue(openOffers.stream().noneMatch(offer -> offer.getId().equals(deletedRental.getId())));
     }
 

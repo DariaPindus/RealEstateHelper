@@ -8,21 +8,19 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 //TODO: inheritance ?? (parent class)
 @Component
-public class RentalGeneralListener implements MessageListener {
-    private static final Logger log = LoggerFactory.getLogger(RentalGeneralListener.class);
+public class RentalFetcherListener {
+    private static final Logger log = LoggerFactory.getLogger(RentalFetcherListener.class);
 
     private final RentalOfferFacade rentalOfferFacade;
 
-    public RentalGeneralListener(RentalOfferFacade rentalOfferFacade) {
+    public RentalFetcherListener(RentalOfferFacade rentalOfferFacade) {
         this.rentalOfferFacade = rentalOfferFacade;
     }
 
-    @Override
     @JmsListener(destination = "${spring.activemq.topic.fetch.general.response}")
     public void onMessage(Message message) {
         try {

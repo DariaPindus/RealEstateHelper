@@ -8,7 +8,9 @@ import javax.persistence.ManyToOne;
 import java.time.Instant;
 
 @Entity
-public class OfferHistory extends BaseEntity<Integer> {
+public class FieldChange extends BaseEntity<Integer> {
+
+    public static String NULL_VALUE = "null";
 
     @Getter @Setter
     private Instant time;
@@ -22,18 +24,22 @@ public class OfferHistory extends BaseEntity<Integer> {
     @Getter @Setter
     private RentalOffer offer;
 
-    public OfferHistory() {
+    public FieldChange() {
+        this.time = Instant.now();
     }
 
-    public OfferHistory(Instant time) {
-        this.time = time;
-    }
-
-    public OfferHistory(Instant time, String fieldName, String newValue, String oldValue, RentalOffer offer) {
-        this.time = time;
+    public FieldChange(String fieldName, String newValue, String oldValue, RentalOffer offer) {
+        this.time = Instant.now();
         this.fieldName = fieldName;
         this.newValue = newValue;
         this.oldValue = oldValue;
         this.offer = offer;
+    }
+
+    public FieldChange(String fieldName, String oldValue, String newValue) {
+        this();
+        this.fieldName = fieldName;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 }

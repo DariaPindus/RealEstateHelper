@@ -7,7 +7,7 @@ import com.daria.learn.rentalhelper.dtos.FetchDetailRequestDTO;
 import java.util.List;
 
 public interface RentalOfferFacade {
-    List<BriefRentalOfferDTO> persistNewRentals(List<BriefRentalOfferDTO> rentalOfferDTOS);
+    void persistNewRentals(List<BriefRentalOfferDTO> rentalOfferDTOS);
     List<DetailRentalOffersDTO> updateRentalDetails(List<DetailRentalOffersDTO> allRentals);
     List<FetchDetailRequestDTO> getFetchDetailRequests();
 }

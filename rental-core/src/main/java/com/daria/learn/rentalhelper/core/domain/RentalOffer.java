@@ -18,22 +18,21 @@ import java.util.Optional;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(indexes = @Index(columnList = "link"))
-@MappedSuperclass
 @DiscriminatorColumn(name = "source")
-public abstract class RentalOffer extends BaseEntity<Integer> {
+public class RentalOffer extends BaseEntity<Integer> {
     @Getter @Setter
     private String name;
     @Getter @Setter
     private String postalCode;
     @Getter @Setter
-    private double price;
+    private Double price;
     @Getter @Setter
-    private int area;
+    private Integer area;
     @Getter @Setter
     private String agency;
     @Getter @Setter
     //TODO: nullable?
-    private boolean furnished;
+    private Boolean furnished;
     @Getter @Setter
     @Column(unique = true)
     private String link;
@@ -42,19 +41,19 @@ public abstract class RentalOffer extends BaseEntity<Integer> {
     @Getter @Setter
     private Instant availableFrom;
     @Getter
-    @Column(name = "source")
+    @Column(name = "source", insertable = false, updatable = false)
     private String source;
     @Getter @Setter
     private RentalStatus rentalStatus;
     @OneToMany @Setter @Getter
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<OfferHistory> offerHistories;
+    private List<FieldChange> offerHistories;
     @Getter @Setter
     private Instant creationTime;
     @Transient
     private boolean shouldBeNotifiedAbout;
 
-    public RentalOffer(String name, String postalCode, int area, double price, String agency, String link, String source) {
+    public RentalOffer(String name, String postalCode, Integer area, Double price, String agency, String link, String source) {
         this.name = name;
         this.postalCode = postalCode;
         this.price = price;
@@ -68,7 +67,7 @@ public abstract class RentalOffer extends BaseEntity<Integer> {
         this.creationTime = Instant.now();
     }
 
-    public RentalOffer(String name, String postalCode, double price, int area, String agency, boolean furnished, String link, String source) {
+    public RentalOffer(String name, String postalCode, Double price, Integer area, String agency, Boolean furnished, String link, String source) {
         this(name, postalCode, area, price, agency, link, source);
         this.furnished = furnished;
     }
@@ -77,7 +76,7 @@ public abstract class RentalOffer extends BaseEntity<Integer> {
         return shouldBeNotifiedAbout;
     }
 
-    public static String generateSearchString(String postalCode, int area, String agency) {
+    public static String generateSearchString(String postalCode, Integer area, String agency) {
         return postalCode + "--" + area + "--" + agency;
     }
 
@@ -96,36 +95,40 @@ public abstract class RentalOffer extends BaseEntity<Integer> {
         return new DetailRentalOffersDTO(name, link, RentalStatusDTO.fromValue(rentalStatus.getValue()), postalCode, price, null, availableFrom, furnished, area, agency);
     }
 
+    //TODO: refactor to enhance "shouldBeNotifiedAbout" logic
+    //TODO: enhance field tracking, maybe create class Field that would implement Trackable interface, that would override getOldValue/getNewValue
     public boolean updateFromDetails(DetailRentalOffersDTO offerDetailsDTO) {
-        List<OfferHistory> offerChangeHistories = new LinkedList<>();
+        List<FieldChange> offerChangeHistories = new LinkedList<>();
         shouldBeNotifiedAbout = this.offerHistories.isEmpty();
 
         RentalStatus newRentalStatus = Optional.ofNullable(offerDetailsDTO.getStatus()).map(RentalStatusDTO::getValue).map(RentalStatus::fromValue).orElse(RentalStatus.OTHER);
         if (offerDetailsDTO.getStatus() != null && newRentalStatus != this.rentalStatus) {
+            String oldValue = this.rentalStatus == null ? FieldChange.NULL_VALUE : this.rentalStatus.getValue();
             if (offerDetailsDTO.isDeleted() && this.rentalStatus == RentalStatus.DELETED)
                 return false;
-            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.RENTAL_STATUS_FIELD, offerDetailsDTO.getStatus().getValue(), this.rentalStatus.getValue(), this));
+            offerChangeHistories.add(new FieldChange(RentalOfferFields.RENTAL_STATUS_FIELD, offerDetailsDTO.getStatus().getValue(), oldValue, this));
             this.rentalStatus = newRentalStatus;
         }
         if (offerDetailsDTO.getName() != null && !offerDetailsDTO.getName().equals(this.name)) {
-            offerChangeHistories.add(new OfferHistory(Instant.now(), RentalOfferFields.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
+            offerChangeHistories.add(new FieldChange(RentalOfferFields.NAME_FIELD, offerDetailsDTO.getName(), this.name, this));
             this.name = offerDetailsDTO.getName();
         }
         if (offerDetailsDTO.getPrice() != null && offerDetailsDTO.getPrice() != this.price) {
             shouldBeNotifiedAbout = true;
+            String oldValue = this.price == null ? FieldChange.NULL_VALUE : String.valueOf(this.price);
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFields.PRICE_FIELD, String.valueOf(offerDetailsDTO.getPrice()), String.valueOf(this.price), this));
+                    new FieldChange(RentalOfferFields.PRICE_FIELD, offerDetailsDTO.getPrice() == null ? FieldChange.NULL_VALUE : String.valueOf(offerDetailsDTO.getPrice()), oldValue, this));
             this.price = offerDetailsDTO.getPrice();
         }
         if (offerDetailsDTO.getIsFurnished() != null && offerDetailsDTO.getIsFurnished() != this.furnished) {
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFields.IS_FURNISHED_FIELD, String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
+                    new FieldChange(RentalOfferFields.IS_FURNISHED_FIELD, offerDetailsDTO.getIsFurnished() == null ? FieldChange.NULL_VALUE : String.valueOf(offerDetailsDTO.getIsFurnished() ), String.valueOf(this.furnished), this));
             this.furnished = offerDetailsDTO.getIsFurnished();
         }
         if (offerDetailsDTO.getAvailableFrom() != null && !offerDetailsDTO.getAvailableFrom().equals(this.availableFrom)) {
             shouldBeNotifiedAbout = true;
             offerChangeHistories.add(
-                    new OfferHistory(Instant.now(), RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
+                    new FieldChange(RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(offerDetailsDTO.getAvailableFrom()), String.valueOf(this.availableFrom), this));
             this.availableFrom = offerDetailsDTO.getAvailableFrom();
         }
         this.offerHistories.addAll(offerChangeHistories);

@@ -1,4 +1,4 @@
-package com.daria.learn.rentalhelper.core.configuration;
+package com.daria.learn.fetcherservice.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import java.util.List;
 
 @Configuration
 public class ActiveMQConfig {
-
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
 
@@ -33,7 +32,6 @@ public class ActiveMQConfig {
         activeMQConnectionFactory.setPassword(password);
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
         activeMQConnectionFactory.setTrustedPackages(List.of(trustedPackages.split(",")));
-//        activeMQConnectionFactory.setClientID("rental-core");
         return new CachingConnectionFactory(activeMQConnectionFactory);
     }
 
@@ -50,4 +48,5 @@ public class ActiveMQConfig {
         factory.setConnectionFactory(connectionFactory);
         return factory;
     }
+
 }

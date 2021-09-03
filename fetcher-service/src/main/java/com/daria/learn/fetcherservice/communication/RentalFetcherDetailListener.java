@@ -1,19 +1,20 @@
 package com.daria.learn.fetcherservice.communication;
 
 import com.daria.learn.fetcherservice.fetch.FetcherFacade;
-import com.daria.learn.rentalhelper.dtos.*;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
+import com.daria.learn.rentalhelper.dtos.DetailRentalOffersListDTO;
+import com.daria.learn.rentalhelper.dtos.FetchDetailRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import java.util.List;
 
 @Component
-public class RentalFetcherDetailListener implements MessageListener {
+public class RentalFetcherDetailListener {
     private static final Logger log = LoggerFactory.getLogger(RentalFetcherListener.class);
     private final FetcherFacade fetcherFacade;
     private final RentalFetchSender rentalFetchSender;
@@ -22,7 +23,7 @@ public class RentalFetcherDetailListener implements MessageListener {
         this.fetcherFacade = fetcherFacade;
         this.rentalFetchSender = rentalFetchSender;
     }
-    @Override
+
     @JmsListener(destination = "${spring.activemq.topic.fetch.detail.request}")
     public void onMessage(Message message) {
         try{
@@ -34,4 +35,5 @@ public class RentalFetcherDetailListener implements MessageListener {
         } catch(Exception e) {
             log.error("Exception in bot offer listener: {}", e.getMessage());
         }
-    }}
+    }
+}

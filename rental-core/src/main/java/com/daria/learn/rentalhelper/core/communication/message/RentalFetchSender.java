@@ -38,7 +38,7 @@ public class RentalFetchSender {
     //TODO: exception hanlding in messagin??
     public void sendDetailFetchRequest(FetchDetailRequestDTO requestDTO) {
         try {
-            jmsTemplate.send(topicGeneral, session -> session.createObjectMessage(requestDTO));
+            jmsTemplate.send(topicDetailed, session -> session.createObjectMessage(requestDTO));
         } catch (Exception ex) {
             log.error("Exception in sending message in to " + topicGeneral + ": {}", ex.getMessage());
         }

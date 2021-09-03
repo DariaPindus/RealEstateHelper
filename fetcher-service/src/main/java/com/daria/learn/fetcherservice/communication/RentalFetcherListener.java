@@ -10,12 +10,11 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import java.util.List;
 
 @Component
-public class RentalFetcherListener implements MessageListener {
+public class RentalFetcherListener {
     private static final Logger log = LoggerFactory.getLogger(RentalFetcherListener.class);
     private final FetcherFacade fetcherFacade;
     private final RentalFetchSender rentalFetchSender;
@@ -25,7 +24,6 @@ public class RentalFetcherListener implements MessageListener {
         this.rentalFetchSender = rentalFetchSender;
     }
 
-    @Override
     @JmsListener(destination = "${spring.activemq.topic.fetch.general.request}")
     public void onMessage(Message message) {
         try{

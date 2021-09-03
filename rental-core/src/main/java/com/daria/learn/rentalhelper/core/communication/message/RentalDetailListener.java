@@ -14,8 +14,8 @@ import javax.jms.ObjectMessage;
 import java.util.List;
 
 @Component
-public class RentalDetailListener implements MessageListener {
-    private static final Logger log = LoggerFactory.getLogger(RentalGeneralListener.class);
+public class RentalDetailListener {
+    private static final Logger log = LoggerFactory.getLogger(RentalFetcherListener.class);
 
     private final RentalOfferFacade rentalOfferFacade;
     private final RentalNotificationSender rentalNotificationSender;
@@ -25,15 +25,17 @@ public class RentalDetailListener implements MessageListener {
         this.rentalNotificationSender = rentalNotificationSender;
     }
 
-    @Override
     @JmsListener(destination = "${spring.activemq.topic.fetch.detail.response}")
     public void onMessage(Message message) {
         try {
             ObjectMessage objectMessage = (ObjectMessage) message;
             DetailRentalOffersListDTO rentalOfferDetailsDTO = (DetailRentalOffersListDTO) objectMessage.getObject();
             log.info("Rental fetcher listener received request: {} ", rentalOfferDetailsDTO);
+
             List<DetailRentalOffersDTO> updatedRentalDetails = rentalOfferFacade.updateRentalDetails(rentalOfferDetailsDTO.getOffersList());
-            rentalNotificationSender.sendMessage(new DetailRentalOffersListDTO(updatedRentalDetails));
+
+            if (!updatedRentalDetails.isEmpty())
+                rentalNotificationSender.sendMessage(new DetailRentalOffersListDTO(updatedRentalDetails));
         } catch (Exception ex) {
             log.error("Couldn't process general rental message: " + message + ", ex: " + ex.getMessage());
         }

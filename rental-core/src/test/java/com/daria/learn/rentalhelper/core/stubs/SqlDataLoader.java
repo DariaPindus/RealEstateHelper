@@ -62,7 +62,7 @@ public class SqlDataLoader {
                 double price = 10 + (2000 - 10) * r.nextDouble();
                 RentalOffer offer = new ParariusRentalOffer(getRandomOfferName(), getRandomPostalCode(), r.nextInt(200) + 10, price,
                          agencies.get(r.nextInt(agencies.size() - 1)), getRandomString(50));
-                List<OfferHistory> histories1 = getRandomHistories(historySize, offer);
+                List<FieldChange> histories1 = getRandomHistories(historySize, offer);
                 offer.setOfferHistories(histories1);
                 offerList.add(offer);
             }
@@ -72,8 +72,8 @@ public class SqlDataLoader {
         assertTrue(rentalOfferRepository.count() >= numberOfRecords);
     }
 
-    private List<OfferHistory> getRandomHistories(int historySize, RentalOffer rentalOffer) {
-        List<OfferHistory> histories = new ArrayList<>();
+    private List<FieldChange> getRandomHistories(int historySize, RentalOffer rentalOffer) {
+        List<FieldChange> histories = new ArrayList<>();
         Random r = new Random();
         for (int k = 0; k < historySize; k++) {
             String fieldName = fields.get(r.nextInt(fields.size()));
@@ -86,19 +86,18 @@ public class SqlDataLoader {
         return Instant.now().minus(new Random().nextInt(120), ChronoUnit.DAYS);
     }
 
-    private static OfferHistory getOfferHistoryFromField(String field, RentalOffer offer) {
-        Instant creationTime = getRandomTime();
+    private static FieldChange getOfferHistoryFromField(String field, RentalOffer offer) {
         switch (field) {
             case NAME_FIELD:
-                return new OfferHistory(creationTime, NAME_FIELD, getRandomString(10), getRandomString(15), offer);
+                return new FieldChange(NAME_FIELD, getRandomString(10), getRandomString(15), offer);
             case PRICE_FIELD:
-                return new OfferHistory(creationTime, PRICE_FIELD, String.valueOf(getRandomNumber(0, 2000)), String.valueOf(getRandomNumber(0, 2000)), offer);
+                return new FieldChange(PRICE_FIELD, String.valueOf(getRandomNumber(0, 2000)), String.valueOf(getRandomNumber(0, 2000)), offer);
             case IS_FURNISHED_FIELD: {
                 Random r = new Random();
-                return new OfferHistory(creationTime, IS_FURNISHED_FIELD, String.valueOf(r.nextBoolean()), String.valueOf(r.nextBoolean()), offer);
+                return new FieldChange(IS_FURNISHED_FIELD, String.valueOf(r.nextBoolean()), String.valueOf(r.nextBoolean()), offer);
             }
             case AVAILABLE_FROM_FIELD:
-                return new OfferHistory(creationTime, RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(getRandomTime()), String.valueOf(getRandomTime()), offer);
+                return new FieldChange(RentalOfferFields.AVAILABLE_FROM_FIELD, String.valueOf(getRandomTime()), String.valueOf(getRandomTime()), offer);
         }
         throw new RuntimeException("Unsupported field " + field);
     }

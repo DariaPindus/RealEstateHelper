@@ -13,7 +13,7 @@ public class RentalNotificationSender {
 
     private final JmsTemplate jmsTemplate;
 
-    @Value("${spring.activemq.topic.rental}")
+    @Value("${spring.activemq.topic.bot.notificaion}")
     private String topic;
 
     public RentalNotificationSender(JmsTemplate jmsTemplate) {

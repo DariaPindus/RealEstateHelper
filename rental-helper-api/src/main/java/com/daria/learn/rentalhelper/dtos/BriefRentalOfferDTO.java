@@ -12,13 +12,13 @@ public class BriefRentalOfferDTO implements Serializable {
     @Getter
     private final String postalCode;
     @Getter
-    private final int area;
+    private final Integer area;
     @Getter
     private final String agency;
     @Getter
     private final String link;
     @Getter
-    private final double price;
+    private final Double price;
     @Getter @Setter
     private String source;
 

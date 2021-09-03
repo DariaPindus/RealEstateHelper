@@ -27,30 +27,28 @@ public class RentalOfferFacadeImpl implements RentalOfferFacade {
 
     @Override
     @Transactional
-    public List<BriefRentalOfferDTO> persistNewRentals(final List<BriefRentalOfferDTO> briefRentalOfferDTOS) {
+    public void persistNewRentals(final List<BriefRentalOfferDTO> briefRentalOfferDTOS) {
         try {
-            Map<String, BriefRentalOfferDTO> rentalSearchInfos = new HashMap<>();
-            briefRentalOfferDTOS.forEach(
-                    dto -> {
-                        String searchString = RentalOffer.generateSearchStringFromDTO(dto);
-                        if (rentalSearchInfos.containsKey(searchString))
-                            return;
-                        rentalSearchInfos.put(searchString, dto);
-                    }
-            );
+            Map<String, BriefRentalOfferDTO> rentalLinks = briefRentalOfferDTOS.stream()
+                    .collect(
+                            toMap(BriefRentalOfferDTO::getLink,
+                                    rentalDTO -> rentalDTO,
+                                    (rentalDTO1, rentalTO2) -> {
+                                        log.warn("Duplicate rental DTO: {}, {}", rentalDTO1, rentalTO2);
+                                        return rentalDTO1;
+                                    }));
 
-            Set<String> existingOffersSearchStrings = rentalOfferRepository.findBySearchStringIn(rentalSearchInfos.keySet())
+            Set<String> existingLinks = rentalOfferRepository.findByLinkIn(rentalLinks.keySet())
                     .stream()
-                    .map(RentalOffer::getSearchString)
+                    .map(RentalOffer::getLink)
                     .collect(Collectors.toSet());
 
-            List<RentalOffer> newOffers = rentalSearchInfos.values().stream()
-                    .filter(rentalOfferDTO -> !existingOffersSearchStrings.contains(RentalOffer.generateSearchStringFromDTO(rentalOfferDTO)))
+            List<RentalOffer> newOffers = rentalLinks.values().stream()
+                    .filter(rentalOfferDTO -> !existingLinks.contains(rentalOfferDTO.getLink()))
                     .map(RentalOffer::fromBriefRentalOfferDTO).collect(toList());
             rentalOfferRepository.saveAll(newOffers);
 
             log.info("Persisted new offers {} ", newOffers);
-            return briefRentalOfferDTOS;
         } catch (Exception ex) {
             log.error("Error persisting rental offers: " + ex.getMessage());
             throw new RuntimeException(ex);
@@ -60,7 +58,7 @@ public class RentalOfferFacadeImpl implements RentalOfferFacade {
     //TODO: pagination ?
     @Override
     public List<FetchDetailRequestDTO> getFetchDetailRequests() {
-        List<String> parariusOffersUrls = rentalOfferRepository.findOpenRentalOffersOfSource(ParariusRentalOffer.DISCRIMINATOR_VALUE).stream()
+        List<String> parariusOffersUrls = rentalOfferRepository.findBySource(ParariusRentalOffer.DISCRIMINATOR_VALUE).stream()
                 .map(RentalOffer::getLink)
                 .collect(toUnmodifiableList());
         return List.of(
@@ -78,12 +76,16 @@ public class RentalOfferFacadeImpl implements RentalOfferFacade {
         List<DetailRentalOffersDTO> toNotifyAbout = new LinkedList<>();
 
         for (RentalOffer existingOffer : existingOffers) {
-            if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
-                continue;
-            DetailRentalOffersDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
-            existingOffer.updateFromDetails(detailsDTO);
-            if (existingOffer.shouldBeNotifiedAbout())
-                toNotifyAbout.add(existingOffer.toRentalOfferDetailsDTO());
+            try {
+                if (!newRentalWithLinks.containsKey(existingOffer.getLink()))
+                    continue;
+                DetailRentalOffersDTO detailsDTO = newRentalWithLinks.get(existingOffer.getLink());
+                existingOffer.updateFromDetails(detailsDTO);
+                if (existingOffer.shouldBeNotifiedAbout())
+                    toNotifyAbout.add(existingOffer.toRentalOfferDetailsDTO());
+            } catch (Exception ex) {
+                log.warn("Couldn't update offer {}", existingOffer);
+            }
         }
 
         rentalOfferRepository.saveAll(existingOffers);

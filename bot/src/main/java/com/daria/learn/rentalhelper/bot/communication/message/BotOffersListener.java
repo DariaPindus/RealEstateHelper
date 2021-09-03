@@ -8,13 +8,12 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class BotOffersListener implements MessageListener {
+public class BotOffersListener {
 
     private static final Logger log = LoggerFactory.getLogger(BotOffersListener.class);
     private final RentalBotNotifierFacade botNotifierFacade;
@@ -23,8 +22,7 @@ public class BotOffersListener implements MessageListener {
         this.botNotifierFacade = botNotifierFacade;
     }
 
-    @Override
-    @JmsListener(destination = "${spring.activemq.topic.rental}")
+    @JmsListener(destination = "${spring.activemq.topic.bot.notificaion}")
     public void onMessage(Message message) {
         try{
             ObjectMessage objectMessage = (ObjectMessage)message;
