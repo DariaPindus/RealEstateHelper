@@ -1,8 +1,10 @@
 package com.daria.learn.fetcherservice.fetch;
 
+import com.daria.learn.fetcherservice.config.FetcherServiceConfiguration;
 import com.daria.learn.fetcherservice.source.DataSource;
 import com.daria.learn.rentalhelper.dtos.BriefRentalOfferDTO;
 import com.daria.learn.rentalhelper.dtos.DetailRentalOffersDTO;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,9 +31,15 @@ public class FetcherFacadeImpl implements FetcherFacade {
     }
 
     @Override
+    @TimeLimiter(name = FetcherServiceConfiguration.RESILIENCE4J_SERVICE_NAME, fallbackMethod = "fallbackFetchOffersFromSource")
     public List<BriefRentalOfferDTO> fetchOffersFromSource(String source) {
         DataSource dataSource = Optional.ofNullable(dataSources.get(source)).orElseThrow(() -> new IllegalArgumentException("Data source " + source + " is not supported" ));
         return dataSource.getOffers();
+    }
+
+    public List<BriefRentalOfferDTO> fallbackFetchOffersFromSource(String source) {
+        log.error("fetchOffersFromSource fell back due to TimeLimiter");
+        return List.of();
     }
 
     @Override
@@ -46,12 +54,18 @@ public class FetcherFacadeImpl implements FetcherFacade {
     }
 
     @Override
+    @TimeLimiter(name = FetcherServiceConfiguration.RESILIENCE4J_SERVICE_NAME, fallbackMethod = "fallbackFetchOfferDetailsFromSource")
     public List<DetailRentalOffersDTO> fetchOfferDetailsFromSource(String source, List<String> urls) {
         List<DetailRentalOffersDTO> detailRentalOffersDTOS = parallelizedFetchFromSource(urls, source);
         return detailRentalOffersDTOS;
     }
 
-    private DetailRentalOffersDTO fetchOfferDetailFromSource(String source, String url) {
+    public List<DetailRentalOffersDTO> fallbackFetchOfferDetailsFromSource() {
+        log.error("fetchOfferDetailsFromSource fell back due to TimeLimiter");
+        return List.of();
+    }
+
+    public DetailRentalOffersDTO fetchOfferDetailFromSource(String source, String url) {
         DataSource dataSource = Optional.ofNullable(dataSources.get(source)).orElseThrow(() -> new IllegalArgumentException());
         return dataSource.fetchOfferDetail(url);
     }

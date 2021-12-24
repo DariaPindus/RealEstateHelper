@@ -47,6 +47,7 @@ public class ActiveMQConfig {
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(@Autowired ConnectionFactory connectionFactory){
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        factory.setPubSubDomain(true);
         return factory;
     }
 }

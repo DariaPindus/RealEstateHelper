@@ -43,11 +43,19 @@ public class ActiveMQConfig {
         jmsTemplate.setConnectionFactory(connectionFactory);
         return jmsTemplate;
     }
-
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(@Autowired ConnectionFactory connectionFactory){
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         return factory;
     }
+
+    @Bean
+    public JmsTemplate topicJmsTemplate(@Autowired ConnectionFactory connectionFactory){
+        JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setConnectionFactory(connectionFactory);
+        jmsTemplate.setPubSubDomain(true);
+        return jmsTemplate;
+    }
+
 }

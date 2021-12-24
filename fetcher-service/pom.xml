@@ -13,9 +13,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>fetcher-service</name>
     <description>Demo project for Spring Boot</description>
+
     <properties>
         <java.version>11</java.version>
+        <resilience4jVersion>1.7.1</resilience4jVersion>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -45,6 +48,11 @@
             <artifactId>spring-boot-starter-activemq</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot2</artifactId>
+            <version>${resilience4jVersion}</version>
+        </dependency>
     </dependencies>
 
     <build>

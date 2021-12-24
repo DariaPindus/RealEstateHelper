@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 public class RentalNotificationSender {
     private static final Logger log = LoggerFactory.getLogger(RentalNotificationSender.class);
 
-    private final JmsTemplate jmsTemplate;
+    private final JmsTemplate topicJmsTemplate;
 
     @Value("${spring.activemq.topic.bot.notificaion}")
     private String topic;
 
-    public RentalNotificationSender(JmsTemplate jmsTemplate) {
-        this.jmsTemplate = jmsTemplate;
+    public RentalNotificationSender(JmsTemplate topicJmsTemplate) {
+        this.topicJmsTemplate = topicJmsTemplate;
     }
 
     public void sendMessage(DetailRentalOffersListDTO detailRentalOffersListDTO){
         try{
             log.info("Attempting Send message to Topic: "+ topic);
-            jmsTemplate.send(topic, session -> session.createObjectMessage(detailRentalOffersListDTO));
+            topicJmsTemplate.send(topic, session -> session.createObjectMessage(detailRentalOffersListDTO));
         } catch(Exception e){
             log.info("Received Exception during send Message: " + e);
         }
