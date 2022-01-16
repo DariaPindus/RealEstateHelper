@@ -2,6 +2,7 @@ package com.daria.learn.rentalhelper.core.communication.message;
 
 import com.daria.learn.rentalhelper.dtos.FetchBriefRequestDTO;
 import com.daria.learn.rentalhelper.dtos.FetchDetailRequestDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class RentalFetchSender {
     private static final Logger log = LoggerFactory.getLogger(RentalFetchSender.class);
 
+    private final ObjectMapper objectMapper;
     private final JmsTemplate jmsTemplate;
 
     @Value("${spring.activemq.topic.fetch.general.request}")
@@ -21,7 +23,9 @@ public class RentalFetchSender {
     private String topicDetailed;
 
 
-    public RentalFetchSender(JmsTemplate jmsTemplate) {
+    public RentalFetchSender(ObjectMapper objectMapper,
+                             JmsTemplate jmsTemplate) {
+        this.objectMapper = objectMapper;
         this.jmsTemplate = jmsTemplate;
     }
 
@@ -29,7 +33,8 @@ public class RentalFetchSender {
     public void sendGeneralFetchRequest() {
         try {
             FetchBriefRequestDTO requestDTO = new FetchBriefRequestDTO();
-            jmsTemplate.send(topicGeneral, session -> session.createObjectMessage(requestDTO));
+            String message = objectMapper.writeValueAsString(requestDTO);
+            jmsTemplate.send(topicGeneral, session -> session.createTextMessage(message));
         } catch (Exception ex) {
             log.error("Exception in sending message in to " + topicGeneral + ": {}", ex.getMessage());
         }

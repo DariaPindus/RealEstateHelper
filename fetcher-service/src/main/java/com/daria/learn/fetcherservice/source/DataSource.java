@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface DataSource {
     String getSourceName();
-    List<BriefRentalOfferDTO> getOffers();
+    List<BriefRentalOfferDTO> getNewOffers();
     DetailRentalOffersDTO fetchOfferDetail(String url);
 }
