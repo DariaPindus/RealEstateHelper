@@ -34,7 +34,7 @@ public class FetcherFacadeImpl implements FetcherFacade {
     @TimeLimiter(name = FetcherServiceConfiguration.RESILIENCE4J_SERVICE_NAME, fallbackMethod = "fallbackFetchOffersFromSource")
     public List<BriefRentalOfferDTO> fetchOffersFromSource(String source) {
         DataSource dataSource = Optional.ofNullable(dataSources.get(source)).orElseThrow(() -> new IllegalArgumentException("Data source " + source + " is not supported" ));
-        return dataSource.getOffers();
+        return dataSource.getNewOffers();
     }
 
     public List<BriefRentalOfferDTO> fallbackFetchOffersFromSource(String source) {
@@ -47,7 +47,7 @@ public class FetcherFacadeImpl implements FetcherFacade {
         log.info("Rental fetcher to run");
         List<BriefRentalOfferDTO> resultList = new LinkedList<>();
         for (DataSource dataSource : dataSources.values()) {
-            resultList.addAll(dataSource.getOffers());
+            resultList.addAll(dataSource.getNewOffers());
         }
         logParsedOffers(resultList);
         return resultList;
