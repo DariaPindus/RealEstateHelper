@@ -7,7 +7,7 @@ import com.daria.learn.rentalhelper.userservice.user.UserService;
 import com.daria.learn.rentalhelper.userservice.user.domain.SourceType;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/user")
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -16,18 +16,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/user")
     public UserDTO addUser(@RequestBody UserDTO userDTO) {
         return userService.addUser(userDTO);
     }
 
-    @PutMapping("/{sourcetype}")
+    @PutMapping("/user/{sourcetype}")
     public UserUpdateDTO updateUser(@PathVariable("sourcetype") String sourceType,
                               @RequestBody UserUpdateDTO userDTO) {
         return userService.updateUser(SourceType.valueOf(sourceType), userDTO);
     }
 
-    @GetMapping("/{sourcetype}/{userid}/userpreference")
+    @GetMapping("/user/{sourcetype}/{userid}/userpreference")
     public UserPreferenceDTO getUserPreference(@PathVariable("sourcetype") String sourceType,
                                                @PathVariable("userid") String userId) {
         return userService.getUserPreferenceBySourceTypeAndId(SourceType.valueOf(sourceType), userId);

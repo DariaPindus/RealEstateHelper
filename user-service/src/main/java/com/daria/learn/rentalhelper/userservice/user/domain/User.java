@@ -18,7 +18,7 @@ public class User {
 
     @Id
     @Getter @Setter
-    private Integer id;
+    private String id;
 
     @Getter @Setter
     private SourceType sourceType;
@@ -28,4 +28,5 @@ public class User {
 
     @Getter @Setter
     private UserPreference userPreference;
+
 }
